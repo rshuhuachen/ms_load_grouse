@@ -1,0 +1,3 @@
+# GO enrichment analysis
+
+As our black grouse genome annotation did not resolve the annotation to the level of official gene symbols, we use the chicken annotation to conduct a GO enrichment analysis. First, we lift over the *Gallus gallus* annotation using `liftoff`. Then, we append the official gene symbols to our deleterious SNPs. Lastly, we build frequentist models per gene to estimate the effect of mutations on sexual traits. We next ordered the list of genes by their significance (after FDR-correction) and used it as input for GOrilla https://cbl-gorilla.cs.technion.ac.il.
