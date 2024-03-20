@@ -1,0 +1,21 @@
+input.file=output/cactus/maf_per_scaf/biggest_30/maf_$(NR).maf      // Input maf file (path)
+input.file.compression=none             // input.file.compression=[none|zip|gzip|bzip2]
+output.log=output/cactus/neutral_tree/multifa/$(NR).maffilter.log        //Output log file
+//A coma separated list of filters, here empty (the programs only read the input file and exits).
+maf.filter= \
+    MinBlockLength(min_length=1),                                 \
+    ExtractFeature(                                               \
+        ref_species=$(REF_SPEC),                                  \
+        feature.file=output/cactus/neutral_tree/win/windows_$(NR).bed.gz,          \
+        feature.file.compression=gzip,                            \
+        feature.format=BedGraph,                                  \
+        feature.type=all,                                         \
+        complete=no,                                              \
+        ignore_strand=no),                                        \
+    Concatenate(minimum_size=$(FASIZE), ref_species=$(REF_SPEC)), \
+    OutputAlignments(                                             \
+        file=output/cactus/neutral_tree/multifa/$(NR).fa.gz,                       \
+        compression=gzip,                                         \
+        format=Fasta,                                             \
+        mask=no,                                                  \
+        coordinates=no)

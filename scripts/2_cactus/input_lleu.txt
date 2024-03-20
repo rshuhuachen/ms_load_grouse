@@ -1,0 +1,1 @@
+Lagopus_leucura data/genomic/intermediate/cactus/Lagopusleucura.fa.gz

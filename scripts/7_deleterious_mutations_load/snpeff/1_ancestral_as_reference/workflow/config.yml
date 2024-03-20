@@ -1,0 +1,5 @@
+
+cactus_sif: '../../../../src/containers/cactus_v2.5.1.sif'
+cactus_cores: "8"
+sif_popgen: '../../../../src/containers/popgen_suite_v0.2.sif'
+sif_jvar: '../../../../src/containers/jvarkit_1b2aedf24.sif'

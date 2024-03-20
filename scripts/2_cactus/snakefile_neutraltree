@@ -1,0 +1,272 @@
+"""
+snakemake -n --snakefile scripts/2_cactus/snakefile_neutraltree -R create_neutral_tree
+
+snakemake --jobs 50 --snakefile scripts/2_cactus/snakefile_neutraltree \
+    --latency-wait 30 \
+    -p \
+    --default-resources mem_mb=51200 threads=1 \
+    --use-singularity \
+    --singularity-args "--bind /vol/cluster-data/rchen/geneticload/gerp/analyses/git/cactus_insert_ltet_take4" \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb}' \
+        --jn neutraltree.{name}.{jobid}.sh \
+        -R estimate_branchlengths --rerun-incomplete
+"""
+
+import pandas as pd
+
+SCAF_LOOKUP = pd.read_table('data/genomic/refgenome/30_largest.scafs.tsv').set_index("scaf_no", drop = True)
+SCAF_NO = SCAF_LOOKUP.index
+#SCAFNAMES=("ScEsiA3_18278:HRSCAF.21663" "ScEsiA3_19038:HRSCAF.23783"  "ScEsiA3_18316:HRSCAF.21772" "ScEsiA3_16870:HRSCAF.19426" "ScEsiA3_18461:HRSCAF.22153" "ScEsiA3_17641:HRSCAF.20530" "ScEsiA3_15486:HRSCAF.17393"  "ScEsiA3_16766:HRSCAF.19082" "ScEsiA3_17007:HRSCAF.19631"  "ScEsiA3_17655:HRSCAF.20552" "ScEsiA3_16641:HRSCAF.18713"  "ScEsiA3_19552:HRSCAF.24415" "ScEsiA3_12205:HRSCAF.13534"  "ScEsiA3_13761:HRSCAF.15525"  "ScEsiA3_669:HRSCAF.1222" "ScEsiA3_292:HRSCAF.720" "ScEsiA3_17616:HRSCAF.20466"  "ScEsiA3_16785:HRSCAF.19165"  "ScEsiA3_18290:HRSCAF.21698"  "ScEsiA3_18386:HRSCAF.21885"  "ScEsiA3_21975:HRSCAF.26924" "ScEsiA3_21978:HRSCAF.26928" "ScEsiA3_21977:HRSCAF.26927" "ScEsiA3_21979:HRSCAF.26929" "ScEsiA3_16771:HRSCAF.19097"  "ScEsiA3_21976:HRSCAF.26926"  "ScEsiA3_18752:HRSCAF.22883"  "ScEsiA3_12113:HRSCAF.13291"  "ScEsiA3_15456:HRSCAF.17358"  "ScEsiA3_18236:HRSCAF.21586"
+
+def get_scafnames(wildcards):
+    return( SCAF_LOOKUP["scaf"][int(wildcards.nscaf)] )
+
+SCAFNAMES = SCAF_LOOKUP["scaf"]
+WIN_SIZE = 1000
+WIN_N = 5000
+
+rule create_neutral_tree:
+    input:
+      win_bed = expand( "output/cactus/wiggle/wig_{nscaf}.bed.gz", nscaf = SCAF_NO),
+      tree = "output/cactus/neutral_tree/multifa/combined_windows.fa.treefile"
+
+# we need to determine what part of the genome is covered 
+# by a the alignment of all other (tip) species
+# first step for this is to create a wig file from the hal
+rule alignment_coverage:
+    input:
+      hal = "data/genomic/intermediate/cactus/363-avian-reduced.hal"
+    output:
+      wig = "output/cactus/neutral_tree/wig/{mscaf}.wig.gz"
+    params:
+      prefix = "output/cactus/neutral_tree/wig/{mscaf}.wig"
+    container: "src/containers/cactus_v2.5.1.sif"
+    shell:
+      """
+      halAlignmentDepth \
+        {input.hal} \
+        Lyrurus_tetrix \
+        --noAncestors \
+        --refSequence {wildcards.nscaf} \
+        --outWiggle {params.prefix}
+      gzip {params.prefix}
+      """
+
+# ultimately we want a bed file as mask, so we convert the wig to bed format
+rule wig_to_bed:
+    input:
+      wig = "output/cactus/wiggle/{nscaf}.wig.gz"
+    output:
+      bed = "output/cactus/neutral_tree/scaf_{nscaf}.bed.gz" 
+    shell:
+      """
+      zcat {input.wig} | wig2bed | gzip > {output.bed}
+      """
+
+# unfortunetely, the original bed is single bp elements,
+# so we collapse them into chunks of equal coverage 
+rule collapse_cov_bed:
+    input:
+      bed = "output/cactus/wiggle/wig_{nscaf}.bed.gz"
+    output:
+      bed = "output/cactus/neutral_tree/scaf_{nscaf}.collapsed.bed.gz"
+    log: "logs/collapse_cov_bed_{nscaf}.log"
+    shell:
+      """
+      Rscript --vanilla scripts/2_cactus/collapse_bed_coverage.R {input.bed} {output.bed} &>> {log}
+      """
+
+# now we filter the coverage bed to a minimum coverage
+# and attach a fourth (dummy) column to match the bedgraph format
+# for maffilter
+rule filter_maf_coverage:
+   input:
+      bed = "output/cactus/neutral_tree/scaf_{nscaf}.collapsed.bed.gz"
+   output:
+     bed = "output/cactus/neutral_tree/filtered/scaf_{nscaf}.bed.gz"
+   params:
+     min_cov = 70
+   shell:
+     """
+     zcat {input.bed} | \
+       awk '$4>{params.min_cov}{{print $0}}' | \
+       gzip > {output.bed}
+     """
+
+rule negative_coverage_mask:
+    input:
+      genome = "data/genomic/refgenome/30_largest.scafs_reduced.tsv",
+      bed = expand( "output/cactus/neutral_tree/filtered/scaf_{nscaf}.bed.gz", nscaf = SCAF_NO)
+    output:
+      bed_cov = "output/cactus/neutral_tree/filtered/whole_genome.bed.gz",
+      bed_genome = "output/cactus/30_largest_scafs.bed",
+      bed_neg_cov = "output/cactus/neutral_tree/cov/filtered/whole_genome_exclude.bed.gz"
+   # container: c_conda
+   # conda: "popgen_basics"
+    log: "logs/negative_cov_mask.log"
+    shell:
+      """
+      zcat {input.bed} | gzip > {output.bed_cov}
+      awk 'NR>1 {{print $1"\t"0"\t"$2}}' {input.genome} > {output.bed_genome}
+      bedtools subtract -a {output.bed_genome} -b {output.bed_cov} | gzip > {output.bed_neg_cov}
+      """
+
+# a second mask is created from the genome annotation
+# (we want to exclude all CDS)
+rule create_cds_mask:
+    input:
+      gff = "data/genomic/annotation/PO2979_Lyrurus_tetrix_black_grouse.annotation.gff"
+    output:
+      bed = "output/cactus/neutral_tree/masks/cds_{nscaf}.bed.gz"
+    shell:
+      """
+      grep "CDS" {input.gff} | \
+        grep {wildcards.nscaf} | \
+        cut -f 1,4,5 | \
+        gzip > {output.bed}
+      """
+
+rule proto_windows:
+    input:
+      bed_cds = expand( "output/cactus/neutral_tree/masks/cds_{nscaf}.bed.gz", nscaf = SCAF_NO )
+    output:
+      bed_cds = "output/cactus/neutral_tree/masks/cds.bed.gz",
+      win_proto = "output/cactus/neutral_tree/win/proto.bed.gz"
+    params:
+      win_size = WIN_SIZE,
+      win_n = WIN_N,
+      win_proto_prefix = "output/cactus/neutral_tree/win/proto.bed",
+      win_seed = 42
+    log: "logs/win.log"
+    shell:
+      """
+      zcat {input.bed_cds} | gzip > {output.bed_cds}
+
+      mkdir -p output/neutral_tree/win/
+      for k in $(seq 1 {params.win_n}); do echo -e "{SCAF_NO[0]}\t0\t{params.win_size}" >> {params.win_proto_prefix}; done
+      gzip {params.win_proto_prefix}
+      """
+
+
+rule shuffle_windows:
+    input:
+      genome = "data/genomic/refgenome/30_largest.scafs_reduced.tsv",
+      bed_cds = "output/cactus/neutral_tree/masks/cds.bed.gz",
+      bed_neg_cov = "output/cactus/neutral_tree/cov/filtered/whole_genome_exclude.bed.gz",
+      win_proto = "output/cactus/neutral_tree/win/proto.bed.gz"
+    output:
+      bed_tmp =  "output/cactus/neutral_tree/win/exclude_tmp.bed.gz" ,
+      bed_exclude = "output/cactus/neutral_tree/win/exclude.bed.gz",
+      bed_win = "output/cactus/neutral_tree/win/windows.bed.gz",
+      win_n_scaf = "output/cactus/neutral_tree/win/win_n_scaf.txt"
+    params:
+      win_seed = 42
+    log: "logs/win.log"
+    shell:
+      """
+      zcat {input.bed_cds} {input.bed_neg_cov} | \
+        sort -k 1,1 -k2,2n | \
+        gzip > {output.bed_tmp}
+
+      bedtools merge -i {output.bed_tmp} | gzip > {output.bed_exclude}
+
+      bedtools shuffle \
+        -i {input.win_proto} \
+        -g {input.genome} \
+        -excl {output.bed_exclude} \
+        -seed {params.win_seed} \
+        -noOverlapping 2>> {log} | \
+        sort -k 1,1 -k2,2n | \
+        gzip > {output.bed_win}
+      
+      for k in "ScEsiA3_18278:HRSCAF.21663" "ScEsiA3_19038:HRSCAF.23783"  "ScEsiA3_18316:HRSCAF.21772" "ScEsiA3_16870:HRSCAF.19426" "ScEsiA3_18461:HRSCAF.22153" "ScEsiA3_17641:HRSCAF.20530" "ScEsiA3_15486:HRSCAF.17393"  "ScEsiA3_16766:HRSCAF.19082" "ScEsiA3_17007:HRSCAF.19631"  "ScEsiA3_17655:HRSCAF.20552" "ScEsiA3_16641:HRSCAF.18713"  "ScEsiA3_19552:HRSCAF.24415" "ScEsiA3_12205:HRSCAF.13534"  "ScEsiA3_13761:HRSCAF.15525"  "ScEsiA3_669:HRSCAF.1222" "ScEsiA3_292:HRSCAF.720" "ScEsiA3_17616:HRSCAF.20466"  "ScEsiA3_16785:HRSCAF.19165"  "ScEsiA3_18290:HRSCAF.21698"  "ScEsiA3_18386:HRSCAF.21885"  "ScEsiA3_21975:HRSCAF.26924" "ScEsiA3_21978:HRSCAF.26928" "ScEsiA3_21977:HRSCAF.26927" "ScEsiA3_21979:HRSCAF.26929" "ScEsiA3_16771:HRSCAF.19097"  "ScEsiA3_21976:HRSCAF.26926"  "ScEsiA3_18752:HRSCAF.22883"  "ScEsiA3_12113:HRSCAF.13291"  "ScEsiA3_15456:HRSCAF.17358"  "ScEsiA3_18236:HRSCAF.21586"; do WN=$(zgrep ${{k}} {output.bed_win} | wc -l); echo -e "${{k}}\t${{WN}}" >> {output.win_n_scaf}; done 
+      """
+#      zcat output/neutral_tree/masks/cds.bed.gz output/neutral_tree/cov/filtered/whole_genome_exclude.bed.gz |         sort -k 1,1 -k2,2n |         gzip > output/neutral_tree/win/exclude_tmp.bed.gz                                                                                                                                                                 
+                                                                                                                                                                                   
+#      bedtools merge -i output/neutral_tree/win/exclude_tmp.bed.gz | gzip > output/neutral_tree/win/exclude.bed.gz                                                                 
+#                                                                                                                                                                                   
+#      bedtools shuffle         -i output/neutral_tree/win/proto.bed.gz         -g data/genomes/30_largest.scafs_reduced.tsv         -excl output/neutral_tree/win/exclude.bed.gz         -seed 42         -noOverlapping 2>> logs/win.log |         sort -k 1,1 -k2,2n |         gzip > output/neutral_tree/win/windows.bed.gz  
+
+#for k in "ScEsiA3_18278:HRSCAF.21663" "ScEsiA3_19038:HRSCAF.23783"  "ScEsiA3_18316:HRSCAF.21772" "ScEsiA3_16870:HRSCAF.19426" "ScEsiA3_18461:HRSCAF.22153" "ScEsiA3_17641:HRSCAF.20530" "ScEsiA3_15486:HRSCAF.17393"  "ScEsiA3_16766:HRSCAF.19082" "ScEsiA3_17007:HRSCAF.19631"  "ScEsiA3_17655:HRSCAF.20552" "ScEsiA3_16641:HRSCAF.18713"  "ScEsiA3_19552:HRSCAF.24415" "ScEsiA3_12205:HRSCAF.13534"  "ScEsiA3_13761:HRSCAF.15525"  "ScEsiA3_669:HRSCAF.1222" "ScEsiA3_292:HRSCAF.720" "ScEsiA3_17616:HRSCAF.20466"  "ScEsiA3_16785:HRSCAF.19165"  "ScEsiA3_18290:HRSCAF.21698"  "ScEsiA3_18386:HRSCAF.21885"  "ScEsiA3_21975:HRSCAF.26924" "ScEsiA3_21978:HRSCAF.26928" "ScEsiA3_21977:HRSCAF.26927" "ScEsiA3_21979:HRSCAF.26929" "ScEsiA3_16771:HRSCAF.19097"  "ScEsiA3_21976:HRSCAF.26926"  "ScEsiA3_18752:HRSCAF.22883"  "ScEsiA3_12113:HRSCAF.13291"  "ScEsiA3_15456:HRSCAF.17358"  "ScEsiA3_18236:HRSCAF.21586"; do WN=$(zgrep ${k} output/neutral_tree/win/windows.bed.gz | wc -l); echo -e "${k}\t${WN}" >> output/neutral_tree/win/win_n_scaf.txt; done
+#manually change to tabs in win_n_scaf.txt
+
+rule windows_by_scaffold:
+    input:
+      bed_win = "output/cactus/neutral_tree/win/windows.bed.gz"
+    output:
+      bed_win = "output/cactus/neutral_tree/win/windows_{nscaf}.bed.gz"
+    params:
+      bed_prefix = "output/cactus/neutral_tree/win/windows_{nscaf}.bed",
+      scafnames = lambda wc: get_scafnames(wc)
+    log: "logs/window_by_scaffold_{nscaf}.log"
+    shell:
+      """
+      echo 'track type=bedGraph name="BedGraph Format" description="BedGraph format"' > {params.bed_prefix}
+      zgrep "{params.scafnames}" {input.bed_win} | awk '{{print $0"\t0"}}' >> {params.bed_prefix}
+      gzip {params.bed_prefix}
+      """
+
+def scaf_to_nr(wildcards):
+  pattern = re.compile(r'mscaf_a1_(.*?)$')
+  out = re.findall(pattern, wildcards.nscaf)
+  return out[0]
+
+rule maf_to_fasta:
+    input:
+      maf = "output/cactus/maf_per_scaf/biggest_30/maf_{nscaf}.maf",
+      conf = "scripts/2_cactus/maffilter_templ.txt",
+      windows = "outpoutput/cactusut/neutral_tree/win/windows_{nscaf}.bed.gz",
+      win_n_scaf = "output/cactus/neutral_tree/win/win_n_scaf.txt"
+    output:
+      fasta = "output/cactus/neutral_tree/multifa/{nscaf}.fa.gz"
+    params:
+      ref_spec = "Lyrurus_tetrix",
+      scafnames = lambda wc: get_scafnames(wc)
+    log: "logs/maf2fa_{nscaf}.log"
+    #container: c_conda
+    #conda: "maffilter"
+    shell:
+      """
+      N_WIN=$(grep '{params.scafnames}' {input.win_n_scaf} | cut -f2)
+      BP_WIN=$((${{N_WIN}} * {WIN_SIZE}))
+      echo "N: ${{N_WIN}} ; BP: ${{BP_WIN}}" > {log}
+      maffilter param={input.conf} NR={wildcards.nscaf} DATA={params.scafnames} FASIZE=${{BP_WIN}} REF_SPEC={params.ref_spec} &>> {log}
+      """
+
+rule single_multi_fasta:
+    input:
+      fas = expand( "output/cactus/neutral_tree/multifa/{nscaf}.fa.gz", nscaf = SCAF_NO )
+    output:
+      fa = "output/cactus/neutral_tree/multifa/combined_windows.fa"
+    shell:
+      """
+      seqkit concat {input.fas} --full > {output.fa}
+      """
+
+rule estimate_branchlengths:
+    input:
+      fa = "output/cactus/neutral_tree/multifa/combined_windows.fa",
+      tree = "output/cactus/topology.tree"
+    output:
+      tree = "output/cactus/combined_windows.fa.treefile"
+    log: "logs/iqtree.log"
+    shell:
+      """
+      iqtree \
+        -s {input.fa}\
+        -m GTR+G \
+        --threads-max 1 \
+        --seed 42 \
+        -g {input.tree}\
+        --tree-fix 
+      """
+
+

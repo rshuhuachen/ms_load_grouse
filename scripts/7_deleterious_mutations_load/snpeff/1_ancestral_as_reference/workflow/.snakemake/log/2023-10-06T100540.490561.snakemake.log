@@ -1,0 +1,6 @@
+Building DAG of jobs...
+MissingInputException in rule anc_allele_tsv in line 34 of /vol/cluster-data/rchen/git/genetic_load_ltet/scripts/snpeff/1_ancestral_as_reference/workflow/./rules/ancestral_alleles.smk:
+Missing input files for rule anc_allele_tsv:
+    output: data/processed/ancestral/ancestral_66_ltet_snps.tsv
+    affected files:
+        data/genomes/Anc66.hal

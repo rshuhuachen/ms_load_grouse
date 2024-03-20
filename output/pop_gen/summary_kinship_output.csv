@@ -1,0 +1,11 @@
+criteria,same_site,n,totaln,perc
+Full-sibling,same_site,27,27,100
+Parent-offspring,same_site,58,60,96.6666666666667
+Parent-offspring,different_site,2,60,3.33333333333333
+Second-degree,same_site,162,176,92.0454545454545
+Second-degree,different_site,14,176,7.95454545454545
+Third-degree,same_site,178,203,87.6847290640394
+Third-degree,different_site,25,203,12.3152709359606
+Unknown,same_site,6,6,100
+Unrelated,different_site,13766,17483,78.7393467940285
+Unrelated,same_site,3717,17483,21.2606532059715

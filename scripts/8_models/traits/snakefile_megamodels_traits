@@ -1,0 +1,60 @@
+"""
+snakemake --snakefile scripts/traits/snakefile_megamodels_traits -n 
+
+snakemake --jobs 50 --snakefile scripts/traits/snakefile_megamodels_traits \
+    --latency-wait 30 \
+    -p \
+    --default-resources mem_mb=51200 \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb} ' \
+        --jn bayes_model.{name}.{jobid}.sh \
+        --rerun-incomplete
+"""
+
+RESPONSES=["blue","eyec","lyre","attend","fight","dist"]
+METHODS=["gerp5","high"]
+LOADTYPES=["tadd","m","e"]
+REGIONS=["all","tss","promoter","gene","down","up","intron","exon"]
+
+rule all:
+    input:
+        expand("output/models/traits/model_{response}_{method}_load_{loadtype}_{region}.RData",response=RESPONSES,method=METHODS,loadtype=LOADTYPES,region=REGIONS),
+        expand("output/models/traits/model_{response}_froh.RData",response=RESPONSES),
+        expand("logs/traits_bayesmodel_{response}_{method}_{loadtype}_{region}.log",response=RESPONSES,method=METHODS,loadtype=LOADTYPES,region=REGIONS)
+
+rule trait_load:
+    input: 
+        rscript = "scripts/8_models/traits/model_relationship_load_trait.R"
+    output:
+        model = "output/models/traits/model_{response}_{method}_load_{loadtype}_{region}.RData"
+    log: "logs/traits_bayesmodel_{response}_{method}_{loadtype}_{region}.log"
+    params:
+        iter = 1000000,
+        burn = 500000,
+        thin = 1000
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {wildcards.method} {wildcards.loadtype} {wildcards.region} {wildcards.response} {params.iter} {params.burn} {params.thin} &> {log}
+        """
+
+rule trait_froh:
+    input: 
+        rscript = "scripts/8_models/traits/model_relationship_froh_trait.R"
+    output:
+        model = "output/models/traits/model_{response}_froh.RData"
+    log: "logs/traits_bayesmodel_{response}_froh.log"
+    params:
+        iter = 1000000,
+        burn = 500000,
+        thin = 1000
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {wildcards.response} {params.iter} {params.burn} {params.thin} &> {log}
+        """

@@ -1,0 +1,41 @@
+"""
+snakemake --snakefile scripts/8_models/lms/snakefile_main -n 
+
+snakemake --jobs 50 --snakefile scripts/8_models/lms/snakefile_main \
+    --latency-wait 30 \
+    -p \
+    --default-resources mem_mb=51200 \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb} ' \
+        --jn bayes_model.{name}.{jobid}.sh \
+        --rerun-incomplete
+"""
+
+MODELS=["lms_froh","lms_snpef_high_total_add","lms_gerp5_total_add","lms_gerp5_total_codom","lms_snpef_high_total_codom","lms_gerp1_total_add","lms_gerp1_realized_potential","lms_gerp2_total_add","lms_gerp2_realized_potential","lms_gerp3_total_add","lms_gerp3_realized_potential","lms_gerp4_total_add","lms_gerp4_realized_potential"]
+
+rule all:
+    input:
+        expand("scripts/8_models/lms/model_files/{model}.R", model = MODELS),
+        expand("output/models/genetic_quality/{model}_zi_29scaf.RData", model = MODELS)
+
+rule run_bayes:
+    input: 
+        rscript = "scripts/8_models/lms/model_files/{model}.R"
+    output:
+        model = "output/models/genetic_quality/{model}_zi_29scaf.RData"
+    log: "logs/bayesmodel_{model}.log"
+    params:
+        iter = 1000000,
+        burn = 500000,
+        thin = 1000
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {params.iter} {params.burn} {params.thin} &> {log}
+        """

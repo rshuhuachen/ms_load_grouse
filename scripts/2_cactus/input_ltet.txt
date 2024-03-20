@@ -1,0 +1,1 @@
+Lyrurus_tetrix data/genomic/refgenome/PO2979_Lyrurus_tetrix_black_grouse.RepeatMasked.fasta

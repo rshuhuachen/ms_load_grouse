@@ -1,0 +1,129 @@
+"""
+snakemake --snakefile scripts/7_deleterious_mutations/gerp/snakefile_gerp_bed -n 
+
+snakemake --jobs 50 --snakefile scripts/7_deleterious_mutations/gerp/snakefile_gerp_bed \
+    --latency-wait 30 \
+    -p \
+    --default-resources mem_mb=51200 threads=1 \
+    --use-singularity \
+    --singularity-args "--bind pwd" \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb} ' \
+        --jn gerp_bed.{name}.{jobid}.sh \
+        --rerun-incomplete
+"""
+
+SCAF_NO=["1","2","3","5","6","7","8","9","10","11","12","14","15","17","18","19","20","21","22","23","24","25","26","27","28","30"]
+#scafs 13, 16 and 29 don't have any overlap so take out
+
+rule all:
+    input: 
+        expand("output/gerp/maf_{nscaf}.maf.rates", nscaf = SCAF_NO),
+        expand("output/gerp/beds/gerp_scaf_{nscaf}.bed", nscaf = SCAF_NO),
+        expand("output/gerp/beds/gerp_overlapSNP_scaf_{nscaf}.tsv.gz", nscaf = SCAF_NO),
+        expand("output/gerp/beds/gerp_overlapSNP_scaf_min2gerp_{nscaf}.tsv.gz", nscaf = SCAF_NO),
+        expand("output/gerp/scores/summary_gerpscores_{nscaf}.tsv", nscaf = SCAF_NO),
+        expand("output/gerp/scores/summary_coverage_windows_{nscaf}.tsv", nscaf = SCAF_NO),
+        expand("output/gerp/scores/load_per_id_filter_{nscaf}.tsv", nscaf = SCAF_NO),
+        "output/ancestral/ltet_filtered_ann_aa.vcf",
+        "output/ancestral/ltet_filtered_ann_aa.bed",
+        expand("output/gerp/scores/load_per_id_cat_{nscaf}.tsv", nscaf = SCAF_NO),
+        expand("output/gerp/scores/load_per_id_cat_total_additive_{nscaf}.tsv", nscaf = SCAF_NO)
+        
+        
+
+rule vcf_to_bed:
+    input: 
+        vcf = "output/ancestral/ltet_filtered_ann_aa.vcf"
+    output:
+        bed = "output/ancestral/ltet_filtered_ann_aa.bed"
+    shell:
+        """
+        convert2bed -i vcf < {input.vcf} > {output.bed}
+        """
+
+rule gerp_to_bed:
+    input:
+        rates = "output/maf_per_scaf/biggest_30/maf_{nscaf}.maf.rates"
+    output:
+        bed = "output/gerp/beds/gerp_scaf_{nscaf}.bed"
+    params:
+        outdir = "output/gerp/beds"
+    log: "logs/gerp_to_bed_{nscaf}"
+    shell:
+        """
+        Rscript --vanilla scripts/7_deleterious_mutations/gerp/2b_gerp_to_bed.R {input.rates} {output.bed} {params.outdir} &> {log}
+        """
+
+rule bed_overlap_snps:
+    input:
+        bed = "output/gerp/beds/gerp_scaf_{nscaf}.bed",
+        snps = "output/ancestral/ltet_filtered_ann_aa.bed"
+    output:
+        tsv = "output/gerp/beds/gerp_overlapSNP_scaf_{nscaf}.tsv.gz"
+    params:
+        tsv = "output/gerp/beds/gerp_overlapSNP_scaf_{nscaf}.tsv"    
+    shell:
+        """
+         # chr, start(-1), end, win_idx, neutral_n, gerp_rs
+        bedtools intersect \
+        -a {input.bed} \
+        -b {input.snps} \
+        -wa -wb |
+        cut -f 6-10 --complement > {params.tsv}
+
+        gzip {params.tsv}
+        """
+
+rule summary_gerp:
+    input:
+        bed = "output/gerp/beds/gerp_scaf_{nscaf}.bed"
+    output:
+        tsv = "output/gerp/scores/summary_gerpscores_{nscaf}.tsv"
+    shell:
+        """
+        datamash --header-out min 5 max 5 mean 5 q3 5 < {input.bed} > {output.tsv}
+        """
+
+rule summary_coverage:
+    input:
+        bed = "output/gerp/beds/windows/average_gerp_coverage_10kb_{nscaf}.bed"
+    output:
+        tsv = "output/gerp/scores/summary_coverage_windows_{nscaf}.tsv"
+    shell:
+        """
+        datamash --header-out min 4 max 4 mean 4 q3 4 < {input.bed} > {output.tsv}
+        """
+
+rule calculate_load_cat:
+    input:
+        tsv = "output/gerp/beds/gerp_overlapSNP_scaf_{nscaf}.tsv.gz"
+    output:
+        load = "output/gerp/scores/load_per_id_cat_{nscaf}.tsv"
+    log: "logs/calculate_gerp_load_cat_{nscaf}.log"
+    params: 
+        scafno = "output/gerp/beds/gerp_overlapSNP_scaf_{nscaf}.tsv.gz"
+    shell:
+        """
+        Rscript --vanilla scripts/7_deleterious_mutations/gerp/2c_gerp_load_cat.R {input.tsv} {params.scafno} {output.load} &> {log}
+        """
+
+rule calculate_load_cat_additive:
+    input:
+        tsv = "output/gerp/beds/gerp_overlapSNP_scaf_{nscaf}.tsv.gz"
+    output:
+        load = "output/gerp/scores/load_per_id_cat_total_additive_{nscaf}.tsv"
+    log: "logs/calculate_gerp_load_cat_{nscaf}.log"
+    params: 
+        scafno = "output/gerp/beds/gerp_overlapSNP_scaf_{nscaf}.tsv.gz"
+    shell:
+        """
+        Rscript --vanilla scripts/7_deleterious_mutations/gerp/2d_gerp_load_total_additive.R {input.tsv} {params.scafno} {output.load} &> {log}
+        """

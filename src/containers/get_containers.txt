@@ -1,0 +1,15 @@
+#cactus v2.5.1
+singularity pull ./src/containers/cactus_v2.5.1.sif docker://quay.io/comparative-genomics-toolkit/cactus:v2.5.1 
+
+#cactus v2.6.12
+singularity pull ./src/containers/cactus_v2.6.12.sif docker://quay.io/comparative-genomics-toolkit/cactus:v2.6.12
+
+#samtools
+singularity pull docker://quay.io/biocontainers/samtools:1.14--hb421002_0
+
+#jvarkit
+docker pull lindenb/jvarkit
+
+#popgensuite form kosmas
+singularity pull docker://docker.io/khench/popgen_suite:v0.2
+

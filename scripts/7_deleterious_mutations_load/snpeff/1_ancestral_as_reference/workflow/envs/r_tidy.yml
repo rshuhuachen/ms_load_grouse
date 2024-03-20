@@ -1,0 +1,38 @@
+# mamba env create -f r_tidy.yml
+name: r_tidy
+channels:
+ - conda-forge
+ - bioconda
+ - defaults
+dependencies:
+ - mamba
+ - openssl=3.1.0 
+ - libgdal=3.7.0
+ - conda-forge::r-base=4.2.3
+ - conda-forge::r-tidyverse=2.0.0
+ - conda-forge::r-here=1.0.1 
+ - conda-forge::r-glue=1.6.2
+ - conda-forge::r-rlang=1.1.1 
+ - conda-forge::r-readxl=1.4.2 
+ - conda-forge::r-yaml=2.3.7
+ - conda-forge::r-lubridate=1.9.2 
+ - conda-forge::r-patchwork=1.1.2
+ - conda-forge::r-cowplot=1.1.1
+ - conda-forge::r-prismatic=1.1.1
+ - conda-forge::r-ggnewscale=0.4.8
+ - conda-forge::r-ggforce=0.4.1
+ - conda-forge::r-geomtextpath=0.1.1
+ - conda-forge::r-ggstance=0.3.6
+ - conda-forge::r-ggridges=0.5.4 
+ - conda-forge::r-sf=1.0_13
+ - conda-forge::r-ape=5.7
+ - conda-forge::r-tidytree=0.4.2
+ - conda-forge::r-renv=0.17.3
+ - conda-forge::r-biocmanager=1.30.20 
+ - conda-forge::r-envstats=2.7.0 
+ - conda-forge::r-r.utils=2.12.2
+ - conda-forge::r-ggtext=0.1.2
+ - conda-forge::r-ggrastr=1.0.2 
+ - conda-forge::r-ggdist=3.3.0
+ - bioconda::bioconductor-ggtree=3.6.0
+ - bioconda::bioconductor-plyranges=1.18.0
