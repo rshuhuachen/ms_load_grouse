@@ -19,7 +19,6 @@ bibliography: bibliography.bib
 format:
   html:
     theme: cosmo
-    css: styles.css
     toc: true
 
 editor: visual
