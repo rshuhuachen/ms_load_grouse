@@ -50,7 +50,7 @@ div.csl-indent {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./qmd/1_test.html" rel="next">
+<link href="./qmd/1_inbreeding.html" rel="next">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -119,12 +119,12 @@ div.csl-indent {
     <ul class="list-unstyled mt-1">
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./index.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Genetic Load</span></a>
+  <a href="./index.html" class="sidebar-item-text sidebar-link active"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Genetic load explains variation in reproductive success in a natural lekking system</span></a>
   </div>
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./qmd/1_test.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">main</span></a>
+  <a href="./qmd/1_inbreeding.html" class="sidebar-item-text sidebar-link"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Inbreeding</span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -142,8 +142,8 @@ div.csl-indent {
    
   <ul>
   <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="toc-section-number">1</span>  Introduction</a></li>
-  <li><a href="#calculating-genetic-load" id="toc-calculating-genetic-load" class="nav-link" data-scroll-target="#calculating-genetic-load"><span class="toc-section-number">2</span>  Calculating genetic load</a></li>
-  <li><a href="#black-grouse" id="toc-black-grouse" class="nav-link" data-scroll-target="#black-grouse"><span class="toc-section-number">3</span>  Black grouse</a></li>
+  <li><a href="#main-goals" id="toc-main-goals" class="nav-link" data-scroll-target="#main-goals"><span class="toc-section-number">2</span>  Main goals</a></li>
+  <li><a href="#calculating-genetic-load" id="toc-calculating-genetic-load" class="nav-link" data-scroll-target="#calculating-genetic-load"><span class="toc-section-number">3</span>  Calculating genetic load</a></li>
   </ul>
 </nav>
     </div>
@@ -175,26 +175,27 @@ div.csl-indent {
 
 <section id="introduction" class="level1" data-number="1">
 <h1 data-number="1"><span class="header-section-number">1</span> Introduction</h1>
-<p>Genetic load can be defined as a statistic that summarizes the selection and dominance coefficients of deleterious mutations as a function of their frequencies in a population <span class="citation" data-cites="bertorelleGeneticLoadGenomic2022">(<a href="qmd/references.html#ref-bertorelleGeneticLoadGenomic2022" role="doc-biblioref">Bertorelle et al. 2022</a>)</span>.</p>
-<p>There are different types of load, e.g.&nbsp;the realized load (expressed load) which reduces fitness in the current generation, and the potential/masked load (inbreeding load) which quantifies the potential fitness loss due to (partially) recessive deleterious mutations that may become expressed in future generations depending on the population’s demography. The genetic load is made up of realized plus masked load.</p>
-</section>
-<section id="calculating-genetic-load" class="level1" data-number="2">
-<h1 data-number="2"><span class="header-section-number">2</span> Calculating genetic load</h1>
-<p>There are generally three most commonly used computational approaches to identify putatively deleterious variants from whole genome re-sequencing data. In general, these tools attempt to predict the effect of a mutation on the function or evolutionary fitness of a protein. The two are distinct but can be related; for instance, a loss of function mutation will be strongly selected against if the gene is essential but will tend to be less evolutionary deleterious if the gene is non-essential or if the variant only slightly alters protein function.</p>
-<ul>
-<li><p>Genomic Evolutionary Rate Profiling (GERP): This approach uses multi-species genome alignments to identify genomic sites that are strongly conserved over millions of years of evolution, as non-synonymous mutations at these sites have a high likelihood of being deleterious. <span class="citation" data-cites="davydovIdentifyingHighFraction2010">(<a href="qmd/references.html#ref-davydovIdentifyingHighFraction2010" role="doc-biblioref">Davydov et al. 2010</a>)</span></p></li>
-<li><p>SNP effect (SnpEff): This approach predicts the consequences of genomic variants on protein sequences and identifies loss of function and missense variants. <span class="citation" data-cites="cingolani2012">(<a href="qmd/references.html#ref-cingolani2012" role="doc-biblioref">Cingolani et al. 2012</a>)</span>.</p></li>
-</ul>
-</section>
-<section id="black-grouse" class="level1" data-number="3">
-<h1 data-number="3"><span class="header-section-number">3</span> Black grouse</h1>
+<p>This webpage contains a summary of the workflow used in the manuscript “Genetic load explains variation in reproductive success in a natural lekking system”, Chen et al.&nbsp;2024 (in preparation). Please see the github repository ([https://github.com/rshuhuachen/ms_load_inbreeding_grouse]) for all scripts and more detailed descriptions of the data and analyses.</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
 <p><img src="plots/img/grouse.jpeg" class="img-fluid figure-img"></p>
 <p></p><figcaption class="figure-caption">Black grouse</figcaption><p></p>
 </figure>
 </div>
-<p>In this project, we calculate genetic load based on both GERP scores and SnpEff annotations. Our dataset consists of 190 whole genomes of black grouse (<em>Lyrurus tetrix</em>) males. In addition to genotypes, we have various phenotypic traits such as sexual traits (measured per year) and fitness data such as survival and lifetime mating success (LMS).</p>
+</section>
+<section id="main-goals" class="level1" data-number="2">
+<h1 data-number="2"><span class="header-section-number">2</span> Main goals</h1>
+<p>In the current study, we used a long-term dataset to investigate whether genetic quality is associated with reproductive success in male black grouse, using whole genome resequencing, phenotypic and fitness data of 190 male black grouse sampled annually across five study sites in Central Finland. We investigated inbreeding and genetic load effects on lifetime mating success.</p>
+<p>Genetic load can be defined as a statistic that summarizes the selection and dominance coefficients of deleterious mutations as a function of their frequencies in a population <span class="citation" data-cites="bertorelleGeneticLoadGenomic2022">(<a href="qmd/references.html#ref-bertorelleGeneticLoadGenomic2022" role="doc-biblioref">Bertorelle et al. 2022</a>)</span>. As we do not have selection and dominance coefficients of mutations in wild populations, we use a proxy for genetic load calculated as the number of deleterious mutations for a given individual.</p>
+<p>There are different types of load, e.g.&nbsp;the realized load (expressed load) which reduces fitness in the current generation, and the potential/masked load (inbreeding load) which quantifies the potential fitness loss due to (partially) recessive deleterious mutations that may become expressed in future generations depending on the population’s demography. The genetic load is made up of realized plus masked load.</p>
+</section>
+<section id="calculating-genetic-load" class="level1" data-number="3">
+<h1 data-number="3"><span class="header-section-number">3</span> Calculating genetic load</h1>
+<p>There are generally two most commonly used computational approaches to identify putative deleterious variants from whole genome re-sequencing data. In general, these tools attempt to predict the effect of a mutation on the function or evolutionary fitness of a protein. The two are distinct but can be related; for instance, a loss of function mutation will be strongly selected against if the gene is essential but will tend to be less evolutionary deleterious if the gene is non-essential or if the variant only slightly alters protein function. We used two common appoaches:</p>
+<ul>
+<li><p>Genomic Evolutionary Rate Profiling (GERP): This approach uses multi-species genome alignments to identify genomic sites that are strongly conserved over millions of years of evolution, as non-synonymous mutations at these sites have a high likelihood of being deleterious. <span class="citation" data-cites="davydovIdentifyingHighFraction2010">(<a href="qmd/references.html#ref-davydovIdentifyingHighFraction2010" role="doc-biblioref">Davydov et al. 2010</a>)</span></p></li>
+<li><p>SNP effect (SnpEff): This approach predicts the consequences of genomic variants on protein sequences and identifies loss of function and missense variants. <span class="citation" data-cites="cingolani2012">(<a href="qmd/references.html#ref-cingolani2012" role="doc-biblioref">Cingolani et al. 2012</a>)</span>.</p></li>
+</ul>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" role="doc-bibliography" style="display: none">
@@ -348,8 +349,8 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   <div class="nav-page nav-page-previous">
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./qmd/1_test.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">main</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./qmd/1_inbreeding.html" class="pagination-link">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Inbreeding</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
