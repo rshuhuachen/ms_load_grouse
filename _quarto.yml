@@ -18,8 +18,9 @@ bibliography: bibliography.bib
 
 format:
   html:
-    theme: cosmo
+    theme: solar
     toc: true
+    mainfont: Gerogia, serif
 
 editor: visual
 
