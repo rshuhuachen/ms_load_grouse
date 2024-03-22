@@ -1,0 +1,26 @@
+project:
+  type: book
+  output-dir: docs
+
+engine: knitr
+
+book:
+  title: "Genetic Load Black Grouse"
+  author: "Rebecca S. Chen"
+  chapters:
+    - index.qmd
+    - qmd/1_test.qmd
+    - qmd/references.qmd
+  navbar:
+    search: true
+
+bibliography: bibliography.bib
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+
+editor: visual
+
