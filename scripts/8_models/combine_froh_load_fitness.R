@@ -9,7 +9,7 @@ load("output/inbreeding/froh_combined.RData")
 # combine
 pheno_wide_load <- left_join(pheno_wide, load_per_region, by = "id")
 pheno_wide_load <- left_join(pheno_wide_load, combined[c("id", "froh_bcftools")], by = "id")
-
+pheno_wide_load <- subset(pheno_wide_load, !is.na(gerp_Lt_cat5)) #some ids without genotypes, excluded for wgr
 save(pheno_wide_load, file = "output/load/pheno_loads_lifetime.RData")
 
 annual
