@@ -3,3 +3,5 @@ data/processed
 data/raw/genotypes
 .Rproj.user
 logs/
+
+/.quarto/

@@ -1,0 +1,29 @@
+---
+title: "Genetic load explains variation in reproductive success in a natural lekking system"
+---
+
+# Introduction
+
+This webpage contains a summary of the workflow used in the manuscript "Genetic load explains variation in reproductive success in a natural lekking system", Chen et al. 2024 (in preparation). Please see the github repository (\[https://github.com/rshuhuachen/ms_load_inbreeding_grouse\]) for all scripts and more detailed descriptions of the data and analyses.
+
+![Black grouse](plots/img/grouse.jpeg)
+
+# Main goals
+
+In the current study, we used a long-term dataset to investigate whether genetic quality is associated with reproductive success in male black grouse, using whole genome resequencing, phenotypic and fitness data of 190 male black grouse sampled annually across five study sites in Central Finland. We investigated inbreeding and genetic load effects on lifetime mating success.
+
+Genetic load can be defined as a statistic that summarizes the selection and dominance coefficients of deleterious mutations as a function of their frequencies in a population [@bertorelleGeneticLoadGenomic2022]. As we do not have selection and dominance coefficients of mutations in wild populations, we use a proxy for genetic load calculated as the number of deleterious mutations for a given individual.
+
+There are different types of load, e.g. the realized load (expressed load) which reduces fitness in the current generation, and the potential/masked load (inbreeding load) which quantifies the potential fitness loss due to (partially) recessive deleterious mutations that may become expressed in future generations depending on the population's demography. The genetic load is made up of realized plus masked load.
+
+# Calculating genetic load
+
+There are generally two most commonly used computational approaches to identify putative deleterious variants from whole genome re-sequencing data. In general, these tools attempt to predict the effect of a mutation on the function or evolutionary fitness of a protein. The two are distinct but can be related; for instance, a loss of function mutation will be strongly selected against if the gene is essential but will tend to be less evolutionary deleterious if the gene is non-essential or if the variant only slightly alters protein function. We used two common appoaches:
+
+-   Genomic Evolutionary Rate Profiling (GERP): This approach uses multi-species genome alignments to identify genomic sites that are strongly conserved over millions of years of evolution, as non-synonymous mutations at these sites have a high likelihood of being deleterious. [@davydovIdentifyingHighFraction2010]
+
+-   SNP effect (SnpEff): This approach predicts the consequences of genomic variants on protein sequences and identifies loss of function and missense variants. [@cingolani2012].
+
+
+
+
