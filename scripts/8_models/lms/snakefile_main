@@ -1,7 +1,8 @@
 """
 snakemake --snakefile scripts/8_models/lms/snakefile_main -n 
+snakemake --snakefile scripts/8_models/lms/snakefile_main --jobs 8 -p --default-resources mem_mb=51200 --use-conda --rerun-triggers mtime --latency-wait 10 --rerun-incomplete
 
-snakemake --jobs 50 --snakefile scripts/8_models/lms/snakefile_main \
+snakemake --jobs 5 --snakefile scripts/8_models/lms/snakefile_main \
     --latency-wait 30 \
     -p \
     --default-resources mem_mb=51200 \
@@ -14,28 +15,44 @@ snakemake --jobs 50 --snakefile scripts/8_models/lms/snakefile_main \
         -e logs/{name}.{jobid}.err \
         -o logs/{name}.{jobid}.out \
         --mem={resources.mem_mb} ' \
-        --jn bayes_model.{name}.{jobid}.sh \
+        --jn mainmodels.{name}.{jobid}.sh \
         --rerun-incomplete
 """
-
-MODELS=["lms_froh","lms_snpef_high_total_add","lms_gerp5_total_add","lms_gerp5_total_codom","lms_snpef_high_total_codom","lms_gerp1_total_add","lms_gerp1_realized_potential","lms_gerp2_total_add","lms_gerp2_realized_potential","lms_gerp3_total_add","lms_gerp3_realized_potential","lms_gerp4_total_add","lms_gerp4_realized_potential"]
+METHODS=["high","gerp45","gerp34","lof","missense"]
 
 rule all:
     input:
-        expand("scripts/8_models/lms/model_files/{model}.R", model = MODELS),
-        expand("output/models/genetic_quality/{model}_zi_29scaf.RData", model = MODELS)
+        "scripts/8_models/lms/model_total.R",
+        "scripts/8_models/lms/model_het_hom.R",
+        expand("output/models/total_hom_het/lms_total_{method}.RData", method=METHODS),
+        expand("output/models/total_hom_het/lms_het_hom_{method}.RData", method=METHODS)
 
-rule run_bayes:
+rule run_bayes_total:
     input: 
-        rscript = "scripts/8_models/lms/model_files/{model}.R"
+        rscript = "scripts/8_models/lms/model_total.R"
     output:
-        model = "output/models/genetic_quality/{model}_zi_29scaf.RData"
-    log: "logs/bayesmodel_{model}.log"
+        model = "output/models/total_hom_het/lms_total_{method}.RData"
+    log: "logs/bayesmodel_total_{method}.log"
     params:
-        iter = 1000000,
-        burn = 500000,
-        thin = 1000
+      iter = 1000000,
+      burn = 500000,
+      thin = 1000
     shell:
         """
-        Rscript --vanilla {input.rscript} {params.iter} {params.burn} {params.thin} &> {log}
+        Rscript --vanilla {input.rscript} {wildcards.method} {output.model} {params.iter} {params.burn} {params.thin} &> {log}
         """
+
+rule run_bayes_het_hom:
+    input: 
+        rscript = "scripts/8_models/lms/model_het_hom.R"
+    output:
+        model = "output/models/total_hom_het/lms_het_hom_{method}.RData"
+    log: "logs/bayesmodel_het_hom_{method}.log"
+    params:
+      iter = 1000000,
+      burn = 500000,
+      thin = 1000
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {wildcards.method}  {output.model} {params.iter} {params.burn} {params.thin} &> {log}
+        """    

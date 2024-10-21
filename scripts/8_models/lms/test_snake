@@ -1,0 +1,24 @@
+"""
+snakemake --jobs 1 --snakefile scripts/8_models/lms/test_snake \
+    -p \
+    --default-resources mem_mb=51200 \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb} ' \
+        --jn test.{name}.{jobid}.sh \
+        --rerun-incomplete 
+"""
+
+rule run_bayes_total:
+    output:
+        test = "test.txt"
+    shell:
+        """
+        echo "hello" > {output.test}
+        """

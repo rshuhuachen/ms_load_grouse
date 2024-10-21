@@ -1,5 +1,6 @@
 """
 snakemake --snakefile scripts/8_models/lms/snakefile_per_region -n 
+snakemake --snakefile scripts/8_models/lms/snakefile_per_region --jobs 8 -p --default-resources mem_mb=51200 --use-conda --rerun-triggers mtime --latency-wait 10 --rerun-incomplete
 
 snakemake --jobs 50 --snakefile scripts/8_models/lms/snakefile_per_region \
     --latency-wait 30 \
@@ -18,34 +19,25 @@ snakemake --jobs 50 --snakefile scripts/8_models/lms/snakefile_per_region \
         --rerun-incomplete
 """
 
-REGIONS=["region_promoter","region_gene","region_tss","region_exon","region_intron","region_down","region_up"]
-METHODS=["high","gerp5"]
+REGIONS=["promoter","tss","exon","intron"]
+METHODS=["high","gerp45"]
 
 rule all:
     input:
-        "scripts/8_models/lms/model_files/lms_per_region_total_add.R",
-        "scripts/8_models/lms/model_files/lms_per_region_expressed_masked.R",
-        expand("output/models/per_gene_region/lms_total_{method}_{region}_zi_29scaf.RData", region=REGIONS, method=METHODS),
-        expand("output/models/per_gene_region/lms_expressed_masked_{method}_{region}_zi_29scaf.RData", region=REGIONS, method=METHODS)
+        "scripts/8_models/lms/model_total_regions.R",
+        expand("output/models/per_gene_region/lms_total_{method}_{region}.RData", region=REGIONS, method=METHODS)
 
 rule run_bayes_total:
     input: 
-        rscript = "scripts/combined_loads/models/lms_per_region_total_add.R"
+        rscript = "scripts/8_models/lms/model_total_regions.R"
     output:
-        model = "output/models/per_gene_region/lms_total_{method}_{region}_zi_29scaf.RData"
+        model = "output/models/per_gene_region/lms_total_{method}_{region}.RData"
     log: "logs/bayesmodel_total_{method}_{region}.log"
+    params:
+      iter = 1000000,
+      burn = 500000,
+      thin = 1000
     shell:
         """
-        Rscript --vanilla {input.rscript} {wildcards.method} {wildcards.region} {output.model} &> {log}
+        Rscript --vanilla {input.rscript} {wildcards.method} {wildcards.region} {output.model} {params.iter} {params.burn} {params.thin} &> {log}
         """
-
-rule run_bayes_expr_mask:
-    input: 
-        rscript = "scripts/combined_loads/models/lms_per_region_expressed_masked.R"
-    output:
-        model = "output/models/per_gene_region/lms_expressed_masked_{method}_{region}_zi_29scaf.RData"
-    log: "logs/bayesmodel_expr_mask_{method}_{region}.log"
-    shell:
-        """
-        Rscript --vanilla {input.rscript} {wildcards.method} {wildcards.region} {output.model} &> {log}
-        """    

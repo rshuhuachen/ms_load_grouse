@@ -5,48 +5,52 @@
 pacman::p_load(brms, bayesplot, tidyverse)
 source("scripts/theme_ggplot.R")
 
-#### Traits on MS ####
+#### GERP - main ####
+##### Traits on MS #####
 
 # load data
-load(file = "output/models/traits/ms_alltraits.RData")
+load(file = "output/models/annual/ams/model_trait_ams_gerp45.RData")
+fit_ms_gerp <- fit
 
 #extract intervals and areas
-brms_trait_ms_interval <- mcmc_intervals_data(fit_MS, prob =0.8, prob_outer = 0.95) %>%
+brms_trait_ms_gerp_interval <- mcmc_intervals_data(fit_ms_gerp, prob =0.8, prob_outer = 0.95) %>%
   subset(grepl("b_scale", parameter))
+brms_trait_ms_gerp_interval <- subset(brms_trait_ms_gerp_interval, parameter != "b_scaletotal_load")
 
-brms_trait_ms_interval$parameter <- gsub("b_scaleblue", "Blue chroma", brms_trait_ms_interval$parameter)
-brms_trait_ms_interval$parameter <- gsub("b_scaleeyec", "Eye comb", brms_trait_ms_interval$parameter)
-brms_trait_ms_interval$parameter <- gsub("b_scalelyre", "Lyre size", brms_trait_ms_interval$parameter)
-brms_trait_ms_interval$parameter <- gsub("b_scaledist", "Centrality", brms_trait_ms_interval$parameter)
-brms_trait_ms_interval$parameter <- gsub("b_scalefight", "Fighting", brms_trait_ms_interval$parameter)
-brms_trait_ms_interval$parameter <- gsub("b_scaleattend", "Attendance", brms_trait_ms_interval$parameter)
+brms_trait_ms_gerp_interval$parameter <- gsub("b_scaleblue", "Blue chroma", brms_trait_ms_gerp_interval$parameter)
+brms_trait_ms_gerp_interval$parameter <- gsub("b_scaleeyec", "Eye comb", brms_trait_ms_gerp_interval$parameter)
+brms_trait_ms_gerp_interval$parameter <- gsub("b_scalelyre", "Lyre size", brms_trait_ms_gerp_interval$parameter)
+brms_trait_ms_gerp_interval$parameter <- gsub("b_scaledist", "Centrality", brms_trait_ms_gerp_interval$parameter)
+brms_trait_ms_gerp_interval$parameter <- gsub("b_scalefight", "Fighting", brms_trait_ms_gerp_interval$parameter)
+brms_trait_ms_gerp_interval$parameter <- gsub("b_scaleattend", "Attendance", brms_trait_ms_gerp_interval$parameter)
 
-brms_trait_ms_interval$parameter <- factor(brms_trait_ms_interval$parameter, 
-                                           levels = c("Centrality", "Fighting", "Attendance",
-                                                                    "Blue chroma", "Eye comb", "Lyre size"))
+brms_trait_ms_gerp_interval$parameter <- factor(brms_trait_ms_gerp_interval$parameter, 
+                                        levels = c("Blue chroma", "Eye comb", "Lyre size",
+                                                   "Centrality", "Fighting", "Attendance"))
+
 
 #area
-brms_trait_ms_areas <- mcmc_areas_data(fit_MS) %>%
+brms_trait_ms_gerp_areas <- mcmc_areas_data(fit_ms_gerp) %>%
   subset(grepl("b_scale", parameter))
+brms_trait_ms_gerp_areas <- subset(brms_trait_ms_gerp_areas, parameter != "b_scaletotal_load")
 
-brms_trait_ms_areas$parameter <- gsub("b_scaleblue", "Blue chroma", brms_trait_ms_areas$parameter)
-brms_trait_ms_areas$parameter <- gsub("b_scaleeyec", "Eye comb", brms_trait_ms_areas$parameter)
-brms_trait_ms_areas$parameter <- gsub("b_scalelyre", "Lyre size", brms_trait_ms_areas$parameter)
-brms_trait_ms_areas$parameter <- gsub("b_scaledist", "Centrality", brms_trait_ms_areas$parameter)
-brms_trait_ms_areas$parameter <- gsub("b_scalefight", "Fighting", brms_trait_ms_areas$parameter)
-brms_trait_ms_areas$parameter <- gsub("b_scaleattend", "Attendance", brms_trait_ms_areas$parameter)
+brms_trait_ms_gerp_areas$parameter <- gsub("b_scaleblue", "Blue chroma", brms_trait_ms_gerp_areas$parameter)
+brms_trait_ms_gerp_areas$parameter <- gsub("b_scaleeyec", "Eye comb", brms_trait_ms_gerp_areas$parameter)
+brms_trait_ms_gerp_areas$parameter <- gsub("b_scalelyre", "Lyre size", brms_trait_ms_gerp_areas$parameter)
+brms_trait_ms_gerp_areas$parameter <- gsub("b_scaledist", "Centrality", brms_trait_ms_gerp_areas$parameter)
+brms_trait_ms_gerp_areas$parameter <- gsub("b_scalefight", "Fighting", brms_trait_ms_gerp_areas$parameter)
+brms_trait_ms_gerp_areas$parameter <- gsub("b_scaleattend", "Attendance", brms_trait_ms_gerp_areas$parameter)
 
-brms_trait_ms_areas$parameter <- factor(brms_trait_ms_areas$parameter, 
-                                           levels = c("Centrality", "Fighting", "Attendance",
-                                                      "Blue chroma", "Eye comb", "Lyre size"))
+brms_trait_ms_gerp_areas$parameter <- factor(brms_trait_ms_gerp_areas$parameter, 
+                                        levels = c("Blue chroma", "Eye comb", "Lyre size",
+                                                   "Centrality", "Fighting", "Attendance"))
 
 ### plot
 
 # split by interval
-brms_trait_ms <- split(brms_trait_ms_areas, brms_trait_ms_areas$interval)
+brms_trait_ms_gerp <- split(brms_trait_ms_gerp_areas, brms_trait_ms_gerp_areas$interval)
 
-brms_trait_ms$bottom <- brms_trait_ms$outer %>%
-  group_by(!!! groups) %>%
+brms_trait_ms_gerp$bottom <- brms_trait_ms_gerp$outer %>%
   summarise(
     ll = min(.data$x),
     hh = max(.data$x),
@@ -57,16 +61,20 @@ brms_trait_ms$bottom <- brms_trait_ms$outer %>%
 ## plot
 
 ### divide up between the two traits
-ggplot(data = brms_trait_ms$outer) +  
+ggplot(data = brms_trait_ms_gerp$outer) +  
   aes(x = .data$x, y = .data$parameter) + 
   geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = parameter, col = parameter))+
-  geom_segment(data=brms_trait_ms_interval, aes(x = l, xend = h, yend = parameter), col = "black", linewidth=3)+
-  geom_segment(data=brms_trait_ms_interval, aes(x = ll, xend = hh, yend = parameter), col = "black")+
-  geom_point(data=brms_trait_ms_interval, aes(x = m, y = parameter), fill="white",  col = "black", shape=21, size = 6) + 
+  geom_segment(data=brms_trait_ms_gerp_interval, aes(x = l, xend = h, yend = parameter), col = "black", linewidth=3)+
+  geom_segment(data=brms_trait_ms_gerp_interval, aes(x = ll, xend = hh, yend = parameter), col = "black")+
+  geom_point(data=brms_trait_ms_gerp_interval, aes(x = m, y = parameter), fill="white",  col = "black", shape=21, size = 6) + 
   geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 1.5)+
-  labs(x = "Standardised beta coefficient", y = "Trait")+
-  scale_fill_manual(values =alpha(c(clrs_related), 0.7)) +
-  scale_color_manual(values =c(clrs_related)) +
+  labs(x = expression("Standardised"~beta), y = "Trait")+
+  scale_fill_manual(values =alpha(c(clrs_hunting[1],clrs_hunting[1],
+                                    clrs_hunting[1],clrs_hunting[1],
+                                    clrs_hunting[1],clr_highlight), 0.5)) +
+  scale_color_manual(values =c(clrs_hunting[1],clrs_hunting[1],
+                               clrs_hunting[1],clrs_hunting[1],
+                               clrs_hunting[1],clr_highlight)) +
   theme(panel.border = element_blank(),
         panel.grid = element_blank(),
         strip.background = element_blank(),
@@ -80,46 +88,50 @@ ggplot(data = brms_trait_ms$outer) +
     panel.grid.minor = element_blank(), #remove minor gridlines
     legend.background = element_rect(fill='transparent'), #transparent legend bg
     legend.box.background = element_rect(fill='transparent') #transparent legend panel
-  )-> traits_ms_posterior
+  )-> traits_ms_gerp_posterior
+traits_ms_gerp_posterior
 
+png(file = "plots/main/fig_3_right_traits_ams.png", width=800, height=1200)
+traits_ms_gerp_posterior
+dev.off()
 
-ggsave(traits_ms_posterior, file = "plots/Figure_3_traits_AMS", height = 12, width=8)
+write.csv(brms_trait_ms_gerp_interval, file = "output/models/intervals/gerp_traits_ms.csv", quote=F, row.names = F)
 
-#### GERP load on traits ####
+##### GERP load on traits ####
 
 # load data
-load(file = "output/models/traits/model_attend_gerp5_load_tadd_all.RData")
+load(file = "output/models/annual/traits/model_attend_gerp45.RData")
 fit_gerp_attend <- fit
-load(file = "output/models/traits/model_fight_gerp5_load_tadd_all.RData")
+load(file = "output/models/annual/traits/model_fight_gerp45.RData")
 fit_gerp_fight <- fit
-load(file = "output/models/traits/model_dist_gerp5_load_tadd_all.RData")
+load(file = "output/models/annual/traits/model_dist_gerp45.RData")
 fit_gerp_dist <- fit
-load(file = "output/models/traits/model_eyec_gerp5_load_tadd_all.RData")
+load(file = "output/models/annual/traits/model_eyec_gerp45.RData")
 fit_gerp_eyec <- fit
-load(file = "output/models/traits/model_blue_gerp5_load_tadd_all.RData")
+load(file = "output/models/annual/traits/model_blue_gerp45.RData")
 fit_gerp_blue <- fit
-load(file = "output/models/traits/model_lyre_gerp5_load_tadd_all.RData")
+load(file = "output/models/annual/traits/model_lyre_gerp45.RData")
 fit_gerp_lyre <- fit
 rm(fit)
 
 #extract intervals and areas
 attend_interval <- mcmc_intervals_data(fit_gerp_attend, prob =0.8, prob_outer = 0.95) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 fight_interval <- mcmc_intervals_data(fit_gerp_fight, prob =0.8, prob_outer = 0.95) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 dist_interval <- mcmc_intervals_data(fit_gerp_dist, prob =0.8, prob_outer = 0.95) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 eyec_interval <- mcmc_intervals_data(fit_gerp_eyec, prob =0.8, prob_outer = 0.95) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 blue_interval <- mcmc_intervals_data(fit_gerp_blue, prob =0.8, prob_outer = 0.95) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 lyre_interval <- mcmc_intervals_data(fit_gerp_lyre, prob =0.8, prob_outer = 0.95) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 gerptrait_interval <- rbind(attend_interval,
                             fight_interval,
@@ -132,27 +144,27 @@ gerptrait_interval <- rbind(attend_interval,
 gerptrait_interval$trait <- c("Attendance", "Fighting", "Centrality", "Eye comb", "Blue chroma", "Lyre size")
 
 gerptrait_interval$trait <- factor(gerptrait_interval$trait, 
-                                           levels = c("Centrality", "Fighting", "Attendance",
-                                                      "Blue chroma", "Eye comb", "Lyre size"))
+                                             levels = c("Blue chroma", "Eye comb", "Lyre size",
+                                                        "Centrality", "Fighting", "Attendance"))
 
 #area
 attend_area <- mcmc_areas_data(fit_gerp_attend) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 fight_area <- mcmc_areas_data(fit_gerp_fight) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 dist_area <- mcmc_areas_data(fit_gerp_dist) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 eyec_area <- mcmc_areas_data(fit_gerp_eyec) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 blue_area <- mcmc_areas_data(fit_gerp_blue) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 lyre_area <- mcmc_areas_data(fit_gerp_lyre) %>%
-  subset(grepl("b_scalegerp5_load_tadd_all", parameter))
+  subset(grepl("scaletotal_load", parameter))
 
 gerptrait_area <- rbind(attend_area,
                         fight_area, 
@@ -169,8 +181,8 @@ gerptrait_area$trait <- c(rep("Attendance", nrow(attend_area)),
                           rep("Lyre size", nrow(lyre_area)))
 
 gerptrait_area$trait <- factor(gerptrait_area$trait, 
-                                        levels = c("Centrality", "Fighting", "Attendance",
-                                                   "Blue chroma", "Eye comb", "Lyre size"))
+                                       levels = c("Blue chroma", "Eye comb", "Lyre size",
+                                                  "Centrality", "Fighting", "Attendance"))
 
 ### plot
 
@@ -178,7 +190,6 @@ gerptrait_area$trait <- factor(gerptrait_area$trait,
 gerptrait <- split(gerptrait_area, gerptrait_area$interval)
 
 gerptrait$bottom <- gerptrait$outer %>%
-  group_by(!!! groups) %>%
   summarise(
     ll = min(.data$x),
     hh = max(.data$x),
@@ -196,9 +207,13 @@ ggplot(data = gerptrait$outer) +
   geom_segment(data=gerptrait_interval, aes(x = ll, xend = hh, yend = trait), col = "black")+
   geom_point(data=gerptrait_interval, aes(x = m, y = trait), fill="white",  col = "black", shape=21, size = 6) + 
   geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 1.5)+
-  labs(x = "Standardised beta coefficient", y = "Trait")+
-  scale_fill_manual(values =alpha(c(rep(clr_gerp, 6)), 0.7)) +
-  scale_color_manual(values =c(rep(clr_gerp, 6))) +
+  labs(x = expression("Standardised"~beta), y = "Trait")+
+  scale_fill_manual(values =alpha(c(clrs_hunting[1],clrs_hunting[1],
+                                    clrs_hunting[1],clrs_hunting[1],
+                                    clrs_hunting[1],clr_highlight), 0.5)) +
+  scale_color_manual(values =c(clrs_hunting[1],clrs_hunting[1],
+                               clrs_hunting[1],clrs_hunting[1],
+                               clrs_hunting[1],clr_highlight)) +
   theme(panel.border = element_blank(),
         panel.grid = element_blank(),
         strip.background = element_blank(),
@@ -214,9 +229,243 @@ ggplot(data = gerptrait$outer) +
     legend.box.background = element_rect(fill='transparent') #transparent legend panel
   )-> traits_gerp_posterior
 
+traits_gerp_posterior
 
-ggsave(traits_gerp_posterior, file = "plots/Figure_3_gerp_traits.png", height = 12, width=8)
 
-### save intervals ####
-write_tsv(gerptrait_interval, file="output/models/intervals/traits_gerp_intervals.tsv")
-write_tsv(brms_trait_ms_interval, file="output/models/intervals/ms_traits_intervals.tsv")
+png(file = "plots/main/fig_3_left_load_traits.png", width=800, height=1200)
+traits_gerp_posterior
+dev.off()
+
+write.csv(gerptrait_interval, file = "output/models/intervals/gerp_load_traits.csv", quote=F, row.names = F)
+
+#### SnpEff - supp ####
+##### Traits on MS #####
+# load data
+load(file = "output/models/annual/ams/model_trait_ams_high.RData")
+fit_ms_high <- fit
+
+#extract intervals and areas
+brms_trait_ms_high_interval <- mcmc_intervals_data(fit_ms_high, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("b_scale", parameter))
+brms_trait_ms_high_interval <- subset(brms_trait_ms_high_interval, parameter != "b_scaletotal_load")
+
+brms_trait_ms_high_interval$parameter <- gsub("b_scaleblue", "Blue chroma", brms_trait_ms_high_interval$parameter)
+brms_trait_ms_high_interval$parameter <- gsub("b_scaleeyec", "Eye comb", brms_trait_ms_high_interval$parameter)
+brms_trait_ms_high_interval$parameter <- gsub("b_scalelyre", "Lyre size", brms_trait_ms_high_interval$parameter)
+brms_trait_ms_high_interval$parameter <- gsub("b_scaledist", "Centrality", brms_trait_ms_high_interval$parameter)
+brms_trait_ms_high_interval$parameter <- gsub("b_scalefight", "Fighting", brms_trait_ms_high_interval$parameter)
+brms_trait_ms_high_interval$parameter <- gsub("b_scaleattend", "Attendance", brms_trait_ms_high_interval$parameter)
+
+brms_trait_ms_high_interval$parameter <- factor(brms_trait_ms_high_interval$parameter, 
+                                                levels = c("Blue chroma", "Eye comb", "Lyre size",
+                                                           "Centrality", "Fighting", "Attendance"))
+
+
+#area
+brms_trait_ms_high_areas <- mcmc_areas_data(fit_ms_high) %>%
+  subset(grepl("b_scale", parameter))
+brms_trait_ms_high_areas <- subset(brms_trait_ms_high_areas, parameter != "b_scaletotal_load")
+
+brms_trait_ms_high_areas$parameter <- gsub("b_scaleblue", "Blue chroma", brms_trait_ms_high_areas$parameter)
+brms_trait_ms_high_areas$parameter <- gsub("b_scaleeyec", "Eye comb", brms_trait_ms_high_areas$parameter)
+brms_trait_ms_high_areas$parameter <- gsub("b_scalelyre", "Lyre size", brms_trait_ms_high_areas$parameter)
+brms_trait_ms_high_areas$parameter <- gsub("b_scaledist", "Centrality", brms_trait_ms_high_areas$parameter)
+brms_trait_ms_high_areas$parameter <- gsub("b_scalefight", "Fighting", brms_trait_ms_high_areas$parameter)
+brms_trait_ms_high_areas$parameter <- gsub("b_scaleattend", "Attendance", brms_trait_ms_high_areas$parameter)
+
+brms_trait_ms_high_areas$parameter <- factor(brms_trait_ms_high_areas$parameter, 
+                                             levels = c("Blue chroma", "Eye comb", "Lyre size",
+                                                        "Centrality", "Fighting", "Attendance"))
+
+### plot
+
+# split by interval
+brms_trait_ms_high <- split(brms_trait_ms_high_areas, brms_trait_ms_high_areas$interval)
+
+brms_trait_ms_high$bottom <- brms_trait_ms_high$outer %>%
+  summarise(
+    ll = min(.data$x),
+    hh = max(.data$x),
+    .groups = "drop_last"
+  ) %>%
+  ungroup()
+
+## plot
+
+### divide up between the two traits
+ggplot(data = brms_trait_ms_high$outer) +  
+  aes(x = .data$x, y = .data$parameter) + 
+  geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = parameter, col = parameter))+
+  geom_segment(data=brms_trait_ms_high_interval, aes(x = l, xend = h, yend = parameter), col = "black", linewidth=3)+
+  geom_segment(data=brms_trait_ms_high_interval, aes(x = ll, xend = hh, yend = parameter), col = "black")+
+  geom_point(data=brms_trait_ms_high_interval, aes(x = m, y = parameter), fill="white",  col = "black", shape=21, size = 6) + 
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 1.5)+
+  labs(x = expression("Standardised"~beta), y = "Trait")+
+  scale_fill_manual(values =alpha(c(clrs_hunting[1],clrs_hunting[1],
+                                    clrs_hunting[1],clrs_hunting[1],
+                                    clrs_hunting[1],clr_highlight), 0.5)) +
+  scale_color_manual(values =c(clrs_hunting[1],clrs_hunting[1],
+                               clrs_hunting[1],clrs_hunting[1],
+                               clrs_hunting[1],clr_highlight)) +
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none",
+        axis.title.x = element_text(size = 26),
+        axis.text.x = element_text(size = 26)) +
+  theme(
+    panel.background = element_rect(fill='transparent'), #transparent panel bg
+    plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+    panel.grid.major = element_blank(), #remove major gridlines
+    panel.grid.minor = element_blank(), #remove minor gridlines
+    legend.background = element_rect(fill='transparent'), #transparent legend bg
+    legend.box.background = element_rect(fill='transparent') #transparent legend panel
+  )-> traits_ms_high_posterior
+traits_ms_high_posterior
+
+png(file = "plots/sup/high_right_traits_ams.png", width=800, height=1200)
+traits_ms_high_posterior
+dev.off()
+
+write.csv(brms_trait_ms_high_interval, file = "output/models/intervals/high_traits_ms.csv", quote=F, row.names = F)
+
+##### SnpEff load on traits ####
+
+# load data
+load(file = "output/models/annual/traits/model_attend_high.RData")
+fit_high_attend <- fit
+load(file = "output/models/annual/traits/model_fight_high.RData")
+fit_high_fight <- fit
+load(file = "output/models/annual/traits/model_dist_high.RData")
+fit_high_dist <- fit
+load(file = "output/models/annual/traits/model_eyec_high.RData")
+fit_high_eyec <- fit
+load(file = "output/models/annual/traits/model_blue_high.RData")
+fit_high_blue <- fit
+load(file = "output/models/annual/traits/model_lyre_high.RData")
+fit_high_lyre <- fit
+rm(fit)
+
+#extract intervals and areas
+attend_interval <- mcmc_intervals_data(fit_high_attend, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+fight_interval <- mcmc_intervals_data(fit_high_fight, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+dist_interval <- mcmc_intervals_data(fit_high_dist, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+eyec_interval <- mcmc_intervals_data(fit_high_eyec, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+blue_interval <- mcmc_intervals_data(fit_high_blue, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+lyre_interval <- mcmc_intervals_data(fit_high_lyre, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+hightrait_interval <- rbind(attend_interval,
+                            fight_interval,
+                            dist_interval, 
+                            eyec_interval, 
+                            blue_interval, 
+                            lyre_interval)
+
+
+hightrait_interval$trait <- c("Attendance", "Fighting", "Centrality", "Eye comb", "Blue chroma", "Lyre size")
+
+hightrait_interval$trait <- factor(hightrait_interval$trait, 
+                                   levels = c("Blue chroma", "Eye comb", "Lyre size",
+                                              "Centrality", "Fighting", "Attendance"))
+
+#area
+attend_area <- mcmc_areas_data(fit_high_attend) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+fight_area <- mcmc_areas_data(fit_high_fight) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+dist_area <- mcmc_areas_data(fit_high_dist) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+eyec_area <- mcmc_areas_data(fit_high_eyec) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+blue_area <- mcmc_areas_data(fit_high_blue) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+lyre_area <- mcmc_areas_data(fit_high_lyre) %>%
+  subset(grepl("scaletotal_load", parameter))
+
+hightrait_area <- rbind(attend_area,
+                        fight_area, 
+                        dist_area,
+                        eyec_area,
+                        blue_area,
+                        lyre_area)
+
+hightrait_area$trait <- c(rep("Attendance", nrow(attend_area)),
+                          rep("Fighting", nrow(fight_area)),
+                          rep("Centrality", nrow(dist_area)),
+                          rep("Eye comb", nrow(eyec_area)),
+                          rep("Blue chroma", nrow(blue_area)),
+                          rep("Lyre size", nrow(lyre_area)))
+
+hightrait_area$trait <- factor(hightrait_area$trait, 
+                               levels = c("Blue chroma", "Eye comb", "Lyre size",
+                                          "Centrality", "Fighting", "Attendance"))
+
+### plot
+
+# split by interval
+hightrait <- split(hightrait_area, hightrait_area$interval)
+
+hightrait$bottom <- hightrait$outer %>%
+  summarise(
+    ll = min(.data$x),
+    hh = max(.data$x),
+    .groups = "drop_last"
+  ) %>%
+  ungroup()
+
+## plot
+
+### divide up between the two traits
+ggplot(data = hightrait$outer) +  
+  aes(x = .data$x, y = .data$trait) + 
+  geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = trait, col = trait))+
+  geom_segment(data=hightrait_interval, aes(x = l, xend = h, yend = trait), col = "black", linewidth=3)+
+  geom_segment(data=hightrait_interval, aes(x = ll, xend = hh, yend = trait), col = "black")+
+  geom_point(data=hightrait_interval, aes(x = m, y = trait), fill="white",  col = "black", shape=21, size = 6) + 
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 1.5)+
+  labs(x = expression("Standardised"~beta), y = "Trait")+
+  scale_fill_manual(values =alpha(c(clrs_hunting[1],clrs_hunting[1],
+                                    clrs_hunting[1],clrs_hunting[1],
+                                    clrs_hunting[1],clrs_hunting[1]), 0.5)) +
+  scale_color_manual(values =c(clrs_hunting[1],clrs_hunting[1],
+                               clrs_hunting[1],clrs_hunting[1],
+                               clrs_hunting[1],clrs_hunting[1])) +
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none",
+        axis.title.x = element_text(size = 26),
+        axis.text.x = element_text(size = 26)) +
+  theme(
+    panel.background = element_rect(fill='transparent'), #transparent panel bg
+    plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+    panel.grid.major = element_blank(), #remove major gridlines
+    panel.grid.minor = element_blank(), #remove minor gridlines
+    legend.background = element_rect(fill='transparent'), #transparent legend bg
+    legend.box.background = element_rect(fill='transparent') #transparent legend panel
+  )-> traits_high_posterior
+
+traits_high_posterior
+
+
+png(file = "plots/sup/high_left_load_traits.png", width=800, height=1200)
+traits_high_posterior
+dev.off()
+
+write.csv(hightrait_interval, file = "output/models/intervals/high_load_traits.csv", quote=F, row.names = F)

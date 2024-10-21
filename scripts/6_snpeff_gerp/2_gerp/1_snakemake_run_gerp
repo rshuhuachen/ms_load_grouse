@@ -1,0 +1,44 @@
+"""
+snakemake --snakefile scripts/7_deleterious_mutations/gerp/1_snakemake_run_gerp -n
+
+snakemake --jobs 50 \
+    --snakefile scripts/7_deleterious_mutations/gerp/1_snakemake_run_gerp  \
+    --latency-wait 30 \
+    -p \
+    --default-resources mem_mb=51200 threads=1 \
+    --use-singularity \
+    --singularity-args "--bind pwd" \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb}' \
+      --jn gerp.{name}.{jobid}.sh \
+      -R call_gerp
+"""
+
+SCFS = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "13", "14", "15", "16", "17","18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30"]
+
+rule all:
+    input:
+      maf = expand( "output/cactus/maf_per_scaf/maf_{scaf}.maf", scaf = SCFS ),
+      tree = "output/cactus/combined_windows.fa.treefile",
+      gerp = expand( "output/gerp/maf_{scaf}.maf.rates", scaf = SCFS )
+
+rule call_gerp:
+    input:
+      maf = "output/cactus/maf_per_scaf/maf_{scaf}.maf",
+      tree = "output/tree_cactus_updated.txt"
+    output:
+      rates = "output/gerp/maf_{scaf}.maf.rates"
+    params:
+      refname = "Lyrurus_tetrix"
+    log: "logs/gerp_{scaf}.log"
+    shell:
+      """
+      gerpcol -t {input.tree} -f {input.maf} -e {params.refname} -j -z -x ".rates" &> {log}
+      """

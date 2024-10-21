@@ -1,0 +1,15 @@
+# mamba env create -f popgen_basics.yml
+name: popgen_basics
+channels:
+ - conda-forge
+ - bioconda
+ - defaults
+dependencies:
+ - mamba
+ - samtools=1.16
+ - vcftools=0.1.16
+ - bcftools=1.16
+ - bedtools=2.30.0
+ - vcflib=1.0.3
+ - bamtools=2.5.2
+ - raxml-ng=1.1.0
