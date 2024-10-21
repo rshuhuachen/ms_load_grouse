@@ -70,15 +70,17 @@ ggplot(data = brms_othersnpeff$outer) +
 png(file = "plots/sup/other_snpeff.png", height = 600, width = 600)
 other_snpeff
 dev.off()
-
+brms_othersnpeff_interval <- brms_othersnpeff_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_othersnpeff_interval, file = "output/models/intervals/other_snpeff.csv", quote=F, row.names = F)
 
 ### GERP categories ####
 
 load(file = "output/models/total_hom_het/lms_total_gerp34.RData")
 brm_load_t_add_gerp4_lms <- brm_load_t
+r2_bayes(brm_load_t_add_gerp4_lms)
 load(file = "output/models/total_hom_het/lms_total_gerp45.RData")
 brm_load_t_add_gerp5_lms <- brm_load_t
+
 rm(brm_load_t)
 
 #extract intervals and areas
@@ -149,6 +151,6 @@ supp_posterior_gerpcats
 png(file = "plots/sup/other_gerp.png", height = 600, width = 600)
 supp_posterior_gerpcats
 dev.off()
-
+brms_gerps_interval <- brms_gerps_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_gerps_interval, file = "output/models/intervals/other_gerp.csv", quote=F, row.names = F)
 

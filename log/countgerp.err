@@ -1,0 +1,78 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 1483463 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 673852 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 494822 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.

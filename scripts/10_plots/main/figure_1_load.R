@@ -11,11 +11,12 @@ gerp_count$gerp_cat <- factor(gerp_count$gerp_cat, levels = c("< 0", "0-1", "1-2
 ggplot(gerp_count, aes(x = gerp_cat, y = n_total)) + 
   geom_col(fill = alpha(c(clr_grey, clr_grey, clr_grey, clr_grey, clr_gerp, clr_grey), 0.7), 
            color=c(clr_grey,clr_grey, clr_grey, clr_grey,  clr_gerp, clr_grey)) + 
-  scale_y_continuous(labels = c("0", expression(paste("1 x"~10^6)), 
-                                expression(paste("2 x"~10^6)), expression(paste("3 x"~10^6)), expression(paste("4 x"~10^6))), 
-                     breaks = c(0, 1000000, 2000000, 3000000, 4000000), 
-                     limits=c(0, 4500000)) +
-  labs(x = "Category", y= "Number of SNPs", title = "GERP") +
+  # scale_y_log10(labels = c("0", expression(10^1),
+  #                               expression(10^3), expression(10^5), expression(10^7)),
+  #                    breaks = c(0, 10, 1000, 100000, 10000000)) +
+  scale_y_log10(limits=c(1,10000000000), labels = c(expression(10^3), expression(10^6), expression(10^9)),
+                breaks=c(1000,1000000,1000000000)) +
+ labs(x = "Category", y= expression('Number of SNPs (log'[10]*')'), title = "GERP") +
   geom_text(aes(label = prettyNum(n_total, big.mark=","), y = n_total), 
             hjust=-0.2, size = 6) +
  coord_flip() -> fig_countgerp
@@ -135,10 +136,14 @@ ggplot(n_mutations_pertype, aes(x = reorder(abb, desc(n_mutations)),
 
 # high
 high <- read.table("data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_HIGH.vcf.gz")
+source("scripts/7_calculate_load/function_calculate_load.R")
 high_load <- calculate_load_snpeff(high, output_vcf = TRUE, loadtype = "high")
 high <- high_load$load
 high <- high %>% mutate(n_total_id_Heterozygosity = het_load*n_genotyped)
 high <- high %>% mutate(n_total_id_Homozygosity = hom_load*n_genotyped)
+high <- high %>% mutate(n_total_mutations = n_total_id_Heterozygosity+(n_total_id_Homozygosity*2))
+sd(high$n_total_mutations)
+mean(high$n_total_mutations)
 
 high_loci <- gather(high[,c("id", "n_total_id_Heterozygosity", "n_total_id_Homozygosity")], type, n_loci, c(n_total_id_Heterozygosity:n_total_id_Homozygosity), factor_key = T)
 high_loci$type <- gsub("n_total_id_", "", high_loci$type)
@@ -176,6 +181,10 @@ gerp_loci$type <- gsub("het_data", "Heterozygosity", gerp_loci$type)
 gerp_loci$type <- gsub("hom_data", "Homozygosity", gerp_loci$type)
 gerp_loci$type <- factor(gerp_loci$type, levels = c("Homozygosity", "Heterozygosity"))
 
+gerp <- gerp %>% mutate(n_total_mutations = het_data+(hom_data*2))
+sd(gerp$n_total_mutations)
+mean(gerp$n_total_mutations)
+
 ggplot(gerp_loci, aes(x = n_loci)) +
   geom_histogram(bins = 30, position = "identity", aes(fill = type, col = type)) +
   labs(x = "Number of loci", fill = "", y = "Number of individuals", title = "GERP ≥ 4") +
@@ -191,7 +200,7 @@ cowplot::plot_grid(fig_countgerp, fig_countsnpef,
                    ncol = 1, labels = c("a", "b"), label_fontface = "plain", label_size = 22,
                    align = "hv", axis = "lb") -> fig_load_1
 
-cowplot::plot_grid(fig_load_1, fig_countsnpef_cat, rel_widths = c(0.4, 0.6),
+cowplot::plot_grid(fig_load_1, fig_countsnpef_cat, rel_widths = c(0.4,0.6),
                    labels = c("", "c"), label_fontface = "plain", label_size = 22,
                    ncol = 2) -> fig_load_2
 

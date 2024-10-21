@@ -77,7 +77,9 @@ get_indirect <- function(mediator, method, trait_model, ams_model){
                               path2_lower = round(quantile(path2, probs = c(.025)), 2),
                               path2_upper = round(quantile(path2, probs = c(.975)), 2),
                               indirect_lower_80 = round(quantile(indirect, probs = c(.1)), 2),
-                              indirect_upper_80 = round(quantile(indirect, probs = c(.9)), 2))
+                              indirect_upper_80 = round(quantile(indirect, probs = c(.9)), 2),
+                              direct_lower_80 = round(quantile(direct, probs = c(.1)), 2),
+                              direct_upper_80 = round(quantile(direct, probs = c(.9)), 2))
   
   return(effect_attend)
 }

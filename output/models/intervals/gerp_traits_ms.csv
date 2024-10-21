@@ -1,0 +1,7 @@
+parameter,outer_width,inner_width,point_est,ll,l,m,h,hh
+Lyre size,0.95,0.8,median,-0.07,0.07,0.31,0.56,0.69
+Eye comb,0.95,0.8,median,-0.21,-0.1,0.13,0.35,0.48
+Blue chroma,0.95,0.8,median,-0.05,0.01,0.15,0.29,0.36
+Centrality,0.95,0.8,median,-0.93,-0.81,-0.59,-0.36,-0.23
+Attendance,0.95,0.8,median,0.71,0.91,1.32,1.74,2.01
+Fighting,0.95,0.8,median,-0.33,-0.24,-0.06,0.11,0.21

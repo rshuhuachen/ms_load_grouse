@@ -13,9 +13,12 @@ source("scripts/theme_ggplot.R")
 # gerp
 load(file = "output/models/total_hom_het/lms_total_gerp45.RData")
 brm_load_t_gerp5_lms <- brm_load_t
+r2_bayes(brm_load_t_gerp5_lms)
+
 # snpeff
 load(file = "output/models/total_hom_het/lms_total_high.RData")
 brm_load_t_add_high_lms <- brm_load_t
+r2_bayes(brm_load_t_add_high_lms)
 
 # get intervals
 brms_gerp5_lms_interval <- mcmc_intervals_data(brm_load_t_gerp5_lms, prob =0.8, prob_outer = 0.95, pars = "b_scaletotal_load")
@@ -75,15 +78,19 @@ ggplot(data = brms_plota$outer) +
         legend.position = "none",
         axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) -> totals
 totals
+
+brms_plota_interval <- brms_plota_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_plota_interval, file = "output/models/intervals/total_gerp45_high.csv", quote=F, row.names = F)
 
 ##### plot b - hom and het  #####
 
 load(file = "output/models/total_hom_het/lms_het_hom_gerp45.RData")
 brm_load_rp_gerp5_lms <- brm_load_het_hom
+r2_bayes(brm_load_rp_gerp5_lms)
 
 load(file = "output/models/total_hom_het/lms_het_hom_high.RData")
 brm_load_rp_high_lms <- brm_load_het_hom
+r2_bayes(brm_load_rp_high_lms)
 
 #extract intervals and areas
 brms_gerp5_lms_interval_hom <- mcmc_intervals_data(brm_load_rp_gerp5_lms, prob =0.8, prob_outer = 0.95) %>%
@@ -185,20 +192,25 @@ ggplot(data = brms_hom_het_lms$outer) +
 
 hom_het
 
+brms_hom_het_lms_interval <- brms_hom_het_lms_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_hom_het_lms_interval, file = "output/models/intervals/hom_het_gerp45_high.csv", quote=F, row.names = F)
 
 #### plot c - GERP per region ####
 load(file = "output/models/per_gene_region/lms_total_gerp45_promoter.RData")
 gerp_promoter <- brm_load_t
+r2_bayes(gerp_promoter)
 
 load(file = "output/models/per_gene_region/lms_total_gerp45_tss.RData")
 gerp_tss <- brm_load_t
+r2_bayes(gerp_tss)
 
 load(file = "output/models/per_gene_region/lms_total_gerp45_exon.RData")
 gerp_exon <- brm_load_t
+r2_bayes(gerp_exon)
 
 load(file = "output/models/per_gene_region/lms_total_gerp45_intron.RData")
 gerp_intron <- brm_load_t
+r2_bayes(gerp_intron)
 
 rm(brm_load_t)
 
@@ -293,20 +305,25 @@ ggplot(data = brms_gerps_regions$outer) +
 
 posterior_gerpregions
 
+brms_gerps_regions_interval <- brms_gerps_regions_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_gerps_regions_interval, file = "output/models/intervals/regions_gerp45.csv", quote=F, row.names = F)
 
 #### plot d - high per region ####
 load(file = "output/models/per_gene_region/lms_total_high_promoter.RData")
 high_promoter <- brm_load_t
+r2_bayes(high_promoter)
 
 load(file = "output/models/per_gene_region/lms_total_high_tss.RData")
 high_tss <- brm_load_t
+r2_bayes(high_tss)
 
 load(file = "output/models/per_gene_region/lms_total_high_exon.RData")
 high_exon <- brm_load_t
+r2_bayes(high_exon)
 
 load(file = "output/models/per_gene_region/lms_total_high_intron.RData")
 high_intron <- brm_load_t
+r2_bayes(high_intron)
 
 rm(brm_load_t)
 
@@ -401,6 +418,7 @@ ggplot(data = brms_high_regions$outer) +
 
 posterior_highregions
 
+brms_high_regions_interval <- brms_high_regions_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_high_regions_interval, file = "output/models/intervals/regions_high.csv", quote=F, row.names = F)
 
 #### combine ####

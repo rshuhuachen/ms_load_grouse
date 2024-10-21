@@ -101,7 +101,13 @@ write.table(load, file = "output/load/all_loads_combined_da_nosex_29scaf.tsv", s
 
 cor.test(load$total_load[which(load$loadtype == "gerp45")], load$total_load[which(load$loadtype == "high")])
 
-s#### Overlap GERP > 4 and high ####
+### Test for lek effects ####
+load("data/phenotypes/phenotypes_lifetime.RData")
+pheno_load <- left_join(pheno_wide, load, by = "id")
+summary(lm(total_load ~ site, data = subset(pheno_load, loadtype == "gerp45")))
+summary(lm(total_load ~ site, data = subset(pheno_load, loadtype == "high")))
+
+#### Overlap GERP > 4 and high ####
 high_nowarning <- subset(high, !grepl("WARNING", V8))
 
 # only select 29 largest autosomal scaffolds

@@ -1,0 +1,675 @@
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 374424 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 396132 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 420558 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 367934 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 280696 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 245912 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 201178 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 206504 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 173236 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 180362 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 187630 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 166833 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 156178 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 141800 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 116731 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 112483 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 111363 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 109046 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 80985 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 70425 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 73518 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 64091 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 49223 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 11215 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 0 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+
+??? (200): chr, start, pos, neutral_rate_n, rs_score, ancestral, derived, qu...
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
+
+Attaching package: ‘dplyr’
+
+The following objects are masked from ‘package:stats’:
+
+    filter, lag
+
+The following objects are masked from ‘package:base’:
+
+    intersect, setdiff, setequal, union
+
+
+Attaching package: ‘data.table’
+
+The following objects are masked from ‘package:dplyr’:
+
+    between, first, last
+
+Rows: 3893 Columns: 200
+── Column specification ────────────────────────────────────────────────────────
+Delimiter: "\t"
+chr (196): chr, ancestral, derived, qual, info, format, D154259, D154280, D1...
+dbl   (4): start, pos, neutral_rate_n, rs_score
+
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.

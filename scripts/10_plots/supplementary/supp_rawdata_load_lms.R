@@ -167,7 +167,8 @@ cowplot::plot_grid(fig_raw_gerp_total,
                    fig_raw_high_total, 
                    fig_raw_gerp_hom_het,
                    fig_raw_high_hom_het, ncol = 2, 
-                   align = "hv", axis = "lb",
+                   rel_heights = c(0.6,1),
+                 #  align = "hv", axis = "lb",
                    labels = "auto", label_fontface = "plain", label_size = 22) -> fig_rawdata
 
 png(file = "plots/sup/rawdata_total_homhet_gerp_snp.png", height=1000, width=800)

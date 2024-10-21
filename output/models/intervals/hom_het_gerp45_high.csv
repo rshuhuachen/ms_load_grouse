@@ -1,0 +1,5 @@
+parameter,outer_width,inner_width,point_est,ll,l,m,h,hh,model,loadtype
+b_scalehom_load,0.95,0.8,median,-0.76,-0.7,-0.57,-0.45,-0.39,Hom,GERP
+b_scalehet_load,0.95,0.8,median,-0.78,-0.72,-0.6,-0.48,-0.41,Het,GERP
+b_scalehom_load,0.95,0.8,median,-0.17,-0.15,-0.09,-0.04,-0.01,Hom,SnpEff
+b_scalehet_load,0.95,0.8,median,-0.24,-0.21,-0.15,-0.09,-0.06,Het,SnpEff

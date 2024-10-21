@@ -1,0 +1,5 @@
+parameter,outer_width,inner_width,point_est,ll,l,m,h,hh,region
+b_scaletotal_load,0.95,0.8,median,-0.34,-0.31,-0.26,-0.2,-0.18,Promoter
+b_scaletotal_load,0.95,0.8,median,-0.12,-0.09,-0.04,0.01,0.04,TSS
+b_scaletotal_load,0.95,0.8,median,-0.15,-0.13,-0.08,-0.02,0.01,Intron
+b_scaletotal_load,0.95,0.8,median,-0.2,-0.17,-0.11,-0.06,-0.03,Exon

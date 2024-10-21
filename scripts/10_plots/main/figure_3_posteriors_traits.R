@@ -95,6 +95,7 @@ png(file = "plots/main/fig_3_right_traits_ams.png", width=800, height=1200)
 traits_ms_gerp_posterior
 dev.off()
 
+brms_trait_ms_gerp_interval <- brms_trait_ms_gerp_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_trait_ms_gerp_interval, file = "output/models/intervals/gerp_traits_ms.csv", quote=F, row.names = F)
 
 ##### GERP load on traits ####
@@ -102,16 +103,27 @@ write.csv(brms_trait_ms_gerp_interval, file = "output/models/intervals/gerp_trai
 # load data
 load(file = "output/models/annual/traits/model_attend_gerp45.RData")
 fit_gerp_attend <- fit
+r2_bayes(fit_gerp_attend)
+
 load(file = "output/models/annual/traits/model_fight_gerp45.RData")
 fit_gerp_fight <- fit
+r2_bayes(fit_gerp_fight)
+
 load(file = "output/models/annual/traits/model_dist_gerp45.RData")
 fit_gerp_dist <- fit
+r2_bayes(fit_gerp_dist)
+
 load(file = "output/models/annual/traits/model_eyec_gerp45.RData")
 fit_gerp_eyec <- fit
+r2_bayes(fit_gerp_eyec)
+
 load(file = "output/models/annual/traits/model_blue_gerp45.RData")
 fit_gerp_blue <- fit
+r2_bayes(fit_gerp_blue)
+
 load(file = "output/models/annual/traits/model_lyre_gerp45.RData")
 fit_gerp_lyre <- fit
+r2_bayes(fit_gerp_lyre)
 rm(fit)
 
 #extract intervals and areas
@@ -243,6 +255,7 @@ write.csv(gerptrait_interval, file = "output/models/intervals/gerp_load_traits.c
 # load data
 load(file = "output/models/annual/ams/model_trait_ams_high.RData")
 fit_ms_high <- fit
+r2_bayes(fit_ms_high)
 
 #extract intervals and areas
 brms_trait_ms_high_interval <- mcmc_intervals_data(fit_ms_high, prob =0.8, prob_outer = 0.95) %>%
@@ -334,16 +347,27 @@ write.csv(brms_trait_ms_high_interval, file = "output/models/intervals/high_trai
 # load data
 load(file = "output/models/annual/traits/model_attend_high.RData")
 fit_high_attend <- fit
+r2_bayes(fit_high_attend)
+
 load(file = "output/models/annual/traits/model_fight_high.RData")
 fit_high_fight <- fit
+r2_bayes(fit_high_fight)
+
 load(file = "output/models/annual/traits/model_dist_high.RData")
 fit_high_dist <- fit
+r2_bayes(fit_high_dist)
+
 load(file = "output/models/annual/traits/model_eyec_high.RData")
 fit_high_eyec <- fit
+r2_bayes(fit_high_eyec)
+
 load(file = "output/models/annual/traits/model_blue_high.RData")
 fit_high_blue <- fit
+r2_bayes(fit_high_blue)
+
 load(file = "output/models/annual/traits/model_lyre_high.RData")
 fit_high_lyre <- fit
+r2_bayes(fit_high_lyre)
 rm(fit)
 
 #extract intervals and areas
