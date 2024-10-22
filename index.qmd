@@ -1,5 +1,6 @@
 ---
 title: "Mutation load in black grouse"
+favicon: plots/img/grouse_silhouette.png
 ---
 
 # Introduction
