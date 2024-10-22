@@ -1,4 +1,0 @@
-NameErrorin line 130 of /vol/cluster-data/rchen/git/genetic_load_ltet/scripts/snpeff/1_ancestral_as_reference/workflow/./rules/ancestral_alleles.smk:
-name 'c_jvar' is not defined
-  File "/vol/cluster-data/rchen/git/genetic_load_ltet/scripts/snpeff/1_ancestral_as_reference/workflow/snakefile", line 21, in <module>
-  File "/vol/cluster-data/rchen/git/genetic_load_ltet/scripts/snpeff/1_ancestral_as_reference/workflow/./rules/ancestral_alleles.smk", line 130, in <module>

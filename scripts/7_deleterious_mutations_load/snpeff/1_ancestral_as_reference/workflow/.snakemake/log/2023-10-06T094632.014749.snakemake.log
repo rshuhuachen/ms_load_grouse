@@ -1,3 +1,0 @@
-WorkflowErrorin line 10 of /vol/cluster-data/rchen/git/genetic_load_ltet/scripts/snpeff/1_ancestral_as_reference/workflow/snakefile:
-Workflow defines configfile workflow/config.yml but it is not present or accessible.
-  File "/vol/cluster-data/rchen/git/genetic_load_ltet/scripts/snpeff/1_ancestral_as_reference/workflow/snakefile", line 10, in <module>

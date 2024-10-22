@@ -5,7 +5,7 @@ project:
 engine: knitr
 
 book:
-  title: "Genetic Load Black Grouse"
+  title: "Mutation Load in Black Grouse"
   author: "Rebecca S. Chen"
   chapters:
     - index.qmd

@@ -1,8 +1,0 @@
-Building DAG of jobs...
-MissingInputException in rule all_anc_allele in line 28 of /vol/cluster-data/rchen/git/genetic_load_ltet/scripts/snpeff/1_ancestral_as_reference/workflow/./rules/ancestral_alleles.smk:
-Missing input files for rule all_anc_allele:
-    affected files:
-        ../results/mutation_load/snp_eff/snp_tally/fixed_in_mirleo.bed.gz
-        ../results/mutation_load/snp_eff/snp_tally/fixed_in_mirang.bed.gz
-        ../data/genomes/ltet_snps_noindel_minDP20_maxmis0.7_maxdp60_minQC30.recode.vcf.gz
-        ../results/mutation_load/snp_eff/snp_tally/n_snp_load_in_pop.tsv
