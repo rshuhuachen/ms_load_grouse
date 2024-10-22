@@ -1,6 +1,18 @@
 data/intermediate
 data/processed
 data/raw/genotypes
+data/genomic/
+dump
+.snakemake/
+output/gerp
+output/ancestral
+output/load/gerp
+output/load/snpeff
+output/models/annual
+output/models/total_hom_het
+output/models/per_gene_region
+output/af
+src
 .Rproj.user
 logs/
 
