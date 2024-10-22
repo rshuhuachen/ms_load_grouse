@@ -71,21 +71,6 @@ View(check[,c("total_load.x", "total_load.y")])
 gerp <- gerp_45_load_check$vcf
 save(gerp, file = "output/load/gerp/gerp_over4.RData")
 
-# for the time being, get load estimate from genetic_load dir
-# 
-# load("/vol/cluster-data/rchen/geneticload/gerp/analyses/git/cactus_insert_ltet_take4/output/gerp/scores/sum_gerp_cat_with0.RData")
-# gerp_34_load <- load_cat_select %>% select(c(id, gerp_cat, n_total, n_genotyped, gerp_Lp, gerp_Lr, gerp_Lt_additive)) %>% 
-#   filter(gerp_cat == "3-4")%>%
-#     select(-c(gerp_cat)) 
-# gerp_34_load$loadtype = "gerp34"
-# names(gerp_34_load) <- names(moderate_load)  
-# 
-# gerp_45_load <- load_cat_select %>% select(c(id, gerp_cat, n_total, n_genotyped, gerp_Lp, gerp_Lr, gerp_Lt_additive)) %>% 
-#   filter(gerp_cat == "4-5")%>%
-#   select(-c(gerp_cat)) 
-# gerp_45_load$loadtype = "gerp45"
-# names(gerp_45_load) <- names(moderate_load)  
-
 #### Save in a single file #####
 
 load <- rbind(high_load$load[,c("id", "het_load", "hom_load", "total_load", "loadtype")] ,

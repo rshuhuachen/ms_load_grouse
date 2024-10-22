@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Mutation Load in Black Grouse - 2&nbsp; SnpEff</title>
+<title>Mutation Load in Black Grouse - 7&nbsp; Random subsampling</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -30,8 +30,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../qmd/2_gerp.html" rel="next">
-<link href="../index.html" rel="prev">
+<link href="../qmd/references.html" rel="next">
+<link href="../qmd/5_per_region.html" rel="prev">
 <link href="../plots/img/grouse_silhouette.png" rel="icon" type="image/png">
 <script src="../site_libs/quarto-html/quarto.js"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -86,7 +86,7 @@ ul.task-list li input[type="checkbox"] {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../qmd/1_snpeff.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">SnpEff</span></a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../qmd/6_random_sub.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Random subsampling</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -114,7 +114,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../qmd/1_snpeff.html" class="sidebar-item-text sidebar-link active">
+  <a href="../qmd/1_snpeff.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">SnpEff</span></span></a>
   </div>
 </li>
@@ -144,7 +144,7 @@ ul.task-list li input[type="checkbox"] {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../qmd/6_random_sub.html" class="sidebar-item-text sidebar-link">
+  <a href="../qmd/6_random_sub.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Random subsampling</span></span></a>
   </div>
 </li>
@@ -160,27 +160,14 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        <nav id="TOC" role="doc-toc" class="toc-active">
-    <h2 id="toc-title">Table of contents</h2>
-   
-  <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">2.1</span> Introduction</a></li>
-  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">2.2</span> Methods</a>
-  <ul class="collapse">
-  <li><a href="#building-the-database" id="toc-building-the-database" class="nav-link" data-scroll-target="#building-the-database"><span class="header-section-number">2.2.1</span> Building the database</a></li>
-  <li><a href="#ancestral-alleles" id="toc-ancestral-alleles" class="nav-link" data-scroll-target="#ancestral-alleles"><span class="header-section-number">2.2.2</span> Ancestral alleles</a></li>
-  <li><a href="#filtering" id="toc-filtering" class="nav-link" data-scroll-target="#filtering"><span class="header-section-number">2.2.3</span> Filtering</a></li>
-  </ul></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">2.3</span> Results</a></li>
-  </ul>
-</nav>
+        
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">SnpEff</span></h1>
+<h1 class="title"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Random subsampling</span></h1>
 </div>
 
 
@@ -195,74 +182,8 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="introduction" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">2.1</span> Introduction</h2>
-<p><a href="https://pcingola.github.io/SnpEff/">SnpEff</a> annotates genetic variants and predicts the functional effects. The output includes a VCF file with annotations that indicate what kind of mutation it is (e.g.&nbsp;introduction of a stop codon) and the predicted effect (low, moderate, high, modifier). In this study, focus on high impact mutations, which includes loss of function (LoF) and nonsense mediate decay (NMD) mutations.</p>
-</section>
-<section id="methods" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="methods"><span class="header-section-number">2.2</span> Methods</h2>
-<section id="building-the-database" class="level3" data-number="2.2.1">
-<h3 data-number="2.2.1" class="anchored" data-anchor-id="building-the-database"><span class="header-section-number">2.2.1</span> Building the database</h3>
-<p>As the black grouse (<em>Lyrurus tetrix</em>) is no common model species with a pre-built database, a custom database was built from the annotation files in .gff format provided by Cantata Bio.</p>
-<p>To build a custom database, five files are required: the gff file containing the gene annotation, the reference genome, and then three files containing information about the coding regions (cds.fa; a fasta file containing the coding regions only), the genes (genes.fa; a fasta file containing the genes only) and a file with the protein sequences (proteins.fa; a fasta file with the protein sequences). Two softwares were used to construct these three fasta files: gff3_to_fasta and AGAT.</p>
-<pre class="{bash}"><code>gff3_to_fasta -g data/genomic/refgenome/PO2979_Lyrurus_tetrix_black_grouse.annotation.gff \
-    -f data/genomic/refgenome/PO2979_Lyrurus_tetrix_black_grouse.RepeatMasked.fasta -st cds -d complete -o data/genomic/refgenome/lyrurus_tetrix/cds.fa 
-
-gff3_to_fasta -g data/genomic/refgenome/PO2979_Lyrurus_tetrix_black_grouse.annotation.gff \
-    -f data/genomic/refgenome/PO2979_Lyrurus_tetrix_black_grouse.RepeatMasked.fasta -st gene -d complete -o data/genomic/refgenome/lyrurus_tetrix/genes.fa </code></pre>
-<p>Similarly, the protein sequences were constructed with AGAT</p>
-<pre class="{bash}"><code>agat_sp_extract_sequences.pl --gff data/genomic/refgenome/PO2979_Lyrurus_tetrix_black_grouse.annotation.gff -f \
-    data/genomic/refgenome/PO2979_Lyrurus_tetrix_black_grouse.RepeatMasked.fasta -p -o \
-    data/genomic/refgenome/lyrurus_tetrix/protein.fa</code></pre>
-<p>Then, the database was built (and automatically checked).</p>
-<pre class="{bash}"><code>java -jar snpEff.jar build -gff3 -v data/genomic/refgenome/lyrurus_tetrix</code></pre>
-<p>Once the database is ready, we can run SnpEff to create the annotated vcf file.</p>
-<pre class="{bash}"><code>java -Xmx8g -jar snpEff.jar ann -stats  \
--no-downstream -no-intergenic -no-intron -no-upstream -no-utr -v \
-lyrurus_tetrix data/genomic/intermediate/ltet_snps_filtered.vcf &gt; data/genomic/intermediate/snpef/ltet_ann_snp_output.vcf</code></pre>
-</section>
-<section id="ancestral-alleles" class="level3" data-number="2.2.2">
-<h3 data-number="2.2.2" class="anchored" data-anchor-id="ancestral-alleles"><span class="header-section-number">2.2.2</span> Ancestral alleles</h3>
-<p>SnpEff annotates mutations according to the change from the reference allele to the focal allele. Hence, it assumes that the reference allele is the ‘better’ one and that a mutation that changes the transcription of this reference allele is detrimental. To allow this assumption to be better met, we used the ancestral genome as a reference, instead of the reference genome itself (i.e.&nbsp;we polarized the genome). This ancestral genome is constructed by cactus, and represents the most recent common ancestor between black grouse <em>(L. tetrix)</em> and <em>Lagoplus leucura</em> (white tailed ptarmigan). This way, any derived allele was assumed to be ‘deleterious’ compared to the ancestral allele, as opposed to a reference-non reference comparison.</p>
-</section>
-<section id="filtering" class="level3" data-number="2.2.3">
-<h3 data-number="2.2.3" class="anchored" data-anchor-id="filtering"><span class="header-section-number">2.2.3</span> Filtering</h3>
-<p>We then used SnpSift to filter annotated mutations based on the four impact categories: modifier, low, moderate and <a href="https://pcingola.github.io/SnpEff/se_inputoutput/#effect-prediction-details">high impact</a> using the following commands.</p>
-<pre class="{bash}"><code>
-## High impact
-zcat output/ancestral/ltet_filtered_ann_aa.vcf.gz | java -jar src/SnpSift.jar filter " ( ANN[*].IMPACT = 'HIGH' )" &gt; data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_HIGH.vcf
-gzip data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_HIGH.vcf
-
-## Moderate
-zcat output/ancestral/ltet_filtered_ann_aa.vcf.gz | java -jar src/SnpSift.jar filter " ( ANN[*].IMPACT = 'MODERATE')" &gt; data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_moderate.vcf
-gzip data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_moderate.vcf
-
-## Low
-zcat output/ancestral/ltet_filtered_ann_aa.vcf.gz | java -jar src/SnpSift.jar filter " ( ANN[*].IMPACT = 'LOW') " &gt; data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_low.vcf
-gzip data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_low.vcf
-</code></pre>
-</section>
-</section>
-<section id="results" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="results"><span class="header-section-number">2.3</span> Results</h2>
-<p>We identified 5,341 high impact mutations:</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../plots/main/fig_1b.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">SnpEff annotation</figcaption>
-</figure>
-</div>
-<p>Existing of mostly LoF mutations and gained stop codons (non-mutually exclusive)</p>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="../plots/main/fig_1c.png" class="img-fluid figure-img"></p>
-<figcaption class="figure-caption">Detailed SnpEff annotation</figcaption>
-</figure>
-</div>
-<p>The mutations in the ‘high impact’ category were used to calculate individual genomic mutation load estimates.</p>
 
 
-</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
@@ -496,31 +417,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       });
     }
   }
-    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
-      var filterRegex = new RegExp('/' + window.location.host + '/');
-    var isInternal = (href) => {
-        return filterRegex.test(href) || localhostRegex.test(href);
-    }
-    // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item)');
-    for (var i=0; i<links.length; i++) {
-      const link = links[i];
-      if (!isInternal(link.href)) {
-          // target, if specified
-          link.setAttribute("target", "_blank");
-      }
-    }
 });
 </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../index.html" class="pagination-link">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Predicted deleterious mutations reveal the genomic mechanisms underlying fitness variation in a lekking bird</span></span>
+      <a href="../qmd/5_per_region.html" class="pagination-link">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Load per genomic region</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../qmd/2_gerp.html" class="pagination-link">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">GERP</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../qmd/references.html" class="pagination-link">
+        <span class="nav-page-text">References</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

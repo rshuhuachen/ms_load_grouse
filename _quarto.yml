@@ -10,17 +10,25 @@ book:
   chapters:
     - index.qmd
     - qmd/1_snpeff.qmd
+    - qmd/2_gerp.qmd
+    - qmd/3_load.qmd
+    - qmd/4_models.qmd
+    - qmd/5_per_region.qmd
+    - qmd/6_random_sub.qmd
     - qmd/references.qmd
   navbar:
     search: true
+  favicon: plots/img/grouse_silhouette.png
 
 bibliography: bibliography.bib
 
 format:
   html:
-    theme: solar
+    theme: darkly
     toc: true
-    mainfont: Gerogia, serif
+    mainfont: Georgia, serif
+    code-fold: true
 
 editor: visual
-
+execute: 
+  eval: false

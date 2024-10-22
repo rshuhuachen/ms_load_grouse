@@ -7,8 +7,8 @@ gerp_out <- args[[3]]
 
 calculate_gerp_load <- function(gerp_vcf, scafno){
   ## metadata on filenames and ids
-  filenames <- fread("/vol/cluster-data/rchen/git/genetic_load_ltet/data/metadata/ltet_snps_noindel_minDP20_maxmis0.7_maxdp60_minQC30_pruned_hwe.fam")
-  ids <- fread("/vol/cluster-data/rchen/git/genetic_load_ltet/data/metadata/file_list_all_bgi_clean.csv")
+  filenames <- fread("data/genomic/raw/metadata/idnames.fam")
+  ids <- fread("data/genomic/raw/metadata/file_list_all_bgi_clean.csv")
   
   #merge
   idnames <- left_join(filenames[,c("V1")], ids[,c("loc", "id")], by = c("V1" = "loc"))

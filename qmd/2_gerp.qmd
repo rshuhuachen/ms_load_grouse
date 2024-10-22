@@ -6,6 +6,7 @@ format:
 ---
 
 ## Introduction
+
 [GERP++](https://bio.tools/gerp) annotates a focal genome based on evolutionary conserveration, where regions in the genome that show higher conservation across multiple different species are expected to face higher selective constraint. The calculation of GERP scores, which indicate the reduction in the number of substitutions compared to neutral expectations, is done from a multi-species alignment file. Higher GERP scores indicate higher evolutionary constraint. First, we create this MAF file using Progressive Cactus, then we calculate GERP scores genome-wide, and select genomic positions with SNPs in our population. 
 
 ## Methods
@@ -14,7 +15,7 @@ format:
 
 We use the publicly available 363 avian genomes [multi-alignment file](https://cgl.gi.ucsc.edu/data/cactus/363-avian-2020.hal) as a starting point, and then reduce this file to exclude species of the Neoaves clade. All the GERP analyses were done using the [cactus container](https://quay.io/repository/comparative-genomics-toolkit/cactus).
 
-```{{bash}}
+``` {bash}
 ### Remove subtrees that are not needed for ltet analysis
 
 #set cactus scratch directory
@@ -55,11 +56,241 @@ halStats data/genomic/intermediate/cactus/363-avian-reduced.hal > output/cactus/
 halExtract data/genomic/intermediate/cactus/363-avian-reduced.hal data/genomic/intermediate/cactus/363-avian-reduced.hal 
 ```
 
-Next, we add two genomes: *Lyrurs tetrix* and *Lagopus lecura*, using the `cactus prepare` function (2_cactus_prepare.txt). To add the *Lagopus lecura* genome to the hal file, the assembly needs to be downloaded from NCBI which can be found on NCBI: https://0-www-ncbi-nlm-nih-gov.brum.beds.ac.uk/datasets/genome/GCF_019238085.1/. This file should be placed under: `data/genomic/intermediate/cactus`. The two files `input_ltet.txt` and `input_lleu.txt` specify the names and file locations of the fasta files of both assemblies.
+Next, we add two genomes: *Lyrurus tetrix* and *Lagopus lecura*, using the `cactus prepare` function (2_cactus_prepare.txt). To add the *Lagopus lecura* genome to the hal file, the assembly needs to be downloaded from NCBI which can be found on NCBI: https://0-www-ncbi-nlm-nih-gov.brum.beds.ac.uk/datasets/genome/GCF_019238085.1/. 
 
-The two files that get outputted by the cactus preparation step can then be run in sequence to add the new genomes to the phylogenetic tree (`3_cactus_update_lyrurus_steps.sh` and `4_cactus_update_lagopus_steps.sh`).
+``` {bash}
+# In this file, we will use the cactus-update-prepare function to create two scripts that will allow us to add two genomes to our dataset
 
-For subsequent steps, the resulting hal file is converted to wiggle format (`5_hal_to_wiggle.R`) to investigate the coverage per scaffold, and in maf format per scaffold (`6_split_hal_per_scaf.R`) for both GERP++ and the neutral tree calculation. Note that we only focus on the 30 largest scaffolds of the black grouse genome which over \>95% of the genome.
+# set scratch directory
+CACTUS_SCRATCH=$(pwd)/scratch/
 
-Lastly, the final phylogenetic tree has to be recalculated according to the updated tree, and the branch lengths have to be calculated in substitutions/site (rather than million years ago). The phylogenetic tree from the edited hal file can be found in `output/cactus/topology.tree` which can be generated with the halStats command. The `snakefile_neutraltree` is a snakemake file containing the workflow to estimate the updated branch lengths with the added genomes, and uses the R script `collapse_bed_coverage.R` as well as the `maffilter_templ.txt` file. The resulting updated phylogenetic tree can be found in `output/cactus/combined_windows.fa.treefile`.
+#enter container
+apptainer shell --cleanenv \
+  --fakeroot --overlay ${CACTUS_SCRATCH} \
+  --bind ${CACTUS_SCRATCH}/tmp:/tmp,$(pwd) \
+  --env PYTHONNOUSERSITE=1 \
+  src/containers/cactus_v2.5.1.sif 
 
+sh
+
+#first add Lyrurus tetrix, branchlengths will be corrected in a later step
+
+cactus-update-prepare \
+  add branch \
+  --parentGenome birdAnc334 \
+  --childGenome Tympanuchus_cupido \
+  data/genomic/intermediate/cactus/363-avian-reduced.hal \
+  scripts/2_cactus/input_ltet.txt \
+  --cactus-prepare-options \
+  '--alignCores 4' \
+  --topBranchLength 0.01 \ 
+  --outDir scratch/tmp/steps-output \
+  --jobStore scratch/tmp/js \
+  --ancestorName AncX > scripts/2_cactus/3_cactus_update_lyrurus_steps.sh 
+
+# then add Lagopus leucura
+
+cactus-update-prepare \
+  add branch \
+  --parentGenome AncX \
+  --childGenome Lyrurus_tetrix \
+  data/genomic/intermediate/cactus/363-avian-reduced.hal \
+  scripts/2_cactus/input_lleu.txt \
+  --cactus-prepare-options \
+  '--alignCores 4' \
+  --topBranchLength 0.01 \
+  --outDir scratch/tmp/steps-output \
+  --jobStore scratch/tmp/js \
+  --ancestorName AncY > scripts/2_cactus/4_cactus_update_lagopus_steps.sh 
+  
+```
+
+This is just the preparation step, and two files will be outputted that can be used to update the .hal file. This is what these files look like (and then they have to be executed).
+
+``` {bash}
+## Preprocessor
+cactus-preprocess scratch/tmp/js/0 scratch/tmp/steps-output/seq_file.in scratch/tmp/steps-output/seq_file.out --inputNames Lyrurus_tetrix --realTimeLogging --logInfo --retryCount 0 --maskMode none
+
+## Alignment
+
+### Round 0
+cactus-blast scratch/tmp/js/1 scratch/tmp/steps-output/seq_file.out scratch/tmp/steps-output/AncX.cigar --root AncX --restart 
+cactus-align scratch/tmp/js/2 scratch/tmp/steps-output/seq_file.out scratch/tmp/steps-output/AncX.cigar scratch/tmp/steps-output/AncX.hal --root AncX  --maxCores 8 
+hal2fasta scratch/tmp/steps-output/AncX.hal AncX --hdf5InMemory > scratch/tmp/steps-output/AncX.fa 
+
+### Round 1
+cactus-blast scratch/tmp/js/3 scratch/tmp/steps-output/seq_file.out scratch/tmp/steps-output/birdAnc334.cigar --root birdAnc334 --includeRoot  
+cactus-align scratch/tmp/js/4 scratch/tmp/steps-output/seq_file.out scratch/tmp/steps-output/birdAnc334.cigar scratch/tmp/steps-output/birdAnc334.hal --root birdAnc334  --maxCores 4 --includeRoot  
+
+## Alignment update
+halAddToBranch data/genomic/intermediate/cactus/363-avian-reduced.hal scratch/tmp/steps-output/AncX.hal scratch/tmp/steps-output/birdAnc334.hal birdAnc334 AncX Tympanuchus_cupido Lyrurus_tetrix 0.01 1.0 --hdf5InMemory 
+
+## Alignment validation
+halValidate --genome birdAnc334 data/genomic/intermediate/cactus/363-avian-reduced.hal --hdf5InMemory
+halValidate --genome AncX data/genomic/intermediate/cactus/363-avian-reduced.hal --hdf5InMemory
+halValidate --genome Tympanuchus_cupido data/genomic/intermediate/cactus/363-avian-reduced.hal --hdf5InMemory
+halValidate --genome Lyrurus_tetrix data/genomic/intermediate/cactus/363-avian-reduced.hal --hdf5InMemory
+```
+
+For subsequent steps, the resulting hal file is converted to maf format per scaffold for both GERP++ and the neutral tree calculation. Note that we only focus on the 30 largest scaffolds of the black grouse genome which over \>95% of the genome, and only autosomal scaffolds.
+
+This conversion is done within an R script
+``` {r}
+hal =  "data/genomic/intermediate/cactus/363-avian-reduced.hal"
+library(dplyr); library(data.table)
+scafs <- fread("data/genomic/refgenome/30_largest.scafs.tsv")
+output_dir = "output/cactus/maf_per_scaf"
+sif = "src/containers/cactus_v2.6.12.sif"
+scratch = "scripts/2_cactus/scratch"
+tmp_js = "scripts/2_cactus/scratch/tmp/js/wiggle"
+
+hal_to_maf_per_scaf <- function(hal, scaf, outdir, scratch, i, sif, tmp_js){
+    system(paste0('/vol/apptainer/bin/apptainer run --cleanenv --fakeroot --overlay ', scratch, ' --bind ', scratch, '/tmp:/tmp,', scratch, ' --env PYTHONNOUSERSITE=1 ', sif, ' cactus-hal2maf ', tmp_js, '/js_', i, ' --restart ', hal, ' ', outdir, '/maf_', i, '.maf --refGenome Lyrurus_tetrix --refSequence ', scaf, ' --dupeMode single --filterGapCausingDupes --chunkSize 1000000 --noAncestors'))
+}
+
+for (i in 1:30){
+  hal_to_maf_per_scaf(hal = hal,
+  scaf = scafs$scaf[i],
+  outdir = output_dir,
+  scratch = scratch,
+  sif = sif,
+  i = i,
+  tmp_js = tmp_js)
+}
+
+```
+
+Lastly, the final phylogenetic tree has to be recalculated according to the updated tree, and the branch lengths have to be calculated in substitutions/site (rather than million years ago). This analysis can be found on github and will not be included here as it contains many small steps integrated with in a snakemake workflow.
+
+### Calculate GERP scores
+
+GERP scores were calculated per scaffold using snakemake using the following rule:
+
+``` {bash}
+rule call_gerp:
+    input:
+      maf = "output/cactus/maf_per_scaf/maf_{scaf}.maf",
+      tree = "output/tree_cactus_updated.txt"
+    output:
+      rates = "output/gerp/maf_{scaf}.maf.rates"
+    params:
+      refname = "Lyrurus_tetrix"
+    log: "logs/gerp_{scaf}.log"
+    shell:
+      """
+      gerpcol -t {input.tree} -f {input.maf} -e {params.refname} -j -z -x ".rates" &> {log}
+      """
+```
+
+### Overlap GERP scores with SNPs
+
+We are only interested in genomic locations where SNPs were found in our population. Therefore, we convert our VCF file and GERP files to bed format to overlap the SNPs with bedtools using the following commands (integrated in snakemake):
+
+``` {bash}
+rule vcf_to_bed:
+    input:
+        vcf = "output/ancestral/ltet_filtered_ann_aa.vcf.gz"
+    output:
+        bed = "output/ancestral/ltet_filtered_ann_aa.bed"
+    shell:
+        """
+        convert2bed -i vcf < {input.vcf} > {output.bed}
+
+rule gerp_to_bed:
+    input:
+        rates = "output/gerp/maf_per_scaf/biggest_30/maf_{nscaf}.maf.rates"
+    output:
+        bed = "output/gerp/beds/gerp_scaf_{nscaf}.bed"
+    params:
+        outdir = "output/gerp/beds"
+    log: "logs/gerp_to_bed_{nscaf}"
+    shell:
+        """
+        Rscript --vanilla scripts/6_snpeff_gerp/2_gerp/gerp_to_bed.R {input.rates} {output.bed} {params.outdir} &> {log}
+        """
+
+rule bed_overlap_snps:
+    input:
+        bed = "output/gerp/beds/gerp_scaf_{nscaf}.bed",
+        snps = "output/ancestral/ltet_filtered_ann_aa.bed"
+    output:
+        tsv = "output/gerp/beds/gerp_overlapSNP_scaf_{nscaf}.tsv.gz"
+    params:
+        tsv = "output/gerp/beds/gerp_overlapSNP_scaf_{nscaf}.tsv"    
+    shell:
+        """
+        bedtools intersect \
+        -a {input.bed} \
+        -b {input.snps} \
+        -wa -wb |
+        cut -f 6-10 --complement > {params.tsv}
+
+        gzip {params.tsv}
+        """
+```
+
+As these files are still very large, we loop over scaffolds within snakemake with an R script to count the number of mutations per individual per scaffold, both in homozygosity and heterozygosity using the following R formula (which is used for each scaffold separately and outputs a tsv file used for calculating mutation load in the next script).
+
+``` {r}
+
+calculate_gerp_load <- function(gerp_vcf, scafno){
+  ## metadata on filenames and ids
+  filenames <- fread("data/genomic/raw/metadata/idnames.fam")
+  ids <- fread("data/genomic/raw/metadata/file_list_all_bgi_clean.csv")
+  
+  #merge
+  idnames <- left_join(filenames[,c("V1")], ids[,c("loc", "id")], by = c("V1" = "loc"))
+  
+  file <- read_tsv(gerp_vcf, col_names = c("chr", "start", "pos", "neutral_rate_n", "rs_score", "ancestral", "derived", "qual", "info","format", idnames$id) )#rename columns
+  
+  # only get GT info, PL and DP are filtered by already anyway 
+  gt <- c(11:ncol(file))
+  select_n3 <- function(x){x = substr(x,1,3)}
+  file[gt] <- lapply(file[gt], select_n3)
+  
+  # replace genotype with RS value but separate per zygosity, do per ID
+  gerp_load <- list()
+  for( id in 11:ncol(file)){
+    subset_id <- file[,c(1:10, id)]
+    subset_id <- subset_id %>% mutate(gerp_cat = as.factor(case_when(
+        rs_score < 0 ~ "< 0", #changed
+        rs_score >= 0 & rs_score < 1 ~ "0-1",
+        rs_score >= 1 & rs_score < 2 ~ "1-2",
+        rs_score >= 2 & rs_score < 3 ~ "2-3",
+        rs_score >= 3 & rs_score < 4 ~ "3-4",
+        rs_score >= 4 ~ "4-5"
+    )))
+    gerp_load_id <- list()
+    for (i in c("< 0", "0-1", "1-2", "2-3", "3-4", "4-5")){#changed
+        cat_subset <- subset(subset_id, gerp_cat == i)
+        het_data <- subset(cat_subset, cat_subset[[11]] == "1/0" | cat_subset[[11]] == "0/1")
+        hom_data <- subset(cat_subset, cat_subset[[11]] == "1/1")
+        n_genotyped <- nrow(cat_subset) - nrow(subset(cat_subset, cat_subset[[11]] == "./."))
+        n_total <- nrow(cat_subset)
+        df <- data.frame(id = colnames(file[id]),
+                         gerp_cat = i,
+                         scafno = scafno,
+                         n_total = n_total,
+                         n_genotyped = n_genotyped,
+                         het_data = nrow(het_data),
+                         hom_data = nrow(hom_data))
+        
+        gerp_load_id[[i]] <- df
+        
+        }
+        gerp_load_id <- do.call(rbind.data.frame, gerp_load_id)
+        rownames(gerp_load_id) <- NULL
+    
+    gerp_load[[id]] <- gerp_load_id
+    }
+  gerp_load <- do.call(rbind.data.frame, gerp_load)
+
+    return(gerp_load)}
+```
+
+## Results
+
+We identified 413,489 mutations with a GERP score higher than or equal to 4:
+![GERP mutations](../plots/main/fig_1a.png)
+
+These mutations were used to calculate mutation load in the next script.

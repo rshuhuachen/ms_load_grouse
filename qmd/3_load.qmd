@@ -1,0 +1,215 @@
+---
+title: "Calculating mutation load"
+---
+
+## Introduction
+
+There are various types of load and in general, mutation load can be divided between potential and realized load. Realized load (also known as expressed load) only includes the deleterious mutations that are expressed in the individual (Bertorelle et al., 2022). Potential load (also known as inbreeding or masked load) is the fitness reduction due to deleterious mutations, of which not all are expressed on an individual level and therefore quantifies recessive deleterious mutations that could be expressed in future generations (Bertorelle et al., 2022).
+
+However, to be able to distinguish between realized and potential load, you need to know dominance coefficients, which we do not. Therefore, we focus on homozygous and heterozygous load instead, which consists of mutations in homo- and heterozygosity in an individual instead. The total load sums the number of mutations contributing to the load, where heterozygous mutations are counted ones (one per allele) and homozygous mutations twice (one per allele).
+
+From here on onwards, the majority of analyses are computed within R (instead of bash scripts/snakemake).
+
+## Mutation load (SnpEff)
+
+Here, we load in the .vcf file outputted by SnpSift with only high impact SnpEff mutations, add column names, include only the 29 largest autosomal scaffolds, exclude warning messages, convert the genotype columns into only 1/1, 1/0, 0/1, 0/0 and ./. values, calculate load per individual, and then merge the load estimates of all individuals together. 
+
+```{r}
+### load packages ###
+pacman::p_load(dplyr, data.table)
+
+### function to calculate load ###
+calculate_load_snpeff <- function(vcf, output_vcf, loadtype){
+  ## metadata on filenames and ids
+  filenames <- fread("data/genomic/raw/metadata/idnames.fam")
+  ids <- fread("data/genomic/raw/metadata/file_list_all_bgi_clean.csv")
+  
+  #merge
+  idnames <- left_join(filenames[,c("V1")], ids[,c("loc", "id")], by = c("V1" = "loc"))
+  
+  names(vcf) <- c(c("CHROM", "POS", "ID", "REF", "ALT", "QUAL", "FILTER", "INFO","FORMAT"), idnames$id)#rename columns
+
+  # only select 29 largest autosomal scaffolds
+  scaf <- fread("data/genomic/refgenome/30_largest.scafs.tsv")
+  scaf$scaf <- gsub(":", ";", scaf$scaf)
+  scaf$scaf <- gsub("\\.", "=", scaf$scaf)
+  scaf <- subset(scaf, scaf_no != 4)
+  
+  vcf <- subset(vcf, CHROM %in% scaf$scaf)
+  
+  # exclude warning messages
+  
+  vcf <- subset(vcf, !grepl("WARNING", INFO))
+  
+  # only get GT info, PL and DP are filtered by already anyway 
+  gt <- c(10:ncol(vcf))
+  select_n3 <- function(x){x = substr(x,1,3)}
+  vcf[gt] <- lapply(vcf[gt], select_n3)
+  
+  # calculate load
+  load <- list()
+  # loop over ids
+  for( id in 10:(ncol(vcf))){
+    # subset per id
+    subset_id <- vcf[,c(1:9, id)]
+    
+    # filter for snps in het and hom
+    het_data <- subset(subset_id, subset_id[[10]] == "1/0" | subset_id[[10]] == "0/1")
+    hom_data <- subset(subset_id, subset_id[[10]] == "1/1")
+    
+    # count amount of snps in het and hom
+    het_load_sum <- nrow(het_data)
+    hom_load_sum <- nrow(hom_data)
+    
+    # count no of snps successfully genotyped
+    n_genotyped <- nrow(subset_id) - nrow(subset(subset_id, subset_id[[10]] == "./."))
+    n_total <- nrow(subset_id)
+    
+    # collect data in df
+    df <- data.frame(id = colnames(vcf[id]),
+                     n_total = n_total,
+                     n_genotyped = n_genotyped,
+                     het_load = het_load_sum / n_genotyped,
+                     hom_load = hom_load_sum / n_genotyped,
+                     total_load = (het_load_sum*0.5 + hom_load_sum) / n_genotyped,
+                     loadtype = loadtype)
+    load[[id]] <- df
+  }
+  # convert list to df
+  load <- do.call(rbind.data.frame, load)
+  
+  if(output_vcf == TRUE){
+    out <- list(load = load, vcf = vcf)
+    return(out)
+  }
+  
+  if(output_vcf==FALSE){
+    return(load)}
+}
+
+##### load high impact mutations (filtered by snpsift) #####
+
+high <- read.table("data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_HIGH.vcf.gz")
+
+## calculate load 
+# in this function, we give the columns names, filter for only the largest 29 autosomal scaffolds and exclude annotations with warning messages
+
+high_load <- calculate_load_snpeff(high, output_vcf = TRUE, loadtype = "high")
+
+```
+
+## Mutation load (GERP)
+
+Here, we load in the .bed files that contain GERP scores from SNPs, filter for those with GERP values >= 4, add column names, convert the genotype columns into only 1/1, 1/0, 0/1, 0/0 and ./. values, calculate load per individual, and then merge the load estimates of all individuals together. Note this step is quite time-intensive as the .bed files are large in filesize!
+
+```{r}
+# load in all bed files with gerp scores that overlap a SNP
+gerp_snp_scafs <- list.files(path = "output/gerp/beds", pattern = "gerp_overlapSNP*", full.names = T)
+gerp_snp_scafs <- gerp_snp_scafs[-22] #empty, scaffold 29 has no SNPs with gerp scores
+
+gerp_snp <- data.frame()
+for (i in 1:length(gerp_snp_scafs)){
+  scaf <- read.table(gerp_snp_scafs[i])
+  scaf <- scaf %>% filter(V5 >= 4)
+  gerp_snp <- rbind(gerp_snp, scaf)
+}
+
+## function to calculate load
+
+calculate_load_gerp <- function(vcf, output_vcf, loadtype){
+  
+  ## metadata on filenames and ids
+  filenames <- fread("data/genomic/raw/metadata/idnames.fam")
+  ids <- fread("data/genomic/raw/metadata/file_list_all_bgi_clean.csv")
+  
+  #merge
+  idnames <- left_join(filenames[,c("V1")], ids[,c("loc", "id")], by = c("V1" = "loc"))
+  
+  names(vcf) <- c("chr", "start", "pos", "neutral_rate_n", "rs_score", "ancestral", "derived", "qual", "info","format", idnames$id) #rename columns
+  
+  # only get GT info, PL and DP are filtered by already anyway 
+  gt <- c(11:ncol(vcf))
+  select_n3 <- function(x){x = substr(x,1,3)}
+  vcf[gt] <- lapply(vcf[gt], select_n3)
+  
+  # calculate load
+  load <- list()
+  # loop over ids
+  for( id in 11:(ncol(vcf))){
+    # subset per id
+    subset_id <- vcf[,c(1:10, id)]
+    
+    # filter for snps in het and hom
+    het_data <- subset(subset_id, subset_id[[11]] == "1/0" | subset_id[[11]] == "0/1")
+    hom_data <- subset(subset_id, subset_id[[11]] == "1/1")
+    
+    # count amount of snps in het and hom
+    het_load_sum <- nrow(het_data)
+    hom_load_sum <- nrow(hom_data)
+    
+    # count no of snps successfully genotyped
+    n_genotyped <- nrow(subset_id) - nrow(subset(subset_id, subset_id[[11]] == "./."))
+    n_total <- nrow(subset_id)
+    
+    # collect data in df
+    df <- data.frame(id = colnames(vcf[id]),
+                     n_total = n_total,
+                     n_genotyped = n_genotyped,
+                     het_load = het_load_sum / n_genotyped,
+                     hom_load = hom_load_sum / n_genotyped,
+                     total_load = (het_load_sum*0.5 + hom_load_sum) / n_genotyped,
+                     loadtype = loadtype)
+    load[[id]] <- df
+  }
+  # convert list to df
+  load <- do.call(rbind.data.frame, load)
+  
+  if(output_vcf == TRUE){
+    out <- list(load = load, vcf = vcf)
+    return(out)
+  }
+  
+  if(output_vcf==FALSE){
+  return(load)}
+}
+
+## calculate load
+gerp_45 <- calculate_load_gerp(gerp_snp, output_vcf = TRUE, loadtype = "gerp45") 
+gerp <- gerp_45_load_check$vcf
+```
+
+### Combine loads
+
+Note: the analyses done above was also done for other mutation categories, e.g. low and moderate impact classes and GERP scores between 3-4. All load scores are then combined into a single file:
+
+```{r}
+load <- rbind(high_load$load[,c("id", "het_load", "hom_load", "total_load", "loadtype")] ,
+              moderate_load[,c("id", "het_load", "hom_load", "total_load", "loadtype")], 
+              low_load[,c("id", "het_load", "hom_load", "total_load", "loadtype")],
+              lof_load[,c("id", "het_load", "hom_load", "total_load", "loadtype")],
+              missense_load[,c("id", "het_load", "hom_load", "total_load", "loadtype")], 
+              gerp_34_load[,c("id", "het_load", "hom_load", "total_load", "loadtype")], 
+              gerp_45_load[,c("id", "het_load", "hom_load", "total_load", "loadtype")])
+
+save(load, file = "output/load/all_loads_combined_da_nosex_29scaf.RData")
+write.table(load, file = "output/load/all_loads_combined_da_nosex_29scaf.tsv", sep="\t", row.names = F)
+```
+
+We can then calculate the correlation between the two load estimates and test for lek effects on load.
+
+```{r, eval=TRUE}
+library(dplyr)
+load(file = "../output/load/all_loads_combined_da_nosex_29scaf.RData")
+
+cor.test(load$total_load[which(load$loadtype == "gerp45")], load$total_load[which(load$loadtype == "high")])
+
+### Test for lek effects ####
+load("../data/phenotypes/phenotypes_lifetime.RData")
+pheno_load <- left_join(pheno_wide, load, by = "id")
+
+summary(lm(total_load ~ site, data = subset(pheno_load, loadtype == "gerp45")))
+
+summary(lm(total_load ~ site, data = subset(pheno_load, loadtype == "high")))
+```
+
+
