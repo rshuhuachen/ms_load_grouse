@@ -4,7 +4,7 @@ title: "Random subsampling"
 
 ## Introduction
 
-Variation in the effects of mutation load among the various models presented could be attributed to variation in the effect sizes of the individual mutations, or alternatively due to the differences in the number of mutations that contribute to the mutation load estimate. Assuming that all mutations that are identified have negative fitness consequences to some extent, we can expect that a larger number of mutations explain more fitness variation. We tested for the effect of total load on LMS between GERP and SnpEff mutations and the four genomic regions by controlling for the number of mutations. 
+Variation in the effects of mutation load among the various models presented could be attributed to variation in the effect sizes of the individual mutations, or alternatively due to the differences in the number of mutations that contribute to the mutation load estimate. Assuming that all mutations that are identified have negative fitness consequences to some extent, we can expect that a larger number of mutations explain more fitness variation. We tested for the effect of total load on LMS between GERP and SnpEff mutations and the four genomic regions by controlling for the number of mutations.
 
 ## Methods
 
@@ -173,7 +173,6 @@ draws_gerp_exon <- random_draws(geno = gerp_exons_gt, n_draws = 5000, n_mutation
 save(draws_gerp_exon, file = "output/random_draws/exon_gerp.RData")
 ```
 
-
 ## Results
 
 We can then plot the results as histograms:
@@ -221,4 +220,4 @@ ggplot(draws_gerp, aes(x = beta)) +
 
 We can then repeat this for the other subsets, leading to the following plots:
 
-![Random subsets](../plots/sup/fig_random_draws.png)
+![Random subsets](../plots/sup/extended_3_random_draws.png)

@@ -54,7 +54,26 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -72,10 +91,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -143,7 +162,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Predicted deleterious mutations reveal the genomic mechanisms underlying fitness variation in a lekking bird</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Mutation load in black grouse</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -229,7 +248,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="introduction" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">4.1</span> Introduction</h2>
-<p>There are various types of load and in general, mutation load can be divided between potential and realized load. Realized load (also known as expressed load) only includes the deleterious mutations that are expressed in the individual (Bertorelle et al., 2022). Potential load (also known as inbreeding or masked load) is the fitness reduction due to deleterious mutations, of which not all are expressed on an individual level and therefore quantifies recessive deleterious mutations that could be expressed in future generations (Bertorelle et al., 2022).</p>
+<p>There are various types of load and in general, mutation load can be divided between potential and realized load. Realized load (also known as expressed load) only includes the deleterious mutations that are expressed in the individual <span class="citation" data-cites="bertorelleGeneticLoadGenomic2022">(<a href="references.html#ref-bertorelleGeneticLoadGenomic2022" role="doc-biblioref">Bertorelle et al. 2022</a>)</span>. Potential load (also known as inbreeding or masked load) is the fitness reduction due to deleterious mutations, of which not all are expressed on an individual level and therefore quantifies recessive deleterious mutations that could be expressed in future generations <span class="citation" data-cites="bertorelleGeneticLoadGenomic2022">(<a href="references.html#ref-bertorelleGeneticLoadGenomic2022" role="doc-biblioref">Bertorelle et al. 2022</a>)</span>.</p>
 <p>However, to be able to distinguish between realized and potential load, you need to know dominance coefficients, which we do not. Therefore, we focus on homozygous and heterozygous load instead, which consists of mutations in homo- and heterozygosity in an individual instead. The total load sums the number of mutations contributing to the load, where heterozygous mutations are counted ones (one per allele) and homozygous mutations twice (one per allele).</p>
 <p>From here on onwards, the majority of analyses are computed within R (instead of bash scripts/snakemake).</p>
 </section>
@@ -425,27 +444,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-<div class="cell-output cell-output-stderr">
-<pre><code>
-Attaching package: 'dplyr'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:stats':
-
-    filter, lag</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>The following objects are masked from 'package:base':
-
-    intersect, setdiff, setequal, union</code></pre>
-</div>
-<details>
-<summary>Code</summary>
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"../output/load/all_loads_combined_da_nosex_29scaf.RData"</span>)</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(load<span class="sc">$</span>total_load[<span class="fu">which</span>(load<span class="sc">$</span>loadtype <span class="sc">==</span> <span class="st">"gerp45"</span>)], load<span class="sc">$</span>total_load[<span class="fu">which</span>(load<span class="sc">$</span>loadtype <span class="sc">==</span> <span class="st">"high"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"../output/load/all_loads_combined_da_nosex_29scaf.RData"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">cor.test</span>(load<span class="sc">$</span>total_load[<span class="fu">which</span>(load<span class="sc">$</span>loadtype <span class="sc">==</span> <span class="st">"gerp45"</span>)], load<span class="sc">$</span>total_load[<span class="fu">which</span>(load<span class="sc">$</span>loadtype <span class="sc">==</span> <span class="st">"high"</span>)])</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -462,11 +464,11 @@ sample estimates:
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Test for lek effects ####</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"../data/phenotypes/phenotypes_lifetime.RData"</span>)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>pheno_load <span class="ot">&lt;-</span> <span class="fu">left_join</span>(pheno_wide, load, <span class="at">by =</span> <span class="st">"id"</span>)</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(total_load <span class="sc">~</span> site, <span class="at">data =</span> <span class="fu">subset</span>(pheno_load, loadtype <span class="sc">==</span> <span class="st">"gerp45"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="do">### Test for lek effects ####</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"../data/phenotypes/phenotypes_lifetime.RData"</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>pheno_load <span class="ot">&lt;-</span> <span class="fu">left_join</span>(pheno_wide, load, <span class="at">by =</span> <span class="st">"id"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(total_load <span class="sc">~</span> site, <span class="at">data =</span> <span class="fu">subset</span>(pheno_load, loadtype <span class="sc">==</span> <span class="st">"gerp45"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -494,7 +496,7 @@ F-statistic: 0.2955 on 4 and 185 DF,  p-value: 0.8807</code></pre>
 </div>
 <details>
 <summary>Code</summary>
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(total_load <span class="sc">~</span> site, <span class="at">data =</span> <span class="fu">subset</span>(pheno_load, loadtype <span class="sc">==</span> <span class="st">"high"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(<span class="fu">lm</span>(total_load <span class="sc">~</span> site, <span class="at">data =</span> <span class="fu">subset</span>(pheno_load, loadtype <span class="sc">==</span> <span class="st">"high"</span>)))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -523,6 +525,11 @@ F-statistic: 0.5289 on 4 and 185 DF,  p-value: 0.7146</code></pre>
 </div>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="ref-bertorelleGeneticLoadGenomic2022" class="csl-entry" role="listitem">
+Bertorelle, Giorgio, Francesca Raffini, Mirte Bosse, Chiara Bortoluzzi, Alessio Iannucci, Emiliano Trucchi, Hernán E. Morales, and Cock van Oosterhout. 2022. <span>“Genetic Load: Genomic Estimates and Applications in Non-Model Animals.”</span> <em>Nature Reviews Genetics</em> 23 (8): 492–503. <a href="https://doi.org/10.1038/s41576-022-00448-x">https://doi.org/10.1038/s41576-022-00448-x</a>.
+</div>
+</div>
 </section>
 </section>
 

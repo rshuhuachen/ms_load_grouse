@@ -4,11 +4,11 @@ title: "Load per genomic region"
 
 ## Introduction
 
-Both functional noncoding and protein-coding regions can be under selective constraint48,49.  However, the former include various regulatory elements such as promoters, enhancers and silencers, which play different roles in gene regulation and might therefore be expected to experience different strengths of purifying selection.  To investigate whether the fitness effects of deleterious mutations vary by genomic region, we classified each deleterious mutation according to whether it was located within a promoter, transcription start site, intron or exon. Then, we calculate total load based on these subsets and model their effects on LMS.
+Both functional noncoding and protein-coding regions can be under selective constraint48,49. However, the former include various regulatory elements such as promoters, enhancers and silencers, which play different roles in gene regulation and might therefore be expected to experience different strengths of purifying selection. To investigate whether the fitness effects of deleterious mutations vary by genomic region, we classified each deleterious mutation according to whether it was located within a promoter, transcription start site, intron or exon. Then, we calculate total load based on these subsets and model their effects on LMS.
 
 ### Genomic regions
 
-We use a combination of GenomicRanges and rtracklayer and other packages to divide up the genome annotation file into the four genomic regions. 
+We use a combination of GenomicRanges and rtracklayer and other packages to divide up the genome annotation file into the four genomic regions.
 
 #### Subset reference genome
 
@@ -43,7 +43,7 @@ export(exons_gene, "data/genomic/annotation/exons_gene.gff3")
 
 #### Annotate deleterious mutations
 
-Then, we load in all deleterious mutations for GERP and SnpEff separately and annotate the mutations according to the four regions. 
+Then, we load in all deleterious mutations for GERP and SnpEff separately and annotate the mutations according to the four regions.
 
 ```{r}
 ###### Annotate high impact and GERP mutations #####
@@ -136,7 +136,7 @@ gerp_all <- gerp_all %>% mutate(region_promoter = case_when(
 save(gerp_all, file = "output/load/gerp/gerp_annotated_region.RData")
 ```
 
-#### Calculate mutation load 
+#### Calculate mutation load
 
 These two files (gerp_all and snpeff_all) contain the SNP locations and additional binary columns whether the mutations was located in one of the 4 regions. We can use this file together with the files containing the genotypes to calculate mutation load based on the subsets of mutations only.
 
@@ -211,9 +211,9 @@ save(load_per_region, file = "output/load/all_loads_combined_da_nosex_29scaf_plu
 
 We then computed the exact same models as the total load models presented before with the following model structure:
 
-` LMS ~ scale(total_load) + core + (1|site) `
+`LMS ~ scale(total_load) + core + (1|site)`
 
-Where total load is not a measure taken from a subset of deleterious mutations located within a specific genomic region. 
+Where total load is not a measure taken from a subset of deleterious mutations located within a specific genomic region.
 
 ### Results
 
@@ -232,6 +232,4 @@ high <- read.csv("../output/models/intervals/regions_high.csv")
 high %>% kbl()
 ```
 
-
 These results indicate that regulatory regions, especially promoter regions (SnpEff) are very important!
-

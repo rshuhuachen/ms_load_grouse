@@ -72,10 +72,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -146,7 +146,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Predicted deleterious mutations reveal the genomic mechanisms underlying fitness variation in a lekking bird</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Mutation load in black grouse</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -207,8 +207,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#total-load" id="toc-total-load" class="nav-link" data-scroll-target="#total-load"><span class="header-section-number">5.2.1</span> Total load</a></li>
   <li><a href="#hom-and-het-load" id="toc-hom-and-het-load" class="nav-link" data-scroll-target="#hom-and-het-load"><span class="header-section-number">5.2.2</span> Hom and het load</a></li>
   <li><a href="#direct-and-indirect-effects" id="toc-direct-and-indirect-effects" class="nav-link" data-scroll-target="#direct-and-indirect-effects"><span class="header-section-number">5.2.3</span> Direct and indirect effects</a></li>
-  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">5.2.4</span> Results</a></li>
   </ul></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">5.3</span> Results</a></li>
   </ul>
 </nav>
     </div>
@@ -234,7 +234,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="introduction" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">5.1</span> Introduction</h2>
-<p>Now that we have mutation load (total, homozygous and heterozygous) load estimates for each individual, based on SnpEff and GERP, we can model their effects on lifetime mating success (LMS).</p>
+<p>Now that we have mutation load (total, homozygous and heterozygous) estimates for each individual, based on SnpEff and GERP, we can model their effects on lifetime mating success (LMS).</p>
 <p>Here, we build three sets of models:</p>
 <ol type="1">
 <li>The effect of total load on LMS</li>
@@ -247,7 +247,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <h2 data-number="5.2" class="anchored" data-anchor-id="methods"><span class="header-section-number">5.2</span> Methods</h2>
 <section id="total-load" class="level3" data-number="5.2.1">
 <h3 data-number="5.2.1" class="anchored" data-anchor-id="total-load"><span class="header-section-number">5.2.1</span> Total load</h3>
-<p>The general structure of the total load models is as follows: <code>LMS ~ scale(total_load) + core + (1|site)</code></p>
+<p>The general structure of the total load models is as follows:</p>
+<p><code>LMS ~ scale(total_load) + core + (1|site)</code></p>
 <p>This is what the script for each load type looks like:</p>
 <div class="cell">
 <details>
@@ -346,7 +347,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="hom-and-het-load" class="level3" data-number="5.2.2">
 <h3 data-number="5.2.2" class="anchored" data-anchor-id="hom-and-het-load"><span class="header-section-number">5.2.2</span> Hom and het load</h3>
-<p>The general structure of the homozygous and heterozygous load models is as follows: <code>LMS ~ scale(het_load) + scale(hom_load) + core + (1|site)</code></p>
+<p>The general structure of the homozygous and heterozygous load models is as follows:</p>
+<p><code>LMS ~ scale(het_load) + scale(hom_load) + core + (1|site)</code></p>
 <p>This is what the script for each load type looks like:</p>
 <div class="cell">
 <details>
@@ -420,6 +422,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="set-2-trait-load-on-ms" class="level4" data-number="5.2.3.2">
 <h4 data-number="5.2.3.2" class="anchored" data-anchor-id="set-2-trait-load-on-ms"><span class="header-section-number">5.2.3.2</span> Set 2: trait + load on MS</h4>
+<p>Then, for both approaches we run the following model:</p>
+<p><code>MS ~ scale(total_load) + scale(lyre) + scale(eyec) + scale(blue) + scale(dist) + scale(attend) + scale(fight) + age_cat + (1|year) + (1|site/id)</code></p>
 <div class="cell">
 <details>
 <summary>Code</summary>
@@ -578,8 +582,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section>
 </section>
-<section id="results" class="level3" data-number="5.2.4">
-<h3 data-number="5.2.4" class="anchored" data-anchor-id="results"><span class="header-section-number">5.2.4</span> Results</h3>
+</section>
+<section id="results" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="results"><span class="header-section-number">5.3</span> Results</h2>
 <p>We find significant effects of total GERP and total SnpEff load:</p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
@@ -733,14 +738,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>Here you can find the posterior distributions of model set 1 (load on traits) for GERP and SnpEff: <img src="../plots/main/fig_3_left_load_traits.png" class="img-fluid" alt="MS set 1 results GERP"></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../plots/sup/high_left_load_traits.png" class="img-fluid figure-img"></p>
+<p><img src="../plots/sup/extended_4_high_left_load_traits.png" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">MS set 1 results SnpEff</figcaption>
 </figure>
 </div>
 <p>And for model set 2 (traits on MS) for GERP and SnpEff: <img src="../plots/main/fig_3_right_traits_ams.png" class="img-fluid" alt="MS set 2 results GERP"></p>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure">
-<p><img src="../plots/sup/high_right_traits_ams.png" class="img-fluid figure-img"></p>
+<p><img src="../plots/sup/extended_4_high_right_traits_ams.png" class="img-fluid figure-img"></p>
 <figcaption class="figure-caption">MS set 2 results SnpEff</figcaption>
 </figure>
 </div>
@@ -1077,7 +1082,6 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 
 
-</section>
 </section>
 
 </main> <!-- /main -->
