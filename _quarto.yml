@@ -9,7 +9,7 @@ book:
   author: "Rebecca S. Chen"
   chapters:
     - index.qmd
-    - qmd/1_inbreeding.qmd
+    - qmd/1_snpeff.qmd
     - qmd/references.qmd
   navbar:
     search: true

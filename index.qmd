@@ -10,7 +10,7 @@ This webpage contains a summary of the workflow used in the manuscript "Predicte
 
 # Main goals
 
-In the current study, we used a long-term dataset to (i) quantify the fitness effects of homozygous and heterozygous individual genomic mutation loads; (ii) compare the fitness effects of deleterious mutations in coding versus noncoding regions; and (iii) unravel the behavioural and / or ornamental pathways through which deleterious mutations impact lifetime reproductive success. We used whole genome resequencing, phenotypic and fitness data of 190 male black grouse sampled annually across five study sites in Central Finland. 
+In the current study, we used a long-term dataset to (i) quantify the fitness effects of homozygous and heterozygous individual genomic mutation loads; (ii) compare the fitness effects of deleterious mutations in coding versus noncoding regions; and (iii) unravel the behavioural and / or ornamental pathways through which deleterious mutations impact lifetime reproductive success. We used whole genome resequencing, phenotypic and fitness data of 190 male black grouse sampled annually across five study sites in Central Finland.
 
 Mutation load can be defined as a statistic that summarizes the selection and dominance coefficients of deleterious mutations as a function of their frequencies in a population [@bertorelleGeneticLoadGenomic2022]. As we do not have selection and dominance coefficients of mutations in wild populations, we use a proxy for mutation load calculated as the number of deleterious mutations for a given individual.
 

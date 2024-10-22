@@ -1,3 +1,65 @@
 ---
 title: "GERP"
+format:
+  html:
+    code-fold: true
 ---
+
+## Introduction
+[GERP++](https://bio.tools/gerp) annotates a focal genome based on evolutionary conserveration, where regions in the genome that show higher conservation across multiple different species are expected to face higher selective constraint. The calculation of GERP scores, which indicate the reduction in the number of substitutions compared to neutral expectations, is done from a multi-species alignment file. Higher GERP scores indicate higher evolutionary constraint. First, we create this MAF file using Progressive Cactus, then we calculate GERP scores genome-wide, and select genomic positions with SNPs in our population. 
+
+## Methods
+
+### Creating the MAF
+
+We use the publicly available 363 avian genomes [multi-alignment file](https://cgl.gi.ucsc.edu/data/cactus/363-avian-2020.hal) as a starting point, and then reduce this file to exclude species of the Neoaves clade. All the GERP analyses were done using the [cactus container](https://quay.io/repository/comparative-genomics-toolkit/cactus).
+
+```{{bash}}
+### Remove subtrees that are not needed for ltet analysis
+
+#set cactus scratch directory
+CACTUS_SCRATCH=$(pwd)/scratch/
+
+# enter the container
+apptainer shell --cleanenv \
+  --fakeroot --overlay ${CACTUS_SCRATCH} \
+  --bind ${CACTUS_SCRATCH}/tmp:/tmp,$(pwd) \
+  --env PYTHONNOUSERSITE=1 \
+  docker:quay.io/comparative-genomics-toolkit/cactus:v2.5.1 
+
+# get stats on the original 363-avian multi-alignment file
+halStats data/genomic/intermediate/cactus/363-avian-2020.hal > output/cactus/stats_original_363_hal.txt
+
+# copy the original file to then edit it
+cp data/genomic/intermediate/cactus/363-avian-2020.hal data/genomic/intermediate/cactus/363-avian-reduced.hal
+
+# remove subtrees to exclude neoaves
+halRemoveSubtree data/genomic/intermediate/cactus/363-avian-reduced.hal birdAnc1
+halRemoveSubtree data/genomic/intermediate/cactus/363-avian-reduced.hal birdAnc57 
+halRemoveSubtree data/genomic/intermediate/cactus/363-avian-reduced.hal birdAnc69 
+halRemoveSubtree data/genomic/intermediate/cactus/363-avian-reduced.hal birdAnc318 #starts with Heliornis_fulica
+halRemoveSubtree data/genomic/intermediate/cactus/363-avian-reduced.hal birdAnc319 #starts with Psophia_crepitans
+halRemoveSubtree data/genomic/intermediate/cactus/363-avian-reduced.hal birdAnc320 #starts with Charadrius_vociferus
+halRemoveSubtree data/genomic/intermediate/cactus/363-avian-reduced.hal birdAnc321 #starts with Opisthocomus_hoazin
+halRemoveSubtree data/genomic/intermediate/cactus/363-avian-reduced.hal birdAnc322 #stars with birdAnc57, so the big chunk of passerines but also a 
+
+#some individual ancestral genomes left to exclude
+halRemoveGenome data/genomic/intermediate/cactus//363-avian-reduced.hal birdAnc322
+halRemoveGenome data/genomic/intermediate/cactus//363-avian-reduced.hal birdAnc1
+
+# get stats of our subset of genomes
+
+halStats data/genomic/intermediate/cactus/363-avian-reduced.hal > output/cactus/stats_reduced_363_hal.txt
+
+#extract the reduced file 
+halExtract data/genomic/intermediate/cactus/363-avian-reduced.hal data/genomic/intermediate/cactus/363-avian-reduced.hal 
+```
+
+Next, we add two genomes: *Lyrurs tetrix* and *Lagopus lecura*, using the `cactus prepare` function (2_cactus_prepare.txt). To add the *Lagopus lecura* genome to the hal file, the assembly needs to be downloaded from NCBI which can be found on NCBI: https://0-www-ncbi-nlm-nih-gov.brum.beds.ac.uk/datasets/genome/GCF_019238085.1/. This file should be placed under: `data/genomic/intermediate/cactus`. The two files `input_ltet.txt` and `input_lleu.txt` specify the names and file locations of the fasta files of both assemblies.
+
+The two files that get outputted by the cactus preparation step can then be run in sequence to add the new genomes to the phylogenetic tree (`3_cactus_update_lyrurus_steps.sh` and `4_cactus_update_lagopus_steps.sh`).
+
+For subsequent steps, the resulting hal file is converted to wiggle format (`5_hal_to_wiggle.R`) to investigate the coverage per scaffold, and in maf format per scaffold (`6_split_hal_per_scaf.R`) for both GERP++ and the neutral tree calculation. Note that we only focus on the 30 largest scaffolds of the black grouse genome which over \>95% of the genome.
+
+Lastly, the final phylogenetic tree has to be recalculated according to the updated tree, and the branch lengths have to be calculated in substitutions/site (rather than million years ago). The phylogenetic tree from the edited hal file can be found in `output/cactus/topology.tree` which can be generated with the halStats command. The `snakefile_neutraltree` is a snakemake file containing the workflow to estimate the updated branch lengths with the added genomes, and uses the R script `collapse_bed_coverage.R` as well as the `maffilter_templ.txt` file. The resulting updated phylogenetic tree can be found in `output/cactus/combined_windows.fa.treefile`.
+
