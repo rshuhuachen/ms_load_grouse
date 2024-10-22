@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -61,6 +95,9 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit"
   }
 }</script>
+
+<script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
 </head>
@@ -160,7 +197,18 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">6.1</span> Introduction</a>
+  <ul class="collapse">
+  <li><a href="#genomic-regions" id="toc-genomic-regions" class="nav-link" data-scroll-target="#genomic-regions"><span class="header-section-number">6.1.1</span> Genomic regions</a></li>
+  <li><a href="#modelling" id="toc-modelling" class="nav-link" data-scroll-target="#modelling"><span class="header-section-number">6.1.2</span> Modelling</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">6.1.3</span> Results</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -182,8 +230,395 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="introduction" class="level2" data-number="6.1">
+<h2 data-number="6.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">6.1</span> Introduction</h2>
+<p>Both functional noncoding and protein-coding regions can be under selective constraint48,49. However, the former include various regulatory elements such as promoters, enhancers and silencers, which play different roles in gene regulation and might therefore be expected to experience different strengths of purifying selection. To investigate whether the fitness effects of deleterious mutations vary by genomic region, we classified each deleterious mutation according to whether it was located within a promoter, transcription start site, intron or exon. Then, we calculate total load based on these subsets and model their effects on LMS.</p>
+<section id="genomic-regions" class="level3" data-number="6.1.1">
+<h3 data-number="6.1.1" class="anchored" data-anchor-id="genomic-regions"><span class="header-section-number">6.1.1</span> Genomic regions</h3>
+<p>We use a combination of GenomicRanges and rtracklayer and other packages to divide up the genome annotation file into the four genomic regions.</p>
+<section id="subset-reference-genome" class="level4" data-number="6.1.1.1">
+<h4 data-number="6.1.1.1" class="anchored" data-anchor-id="subset-reference-genome"><span class="header-section-number">6.1.1.1</span> Subset reference genome</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">#### Packages #####</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(BiocManager, rtracklayer, GenomicFeatures, BiocGenerics, data.table, dplyr, genomation, GenomicRanges, tibble)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="do">#### Genome data ####</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># first change scaffold names</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>gff_raw <span class="ot">&lt;-</span> <span class="fu">fread</span>(<span class="st">"data/genomic/annotation/PO2979_Lyrurus_tetrix_black_grouse.annotation.gff"</span>) </span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>gff_raw<span class="sc">$</span>V1 <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">";"</span>, <span class="st">"__"</span>, gff_raw<span class="sc">$</span>V1)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>gff_raw<span class="sc">$</span>V1 <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"="</span>, <span class="st">"_"</span>, gff_raw<span class="sc">$</span>V1)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">write.table</span>(gff_raw, <span class="at">file =</span> <span class="st">"data/genomic/PO2979_Lyrurus_tetrix_black_grouse.annotation_editedscafnames.gff"</span>, <span class="at">sep =</span> <span class="st">"</span><span class="sc">\t</span><span class="st">"</span>, <span class="at">col.names =</span> <span class="cn">FALSE</span>, <span class="at">quote=</span>F, <span class="at">row.names =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="co">#read in new file</span></span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>gff <span class="ot">&lt;-</span> <span class="fu">makeTxDbFromGFF</span>(<span class="st">"data/genomic/PO2979_Lyrurus_tetrix_black_grouse.annotation_editedscafnames.gff"</span>, <span class="at">format=</span><span class="st">"gff3"</span>, <span class="at">organism=</span><span class="st">"Lyrurus tetrix"</span>) </span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="do">## divide up between the 4 regions </span><span class="al">###</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>promoters <span class="ot">&lt;-</span> <span class="fu">promoters</span>(gff, <span class="at">upstream=</span><span class="dv">2000</span>, <span class="at">downstream=</span><span class="dv">200</span>, <span class="at">columns=</span><span class="fu">c</span>(<span class="st">"tx_name"</span>, <span class="st">"gene_id"</span>)) <span class="co"># From NIOO</span></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>TSS <span class="ot">&lt;-</span> <span class="fu">promoters</span>(gff, <span class="at">upstream=</span><span class="dv">300</span>, <span class="at">downstream=</span><span class="dv">50</span>, <span class="at">columns=</span><span class="fu">c</span>(<span class="st">"tx_name"</span>, <span class="st">"gene_id"</span>)) <span class="co"># TSS as in Laine et al., 2016. Nature Communications</span></span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>exons_gene <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">exonsBy</span>(gff, <span class="st">"gene"</span>)) <span class="co"># group exons by genes</span></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>introns <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">intronsByTranscript</span>(gff, <span class="at">use.names=</span><span class="cn">TRUE</span>))</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="do">### write out files</span></span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a><span class="fu">export</span>(promoters, <span class="st">"data/genomic/annotation/promoters.gff3"</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a><span class="fu">export</span>(TSS, <span class="st">"data/genomic/annotation/TSS.gff3"</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>introns<span class="sc">@</span>ranges<span class="sc">@</span>NAMES[<span class="fu">is.na</span>(introns<span class="sc">@</span>ranges<span class="sc">@</span>NAMES)]<span class="ot">&lt;-</span><span class="st">"Unknown"</span></span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a><span class="fu">export</span>(introns, <span class="st">"data/genomic/annotation/introns_transcripts.gff3"</span>)</span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a><span class="fu">export</span>(exons_gene, <span class="st">"data/genomic/annotation/exons_gene.gff3"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="annotate-deleterious-mutations" class="level4" data-number="6.1.1.2">
+<h4 data-number="6.1.1.2" class="anchored" data-anchor-id="annotate-deleterious-mutations"><span class="header-section-number">6.1.1.2</span> Annotate deleterious mutations</h4>
+<p>Then, we load in all deleterious mutations for GERP and SnpEff separately and annotate the mutations according to the four regions.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">###### Annotate high impact and GERP mutations #####</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="do">### annotate gene regions per SNP for high impact and gerp mutations </span><span class="al">###</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="do">### load data </span><span class="al">###</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/snpeff/snpeff_high.RData"</span>)</span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/gerp/gerp_over4.RData"</span>)</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="do">### change scaf names</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>snpeff<span class="sc">$</span>CHROM <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">";"</span>, <span class="st">"__"</span>, snpeff<span class="sc">$</span>CHROM)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>snpeff<span class="sc">$</span>CHROM <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"="</span>, <span class="st">"_"</span>, snpeff<span class="sc">$</span>CHROM)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>gerp<span class="sc">$</span>chr <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">";"</span>, <span class="st">"__"</span>, gerp<span class="sc">$</span>chr)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>gerp<span class="sc">$</span>chr <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"="</span>, <span class="st">"_"</span>, gerp<span class="sc">$</span>chr)</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="do">### remove genotypes: not necessary here</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>snpeff <span class="ot">&lt;-</span> snpeff[,<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>)]</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>gerp <span class="ot">&lt;-</span> gerp[,<span class="fu">c</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>)]</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a><span class="do">####### Gene regions ###########</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a><span class="do">### load annotation data</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>annotation_dir <span class="ot">&lt;-</span> <span class="st">"data/genomic/annotation"</span></span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>promoter<span class="ot">=</span><span class="fu">unique</span>(<span class="fu">gffToGRanges</span>(<span class="fu">paste0</span>(annotation_dir, <span class="st">"/promoters.gff3"</span>)))</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>TSS<span class="ot">=</span><span class="fu">unique</span>(<span class="fu">gffToGRanges</span>(<span class="fu">paste0</span>(annotation_dir, <span class="st">"/TSS.gff3"</span>)))</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>introns<span class="ot">=</span><span class="fu">unique</span>(<span class="fu">gffToGRanges</span>(<span class="fu">paste0</span>(annotation_dir, <span class="st">"/introns_transcripts.gff3"</span>)))</span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>exons_gene<span class="ot">=</span><span class="fu">unique</span>(<span class="fu">gffToGRanges</span>(<span class="fu">paste0</span>(annotation_dir, <span class="st">"/exons_gene.gff3"</span>)))</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a><span class="do">#### Annotate SNPeff regions ####</span></span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>snpeff<span class="sc">$</span>end <span class="ot">&lt;-</span> snpeff<span class="sc">$</span>POS</span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>snpeff<span class="sc">$</span>start <span class="ot">&lt;-</span> snpeff<span class="sc">$</span>POS</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>snpef_gr <span class="ot">&lt;-</span> <span class="fu">as</span>(snpeff, <span class="st">"GRanges"</span>)</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>snpef_promoter <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">subsetByOverlaps</span>(snpef_gr, promoter)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_column</span>(<span class="st">"region_promoter"</span> <span class="ot">=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">chr =</span> seqnames)<span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>snpef_TSS <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">subsetByOverlaps</span>(snpef_gr, TSS))<span class="sc">%&gt;%</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_column</span>(<span class="st">"region_tss"</span> <span class="ot">=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">chr =</span> seqnames)<span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>snpef_exons <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">subsetByOverlaps</span>(snpef_gr, exons_gene))<span class="sc">%&gt;%</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_column</span>(<span class="st">"region_exon"</span> <span class="ot">=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">chr =</span> seqnames)<span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>snpef_introns <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">subsetByOverlaps</span>(snpef_gr, introns))<span class="sc">%&gt;%</span></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_column</span>(<span class="st">"region_intron"</span> <span class="ot">=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">chr =</span> seqnames)<span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>snpef_all <span class="ot">&lt;-</span> <span class="fu">left_join</span>(snpeff, snpef_promoter[,<span class="fu">c</span>(<span class="st">"chr"</span>, <span class="st">"start"</span>, <span class="st">"region_promoter"</span>)], <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"CHROM"</span> <span class="ot">=</span> <span class="st">"chr"</span>, <span class="st">"start"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(snpef_TSS[,<span class="fu">c</span>(<span class="st">"chr"</span>, <span class="st">"start"</span>, <span class="st">"region_tss"</span>)], <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"CHROM"</span> <span class="ot">=</span> <span class="st">"chr"</span>, <span class="st">"start"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(snpef_exons[,<span class="fu">c</span>(<span class="st">"chr"</span>, <span class="st">"start"</span>, <span class="st">"region_exon"</span>)], <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"CHROM"</span> <span class="ot">=</span> <span class="st">"chr"</span>, <span class="st">"start"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(snpef_introns[,<span class="fu">c</span>(<span class="st">"chr"</span>, <span class="st">"start"</span>, <span class="st">"region_intron"</span>)], <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"CHROM"</span> <span class="ot">=</span> <span class="st">"chr"</span>, <span class="st">"start"</span>))</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="co"># correct promoters</span></span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>snpef_all <span class="ot">&lt;-</span> snpef_all <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">region_promoter =</span> <span class="fu">case_when</span>(</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>  region_tss <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> region_promoter <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  <span class="fu">is.na</span>(region_tss) <span class="sc">&amp;</span> region_promoter <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span></span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(snpef_all, <span class="at">file =</span> <span class="st">"output/load/snpeff/snpeff_high_annotated_region.RData"</span>)</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a><span class="do">#### Annotate gerp regions ####</span></span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>gerp<span class="sc">$</span>end <span class="ot">&lt;-</span> gerp<span class="sc">$</span>pos</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>gerp<span class="sc">$</span>start <span class="ot">&lt;-</span> gerp<span class="sc">$</span>pos</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>gerp_gr <span class="ot">&lt;-</span> <span class="fu">as</span>(gerp, <span class="st">"GRanges"</span>)</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>gerp_promoter <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">subsetByOverlaps</span>(gerp_gr, promoter)) <span class="sc">%&gt;%</span></span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_column</span>(<span class="st">"region_promoter"</span> <span class="ot">=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">chr =</span> seqnames)<span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>gerp_TSS <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">subsetByOverlaps</span>(gerp_gr, TSS))<span class="sc">%&gt;%</span></span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_column</span>(<span class="st">"region_tss"</span> <span class="ot">=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">chr =</span> seqnames)<span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>gerp_exons <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">subsetByOverlaps</span>(gerp_gr, exons_gene))<span class="sc">%&gt;%</span></span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_column</span>(<span class="st">"region_exon"</span> <span class="ot">=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">chr =</span> seqnames)<span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>gerp_introns <span class="ot">&lt;-</span> <span class="fu">as.data.frame</span>(<span class="fu">subsetByOverlaps</span>(gerp_gr, introns))<span class="sc">%&gt;%</span></span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>  <span class="fu">add_column</span>(<span class="st">"region_intron"</span> <span class="ot">=</span> <span class="dv">1</span>) <span class="sc">%&gt;%</span> dplyr<span class="sc">::</span><span class="fu">rename</span>(<span class="at">chr =</span> seqnames)<span class="sc">%&gt;%</span> <span class="fu">unique</span>()</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>gerp_all <span class="ot">&lt;-</span> <span class="fu">left_join</span>(gerp, gerp_promoter[,<span class="fu">c</span>(<span class="st">"chr"</span>, <span class="st">"start"</span>, <span class="st">"region_promoter"</span>)], <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"chr"</span> <span class="ot">=</span> <span class="st">"chr"</span>, <span class="st">"start"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>   <span class="fu">left_join</span>(gerp_TSS[,<span class="fu">c</span>(<span class="st">"chr"</span>, <span class="st">"start"</span>, <span class="st">"region_tss"</span>)], <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"chr"</span> <span class="ot">=</span> <span class="st">"chr"</span>, <span class="st">"start"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(gerp_exons[,<span class="fu">c</span>(<span class="st">"chr"</span>, <span class="st">"start"</span>, <span class="st">"region_exon"</span>)], <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"chr"</span> <span class="ot">=</span> <span class="st">"chr"</span>, <span class="st">"start"</span>))<span class="sc">%&gt;%</span></span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>  <span class="fu">left_join</span>(gerp_introns[,<span class="fu">c</span>(<span class="st">"chr"</span>, <span class="st">"start"</span>, <span class="st">"region_intron"</span>)], <span class="at">by =</span> <span class="fu">c</span>(<span class="st">"chr"</span> <span class="ot">=</span> <span class="st">"chr"</span>, <span class="st">"start"</span>))</span>
+<span id="cb2-81"><a href="#cb2-81" aria-hidden="true" tabindex="-1"></a> </span>
+<span id="cb2-82"><a href="#cb2-82" aria-hidden="true" tabindex="-1"></a><span class="co"># correct promoters</span></span>
+<span id="cb2-83"><a href="#cb2-83" aria-hidden="true" tabindex="-1"></a>gerp_all <span class="ot">&lt;-</span> gerp_all <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">region_promoter =</span> <span class="fu">case_when</span>(</span>
+<span id="cb2-84"><a href="#cb2-84" aria-hidden="true" tabindex="-1"></a>  region_tss <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> region_promoter <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="cn">NA</span>,</span>
+<span id="cb2-85"><a href="#cb2-85" aria-hidden="true" tabindex="-1"></a>  <span class="fu">is.na</span>(region_tss) <span class="sc">&amp;</span> region_promoter <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="dv">1</span></span>
+<span id="cb2-86"><a href="#cb2-86" aria-hidden="true" tabindex="-1"></a>))</span>
+<span id="cb2-87"><a href="#cb2-87" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-88"><a href="#cb2-88" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(gerp_all, <span class="at">file =</span> <span class="st">"output/load/gerp/gerp_annotated_region.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="calculate-mutation-load" class="level4" data-number="6.1.1.3">
+<h4 data-number="6.1.1.3" class="anchored" data-anchor-id="calculate-mutation-load"><span class="header-section-number">6.1.1.3</span> Calculate mutation load</h4>
+<p>These two files (gerp_all and snpeff_all) contain the SNP locations and additional binary columns whether the mutations was located in one of the 4 regions. We can use this file together with the files containing the genotypes to calculate mutation load based on the subsets of mutations only.</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="do">#### Calculate load per region #####</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># load annotated gerp data</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/gerp/gerp_annotated_region.RData"</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>gerp_all<span class="sc">$</span>chr <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"__"</span>, <span class="st">";"</span>, gerp_all<span class="sc">$</span>chr)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>gerp_all<span class="sc">$</span>chr <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"HRSCAF_"</span>, <span class="st">"HRSCAF="</span>, gerp_all<span class="sc">$</span>chr)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co"># load annotation</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/snpeff/snpeff_high_annotated_region.RData"</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>snpef_all<span class="sc">$</span>CHROM <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"__"</span>, <span class="st">";"</span>, snpef_all<span class="sc">$</span>CHROM)</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>snpef_all<span class="sc">$</span>CHROM <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"HRSCAF_"</span>, <span class="st">"HRSCAF="</span>, snpef_all<span class="sc">$</span>CHROM)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="do">## load functions to calculate load</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"scripts/7_calculate_load/function_calculate_load.R"</span>)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="do">#### calculate load per region as defined below </span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>regions <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"region_promoter"</span>, <span class="st">"region_tss"</span> ,<span class="st">"region_exon"</span>,<span class="st">"region_intron"</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a><span class="co">#load existing combined load file</span></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"output/load/all_loads_combined_da_nosex_29scaf.RData"</span>) <span class="co">#loads no sex chr only 29 scaf</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co"># load gt again to include genotypes</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/snpeff/snpeff_high.RData"</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/gerp/gerp_over4.RData"</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="co">#first gerp5</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>load_per_region <span class="ot">&lt;-</span> load</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (region <span class="cf">in</span> regions){</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  subset_locs <span class="ot">&lt;-</span> <span class="fu">subset</span>(gerp_all, gerp_all[,region] <span class="sc">==</span> <span class="dv">1</span>) <span class="co">#subset based on region name</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>  subset_locs<span class="sc">$</span>chr_pos <span class="ot">&lt;-</span> <span class="fu">paste0</span>(subset_locs<span class="sc">$</span>chr, <span class="st">"_"</span>, subset_locs<span class="sc">$</span>pos) <span class="co">#make a col for the snp position</span></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>  gerp<span class="sc">$</span>chr_pos <span class="ot">&lt;-</span> <span class="fu">paste0</span>(gerp<span class="sc">$</span>chr, <span class="st">"_"</span>, gerp<span class="sc">$</span>pos) <span class="co">#make a col for the snp position</span></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>  sub_genotypes <span class="ot">&lt;-</span> <span class="fu">subset</span>(gerp, chr_pos <span class="sc">%in%</span> subset_locs<span class="sc">$</span>chr_pos) <span class="co">#subset genotypes based on subset</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>  sub_genotypes<span class="sc">$</span>chr_pos <span class="ot">&lt;-</span> <span class="cn">NULL</span> <span class="co">#remove chr_pos again</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  loadtype <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"gerp45"</span>, <span class="fu">gsub</span>(<span class="st">"region"</span>, <span class="st">""</span>, region))</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>  load_sub <span class="ot">&lt;-</span> <span class="fu">calculate_load_gerp</span>(sub_genotypes, <span class="at">loadtype =</span> loadtype, <span class="at">output_vcf =</span> F) <span class="co">#calculate loads</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>  load_per_region <span class="ot">&lt;-</span> <span class="fu">rbind</span>(load_per_region, load_sub[,<span class="fu">c</span>(<span class="st">"id"</span>, <span class="st">"het_load"</span>, <span class="st">"hom_load"</span>, <span class="st">"total_load"</span>, <span class="st">"loadtype"</span>)])</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a><span class="co">#snpeff</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (region <span class="cf">in</span> regions){</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>  subset_locs <span class="ot">&lt;-</span> <span class="fu">subset</span>(snpef_all, snpef_all[,region] <span class="sc">==</span> <span class="dv">1</span>) <span class="co">#subset based on region name</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>  subset_locs<span class="sc">$</span>chr_pos <span class="ot">&lt;-</span> <span class="fu">paste0</span>(subset_locs<span class="sc">$</span>CHROM, <span class="st">"_"</span>, subset_locs<span class="sc">$</span>POS) <span class="co">#make a col for the snp position</span></span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>  snpeff<span class="sc">$</span>chr_pos <span class="ot">&lt;-</span> <span class="fu">paste0</span>(snpeff<span class="sc">$</span>CHROM, <span class="st">"_"</span>, snpeff<span class="sc">$</span>POS) <span class="co">#make a col for the snp position</span></span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>  sub_genotypes <span class="ot">&lt;-</span> <span class="fu">subset</span>(snpeff, chr_pos <span class="sc">%in%</span> subset_locs<span class="sc">$</span>chr_pos) <span class="co">#subset genotypes based on subset</span></span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>  sub_genotypes<span class="sc">$</span>chr_pos <span class="ot">&lt;-</span> <span class="cn">NULL</span> <span class="co">#remove chr_pos again</span></span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>  loadtype <span class="ot">=</span> <span class="fu">paste0</span>(<span class="st">"high"</span>, <span class="fu">gsub</span>(<span class="st">"region"</span>, <span class="st">""</span>, region))</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>  load_sub <span class="ot">&lt;-</span> <span class="fu">calculate_load_snpeff</span>(sub_genotypes, <span class="at">loadtype =</span> loadtype, <span class="at">output_vcf =</span> F) <span class="co">#calculate loads</span></span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>  load_per_region <span class="ot">&lt;-</span> <span class="fu">rbind</span>(load_per_region, load_sub[,<span class="fu">c</span>(<span class="st">"id"</span>, <span class="st">"het_load"</span>, <span class="st">"hom_load"</span>, <span class="st">"total_load"</span>, <span class="st">"loadtype"</span>)])</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(load_per_region, <span class="at">file =</span> <span class="st">"output/load/all_loads_combined_da_nosex_29scaf_plus_per_region.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="modelling" class="level3" data-number="6.1.2">
+<h3 data-number="6.1.2" class="anchored" data-anchor-id="modelling"><span class="header-section-number">6.1.2</span> Modelling</h3>
+<p>We then computed the exact same models as the total load models presented before with the following model structure:</p>
+<p><code>LMS ~ scale(total_load) + core + (1|site)</code></p>
+<p>Where total load is not a measure taken from a subset of deleterious mutations located within a specific genomic region.</p>
+</section>
+<section id="results" class="level3" data-number="6.1.3">
+<h3 data-number="6.1.3" class="anchored" data-anchor-id="results"><span class="header-section-number">6.1.3</span> Results</h3>
+<p>Below you find the posterior distributions:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../plots/main/fig_2c.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Results per genomic region GERP</figcaption>
+</figure>
+</div>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../plots/main/fig_2d.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Results per genomic region SnpEff</figcaption>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl); <span class="fu">library</span>(dplyr); <span class="fu">library</span>(kableExtra)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>gerp <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../output/models/intervals/regions_gerp45.csv"</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>gerp <span class="sc">%&gt;%</span> <span class="fu">kbl</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">parameter</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">outer_width</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">inner_width</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">point_est</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">ll</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">l</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">m</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">h</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">hh</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">region</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.26</td>
+<td style="text-align: right;">-0.23</td>
+<td style="text-align: right;">-0.18</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: left;">Promoter</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.35</td>
+<td style="text-align: right;">-0.32</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">-0.22</td>
+<td style="text-align: right;">-0.20</td>
+<td style="text-align: left;">TSS</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.37</td>
+<td style="text-align: right;">-0.35</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">-0.23</td>
+<td style="text-align: right;">-0.21</td>
+<td style="text-align: left;">Intron</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.23</td>
+<td style="text-align: right;">0.29</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: left;">Exon</td>
+</tr>
+</tbody>
+</table>
 
 
+</div>
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>high <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../output/models/intervals/regions_high.csv"</span>)</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>high <span class="sc">%&gt;%</span> <span class="fu">kbl</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">parameter</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">outer_width</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">inner_width</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">point_est</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">ll</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">l</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">m</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">h</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">hh</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">region</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.34</td>
+<td style="text-align: right;">-0.31</td>
+<td style="text-align: right;">-0.26</td>
+<td style="text-align: right;">-0.20</td>
+<td style="text-align: right;">-0.18</td>
+<td style="text-align: left;">Promoter</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: left;">TSS</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.15</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: left;">Intron</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.20</td>
+<td style="text-align: right;">-0.17</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: left;">Exon</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>These results indicate that regulatory regions, especially promoter regions (SnpEff) are very important!</p>
+
+
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

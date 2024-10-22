@@ -354,10 +354,10 @@ We find significant effects of total GERP and total SnpEff load:
 
 ![Total load results](../plots/main/fig_2a.png)
 
-```{r, eval=T}
+```{r, eval=T, message=F, warning=F}
 library(readxl); library(dplyr); library(kableExtra)
 totals <- read.csv("../output/models/intervals/total_gerp45_high.csv")
-totals %>% kbl() %>%  kable_classic_2() 
+totals %>% kbl() 
 ```
 
 We also find significant effects of both hom and het GERP and SnpEff load:
@@ -366,18 +366,20 @@ We also find significant effects of both hom and het GERP and SnpEff load:
 
 ```{r, eval=T}
 homhet <- read.csv("../output/models/intervals/hom_het_gerp45_high.csv")
-homhet %>% kbl() %>%  kable_classic_2() 
+homhet %>% kbl() 
 ```
 
 Here you can find the posterior distributions of model set 1 (load on traits) for GERP and SnpEff:
-![MS set 1 results GERP](../plots/main/fig_3_left_load_traits.png, bg="white")
-![MS set 1 results SnpEff](../plots/sup/high_left_load_traits.png, bg="white")
+![MS set 1 results GERP](../plots/main/fig_3_left_load_traits.png)
+
+![MS set 1 results SnpEff](../plots/sup/high_left_load_traits.png)
 
 
 And for model set 2 (traits on MS) for GERP and SnpEff:
-![MS set 2 results GERP](../plots/main/fig_3_right_traits_ams.png, bg = "white")
+![MS set 2 results GERP](../plots/main/fig_3_right_traits_ams.png)
 
-![MS set 2 results SnpEff](../plots/sup/high_right_traits_ams, bg = "white")
+
+![MS set 2 results SnpEff](../plots/sup/high_right_traits_ams.png)
 
 We can check out the result of the direct and indirect effects as follows:
 

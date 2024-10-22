@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -61,6 +95,9 @@ ul.task-list li input[type="checkbox"] {
     "search-submit-button-title": "Submit"
   }
 }</script>
+
+<script src="../site_libs/kePrint-0.0.1/kePrint.js"></script>
+<link href="../site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
 
 
 </head>
@@ -160,7 +197,20 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">5.1</span> Introduction</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">5.2</span> Methods</a>
+  <ul class="collapse">
+  <li><a href="#total-load" id="toc-total-load" class="nav-link" data-scroll-target="#total-load"><span class="header-section-number">5.2.1</span> Total load</a></li>
+  <li><a href="#hom-and-het-load" id="toc-hom-and-het-load" class="nav-link" data-scroll-target="#hom-and-het-load"><span class="header-section-number">5.2.2</span> Hom and het load</a></li>
+  <li><a href="#direct-and-indirect-effects" id="toc-direct-and-indirect-effects" class="nav-link" data-scroll-target="#direct-and-indirect-effects"><span class="header-section-number">5.2.3</span> Direct and indirect effects</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">5.2.4</span> Results</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -182,8 +232,853 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="introduction" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">5.1</span> Introduction</h2>
+<p>Now that we have mutation load (total, homozygous and heterozygous) load estimates for each individual, based on SnpEff and GERP, we can model their effects on lifetime mating success (LMS).</p>
+<p>Here, we build three sets of models:</p>
+<ol type="1">
+<li>The effect of total load on LMS</li>
+<li>The effects of homo- and heterozygous load on LMS</li>
+<li>The direct and indirect effects of total load on mating success through the sexual traits</li>
+</ol>
+<p>We use Bayesian GLMMs using the R package ‘brms’ to compute these models</p>
+</section>
+<section id="methods" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="methods"><span class="header-section-number">5.2</span> Methods</h2>
+<section id="total-load" class="level3" data-number="5.2.1">
+<h3 data-number="5.2.1" class="anchored" data-anchor-id="total-load"><span class="header-section-number">5.2.1</span> Total load</h3>
+<p>The general structure of the total load models is as follows: <code>LMS ~ scale(total_load) + core + (1|site)</code></p>
+<p>This is what the script for each load type looks like:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load pheno data lifetime</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/pheno_loads_lifetime.RData"</span>)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># load mutation load measures</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"output/load/all_loads_combined_da_nosex_29scaf_plus_per_region.RData"</span>) <span class="co">#loads no sex chr only 30 scaf</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># subset only the relevant method/loadtype</span></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>load <span class="ot">&lt;-</span> load_per_region <span class="sc">%&gt;%</span> <span class="fu">filter</span>(loadtype <span class="sc">==</span> method)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="co"># combine</span></span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>pheno_wide_load <span class="ot">&lt;-</span> <span class="fu">left_join</span>(pheno_wide, load, <span class="at">by =</span> <span class="st">"id"</span>)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>pheno_wide_load <span class="ot">&lt;-</span> <span class="fu">subset</span>(pheno_wide_load, <span class="sc">!</span><span class="fu">is.na</span>(total_load)) <span class="co">#some ids without genotypes, excluded for wgr</span></span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="do">#### model ####</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>brm_load_t <span class="ot">&lt;-</span> <span class="fu">brm</span>(LMS_min <span class="sc">~</span> <span class="fu">scale</span>(total_load) <span class="sc">+</span> core <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), <span class="at">data =</span> pheno_wide_load,</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">family =</span> <span class="st">"zero_inflated_poisson"</span>,</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cores =</span><span class="dv">8</span>, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.99</span>, <span class="at">max_treedepth =</span> <span class="dv">15</span>),</span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter =</span> iter, <span class="at">thin =</span> thin, <span class="at">warmup =</span> warm, <span class="at">seed =</span> <span class="dv">1908</span>)</span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(brm_load_t, <span class="at">file =</span> out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We can check out the performance of each model using the following loop:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>output_total <span class="ot">&lt;-</span> <span class="fu">list.files</span>(<span class="at">path =</span> <span class="st">"output/models/total_hom_het/"</span>,</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>                         <span class="at">pattern =</span> <span class="st">"lms*"</span>, <span class="at">full.names=</span>T)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>diagnose_summary <span class="ot">&lt;-</span> <span class="fu">list</span>()</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span><span class="fu">length</span>(output)){</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  <span class="co">#load fit</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">load</span>(<span class="at">file =</span> output[[i]])</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>  <span class="co">#get posteriors</span></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>  posterior <span class="ot">&lt;-</span> <span class="fu">as.array</span>(fit)</span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>  log_ps <span class="ot">&lt;-</span> <span class="fu">log_posterior</span>(fit)</span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>  nuts <span class="ot">&lt;-</span> <span class="fu">nuts_params</span>(fit) <span class="co">#divergence</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>  <span class="co">#get only beta and sd</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>  betas <span class="ot">&lt;-</span> <span class="fu">variables</span>(fit)[<span class="fu">grep</span>(<span class="st">"b_"</span>, <span class="fu">variables</span>(fit))]</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>  sd <span class="ot">&lt;-</span> <span class="fu">variables</span>(fit)[<span class="fu">grep</span>(<span class="st">"sd_"</span>, <span class="fu">variables</span>(fit))]</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>  <span class="co">#global patterns in divergence</span></span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>  diverge_beta <span class="ot">&lt;-</span> <span class="fu">mcmc_parcoord</span>(posterior, <span class="at">np =</span> nuts, <span class="at">pars=</span> betas)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  diverge_sd <span class="ot">&lt;-</span> <span class="fu">mcmc_parcoord</span>(posterior, <span class="at">np =</span> nuts, <span class="at">pars=</span> sd)</span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>  <span class="co">#identify collinearity between parameters</span></span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>  collin_beta <span class="ot">&lt;-</span> <span class="fu">mcmc_pairs</span>(posterior, <span class="at">np =</span> nuts, <span class="at">pars=</span> betas)</span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>  collin_sd <span class="ot">&lt;-</span> <span class="fu">mcmc_pairs</span>(posterior, <span class="at">np =</span> nuts, <span class="at">pars=</span> sd)</span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>  <span class="co">#traceplot</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>  trace_beta <span class="ot">&lt;-</span> <span class="fu">mcmc_trace</span>(posterior, <span class="at">pars =</span> betas, <span class="at">np =</span> nuts)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>  trace_sd <span class="ot">&lt;-</span> <span class="fu">mcmc_trace</span>(posterior, <span class="at">pars =</span> sd, <span class="at">np =</span> nuts)</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>  <span class="co">#rhat</span></span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>  rhat <span class="ot">&lt;-</span> <span class="fu">mcmc_rhat</span>(brms<span class="sc">::</span><span class="fu">rhat</span>(fit))</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="co">#effective sample size</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  neff <span class="ot">&lt;-</span> <span class="fu">mcmc_neff</span>(<span class="fu">neff_ratio</span>(fit))</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>  <span class="co">#autocorrelation</span></span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>  autocor_beta <span class="ot">&lt;-</span> <span class="fu">mcmc_acf</span>(posterior, <span class="at">pars =</span> betas)</span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  autocor_sd <span class="ot">&lt;-</span> <span class="fu">mcmc_acf</span>(posterior, <span class="at">pars=</span>sd)</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="co">#quick glance results</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  areas <span class="ot">&lt;-</span> <span class="fu">mcmc_areas</span>(fit, <span class="at">pars=</span>betas)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a>  <span class="co">#combine in list</span></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a>  diagnosis <span class="ot">&lt;-</span> <span class="fu">list</span>(<span class="at">diverge_beta =</span> diverge_beta, </span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a>                    <span class="at">diverge_sd =</span> diverge_sd, </span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a>                    <span class="at">collin_beta =</span> collin_beta, </span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>                    <span class="at">collin_sd =</span> collin_sd, </span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>                    <span class="at">trace_beta =</span> trace_beta, </span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>                    <span class="at">trace_sd =</span> trace_sd, </span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>                    <span class="at">rhat =</span> rhat, </span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>                    <span class="at">neff =</span> neff, </span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>                    <span class="at">autocor_beta =</span> autocor_beta, </span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>                    <span class="at">autocor_sd =</span> autocor_sd,</span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>                    <span class="at">areas =</span> areas)</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  modelname <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">".*/"</span>, <span class="st">""</span>, output[i]) </span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>  modelname <span class="ot">&lt;-</span> <span class="fu">sub</span>(<span class="st">".RData"</span>, <span class="st">""</span>, modelname)</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  <span class="co"># add to summary</span></span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  diagnose_summary[[modelname]] <span class="ot">&lt;-</span> diagnosis</span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>This is what these plots look like for total GERP load effects:</p>
+<p><a href="https://github.com/rshuhuachen/ms_load_grouse/blob/main/output/models/diagnosis/lms_total_gerp45.pdf">Diagnostics GERP total load model</a></p>
+</section>
+<section id="hom-and-het-load" class="level3" data-number="5.2.2">
+<h3 data-number="5.2.2" class="anchored" data-anchor-id="hom-and-het-load"><span class="header-section-number">5.2.2</span> Hom and het load</h3>
+<p>The general structure of the homozygous and heterozygous load models is as follows: <code>LMS ~ scale(het_load) + scale(hom_load) + core + (1|site)</code></p>
+<p>This is what the script for each load type looks like:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load pheno data lifetime</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/pheno_loads_lifetime.RData"</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co"># load mutation load measures</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"output/load/all_loads_combined_da_nosex_29scaf_plus_per_region.RData"</span>) <span class="co">#loads no sex chr only 30 scaf</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># subset only the relevant method/loadtype</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>load <span class="ot">&lt;-</span> load_per_region <span class="sc">%&gt;%</span> <span class="fu">filter</span>(loadtype <span class="sc">==</span> method)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># combine</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>pheno_wide_load <span class="ot">&lt;-</span> <span class="fu">left_join</span>(pheno_wide, load, <span class="at">by =</span> <span class="st">"id"</span>)</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>pheno_wide_load <span class="ot">&lt;-</span> <span class="fu">subset</span>(pheno_wide_load, <span class="sc">!</span><span class="fu">is.na</span>(total_load)) <span class="co">#some ids without genotypes, excluded for wgr</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="do">#### model ####</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>brm_load_het_hom <span class="ot">&lt;-</span> <span class="fu">brm</span>(LMS_min <span class="sc">~</span> <span class="fu">scale</span>(het_load) <span class="sc">+</span> <span class="fu">scale</span>(hom_load) <span class="sc">+</span> core <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), <span class="at">data =</span> pheno_wide_load,</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">family =</span> <span class="st">"zero_inflated_poisson"</span>,</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>                  <span class="at">cores =</span><span class="dv">8</span>, <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.99</span>, <span class="at">max_treedepth =</span> <span class="dv">15</span>),</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>                  <span class="at">iter =</span> iter, <span class="at">thin =</span> thin, <span class="at">warmup =</span> warm, <span class="at">seed =</span> <span class="dv">1908</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(brm_load_het_hom, <span class="at">file =</span> out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>The same diagnostics were applied to each model.</p>
+</section>
+<section id="direct-and-indirect-effects" class="level3" data-number="5.2.3">
+<h3 data-number="5.2.3" class="anchored" data-anchor-id="direct-and-indirect-effects"><span class="header-section-number">5.2.3</span> Direct and indirect effects</h3>
+<p>Next, we build models that are based on annual values. There are two sets of models: the first quantifies the effect of load on the six sexual traits (attendance, fighting rate, centrality, lyre size, blue chroma and red eye comb size) in six separate models. The second set analyses the effect of the six traits and load on annual mating success (MS).</p>
+<p>The direct effect is the effect of load on MS while correcting for all mediators. The indirect effect is calculated using a mediation analysis, where this effect is calculated as the product of the effect of the predictor (the total load) on the mediator (the sexual trait) and the effect of the mediator on the response variable (AMS).</p>
+<section id="set-1-load-on-traits" class="level4" data-number="5.2.3.1">
+<h4 data-number="5.2.3.1" class="anchored" data-anchor-id="set-1-load-on-traits"><span class="header-section-number">5.2.3.1</span> Set 1: load on traits</h4>
+<p>For each trait, we run this model:</p>
+<p><code>scale(trait) ~ scale(total_load) + age_cat + (1|year) + (1|site/id)</code></p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">### load data </span><span class="al">###</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"data/phenotypes/phenotypes_annual.RData"</span>)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co"># load mutation load measures</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"output/load/all_loads_combined_da_nosex_29scaf_plus_per_region.RData"</span>) <span class="co">#loads no sex chr only 30 scaf</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="co"># subset only the relevant method/loadtype</span></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a>load <span class="ot">&lt;-</span> load_per_region <span class="sc">%&gt;%</span> <span class="fu">filter</span>(loadtype <span class="sc">==</span> method)</span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># merge files</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>pheno <span class="ot">&lt;-</span> <span class="fu">left_join</span>(pheno_long, load, <span class="at">by =</span> <span class="st">"id"</span>)</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>pheno<span class="sc">$</span>born <span class="ot">&lt;-</span> pheno<span class="sc">$</span>year <span class="sc">-</span> pheno<span class="sc">$</span>age</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>pheno <span class="ot">&lt;-</span> pheno <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">age_cat =</span> <span class="fu">as.factor</span>(<span class="fu">case_when</span>(age <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"yearling"</span>, age <span class="sc">&gt;</span> <span class="dv">1</span>  <span class="sc">~</span> <span class="st">"adult"</span>)))</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="do">### modelling ####</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">&lt;-</span> <span class="fu">formula</span>(<span class="fu">paste0</span>(<span class="st">"scale("</span>, response, <span class="st">") ~ scale(total_load) + age_cat + (1|year) + (1|site/id)"</span>))</span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(formula,</span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>            <span class="at">family =</span> <span class="st">"gaussian"</span>,</span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> pheno, </span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>           <span class="at">cores =</span><span class="dv">8</span>,</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.99</span>, <span class="at">max_treedepth =</span> <span class="dv">15</span>),</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>           <span class="at">iter =</span> iterations, </span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">thin =</span> thin, <span class="at">warmup =</span> burn)</span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(fit, <span class="at">file =</span> out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="set-2-trait-load-on-ms" class="level4" data-number="5.2.3.2">
+<h4 data-number="5.2.3.2" class="anchored" data-anchor-id="set-2-trait-load-on-ms"><span class="header-section-number">5.2.3.2</span> Set 2: trait + load on MS</h4>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="do">### load data </span><span class="al">###</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"data/phenotypes/phenotypes_annual.RData"</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="co"># load mutation load measures</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"output/load/all_loads_combined_da_nosex_29scaf_plus_per_region.RData"</span>) <span class="co">#loads no sex chr only 30 scaf</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="co"># subset only the relevant method/loadtype</span></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>load <span class="ot">&lt;-</span> load_per_region <span class="sc">%&gt;%</span> <span class="fu">filter</span>(loadtype <span class="sc">==</span> method)</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co"># merge files</span></span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>pheno <span class="ot">&lt;-</span> <span class="fu">left_join</span>(pheno_long, load, <span class="at">by =</span> <span class="st">"id"</span>)</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>pheno<span class="sc">$</span>born <span class="ot">&lt;-</span> pheno<span class="sc">$</span>year <span class="sc">-</span> pheno<span class="sc">$</span>age</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>pheno <span class="ot">&lt;-</span> pheno <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">age_cat =</span> <span class="fu">as.factor</span>(<span class="fu">case_when</span>(age <span class="sc">==</span> <span class="dv">1</span> <span class="sc">~</span> <span class="st">"yearling"</span>, age <span class="sc">&gt;</span> <span class="dv">1</span>  <span class="sc">~</span> <span class="st">"adult"</span>)))</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="do">### modelling ####</span></span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>formula <span class="ot">&lt;-</span> <span class="fu">formula</span>(<span class="st">"MS ~ scale(total_load) + scale(lyre) + scale(eyec) + scale(blue) + scale(dist) + scale(attend) + scale(fight) + age_cat + (1|year) + (1|site/id)"</span>)</span>
+<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a>fit <span class="ot">&lt;-</span> <span class="fu">brm</span>(formula,</span>
+<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a>           <span class="at">family =</span> <span class="st">"zero_inflated_poisson"</span>,</span>
+<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>           <span class="at">data =</span> pheno, </span>
+<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>           <span class="at">cores =</span><span class="dv">8</span>,</span>
+<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>           <span class="at">control =</span> <span class="fu">list</span>(<span class="at">adapt_delta =</span> <span class="fl">0.99</span>, <span class="at">max_treedepth =</span> <span class="dv">15</span>),</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>           <span class="at">prior =</span> <span class="fu">prior</span>(<span class="fu">normal</span>(<span class="dv">0</span>,<span class="dv">1</span>), <span class="at">class =</span> b),</span>
+<span id="cb5-26"><a href="#cb5-26" aria-hidden="true" tabindex="-1"></a>           <span class="at">iter =</span> iterations, </span>
+<span id="cb5-27"><a href="#cb5-27" aria-hidden="true" tabindex="-1"></a>           <span class="at">thin =</span> thin, <span class="at">warmup =</span> burn)</span>
+<span id="cb5-28"><a href="#cb5-28" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-29"><a href="#cb5-29" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(fit, <span class="at">file =</span> out)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="direct-indirect-effects" class="level4" data-number="5.2.3.3">
+<h4 data-number="5.2.3.3" class="anchored" data-anchor-id="direct-indirect-effects"><span class="header-section-number">5.2.3.3</span> Direct / indirect effects</h4>
+<p>The direct/indirect effects are then calculated after loading in all model outputs:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="do">### load packages ####</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(brms, bayesplot, dplyr, data.table)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a><span class="do">### load models </span><span class="al">###</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a><span class="do">#### gerp ####</span></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_attend_gerp45.RData"</span>)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>fit_gerp_attend <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_fight_gerp45.RData"</span>)</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>fit_gerp_fight <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_dist_gerp45.RData"</span>)</span>
+<span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a>fit_gerp_dist <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_eyec_gerp45.RData"</span>)</span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a>fit_gerp_eyec <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_blue_gerp45.RData"</span>)</span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a>fit_gerp_blue <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_lyre_gerp45.RData"</span>)</span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a>fit_gerp_lyre <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/ams/model_trait_ams_gerp45.RData"</span>)</span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a>fit_gerp_ams <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(fit)</span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="do">### snpeff </span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_attend_high.RData"</span>)</span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a>fit_high_attend <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_fight_high.RData"</span>)</span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>fit_high_fight <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_dist_high.RData"</span>)</span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>fit_high_dist <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_eyec_high.RData"</span>)</span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a>fit_high_eyec <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_blue_high.RData"</span>)</span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a>fit_high_blue <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/traits/model_lyre_high.RData"</span>)</span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a>fit_high_lyre <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/models/annual/ams/model_trait_ams_high.RData"</span>)</span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a>fit_high_ams <span class="ot">&lt;-</span> fit</span>
+<span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="fu">rm</span>(fit)</span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="do">### indirect effects loop #####</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a>get_indirect <span class="ot">&lt;-</span> <span class="cf">function</span>(mediator, method, trait_model, ams_model){</span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a>  treatment <span class="ot">=</span> <span class="st">"b_scaletotal_load"</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>  path1 <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(trait_model, <span class="at">variable =</span>treatment)</span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>  path1 <span class="ot">&lt;-</span> path1<span class="sc">$</span>b_scaletotal_load</span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>  path2 <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(ams_model, <span class="at">variable =</span> mediator)</span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>  path2 <span class="ot">&lt;-</span> <span class="fu">unlist</span>(<span class="fu">c</span>(path2[,<span class="dv">1</span>]))</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a>  indirect <span class="ot">&lt;-</span> path1<span class="sc">*</span>path2</span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a>  direct <span class="ot">&lt;-</span> <span class="fu">as_draws_df</span>(ams_model, <span class="at">variable =</span>treatment)</span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a>  direct <span class="ot">&lt;-</span> direct<span class="sc">$</span>b_scaletotal_load</span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a>  total <span class="ot">&lt;-</span> indirect <span class="sc">+</span> direct</span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a>  effect_attend <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">treatment =</span> treatment,</span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a>                              <span class="at">mediator =</span> mediator,</span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a>                              <span class="at">method =</span> method,</span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a>                              <span class="at">indirect_median =</span> <span class="fu">round</span>(<span class="fu">median</span>(indirect), <span class="dv">2</span>),</span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a>                              <span class="at">indirect_lower =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(indirect, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">025</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a>                              <span class="at">indirect_upper =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(indirect, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">975</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a>                              <span class="at">direct_median =</span> <span class="fu">round</span>(<span class="fu">median</span>(direct), <span class="dv">2</span>),</span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a>                              <span class="at">direct_lower =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(direct, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">025</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a>                              <span class="at">direct_upper =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(direct, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">975</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a>                              <span class="at">total_median =</span> <span class="fu">round</span>(<span class="fu">median</span>(total), <span class="dv">2</span>),</span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a>                              <span class="at">total_lower =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(total, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">025</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a>                              <span class="at">total_upper =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(total, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">975</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a>                              <span class="at">path1_median =</span> <span class="fu">round</span>(<span class="fu">median</span>(path1), <span class="dv">2</span>),</span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a>                              <span class="at">path1_lower =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(path1, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">025</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a>                              <span class="at">path1_upper =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(path1, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">975</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a>                              <span class="at">path2_median =</span> <span class="fu">round</span>(<span class="fu">median</span>(path2), <span class="dv">2</span>),</span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a>                              <span class="at">path2_lower =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(path2, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">025</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>                              <span class="at">path2_upper =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(path2, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">975</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a>                              <span class="at">indirect_lower_80 =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(indirect, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">1</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a>                              <span class="at">indirect_upper_80 =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(indirect, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">9</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a>                              <span class="at">direct_lower_80 =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(direct, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">1</span>)), <span class="dv">2</span>),</span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a>                              <span class="at">direct_upper_80 =</span> <span class="fu">round</span>(<span class="fu">quantile</span>(direct, <span class="at">probs =</span> <span class="fu">c</span>(.<span class="dv">9</span>)), <span class="dv">2</span>))</span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(effect_attend)</span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>effects <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="fu">rbind</span>(<span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scalelyre"</span>, <span class="at">method =</span> <span class="st">"gerp45"</span>, </span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_gerp_lyre, <span class="at">ams_model =</span> fit_gerp_ams),</span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scaleeyec"</span>,  <span class="at">method =</span> <span class="st">"gerp45"</span>, </span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_gerp_eyec, <span class="at">ams_model =</span> fit_gerp_ams),</span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scaleblue"</span>,  <span class="at">method =</span> <span class="st">"gerp45"</span>, </span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_gerp_blue, <span class="at">ams_model =</span> fit_gerp_ams),</span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scaleattend"</span>,  <span class="at">method =</span> <span class="st">"gerp45"</span>, </span>
+<span id="cb6-94"><a href="#cb6-94" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_gerp_attend, <span class="at">ams_model =</span> fit_gerp_ams),</span>
+<span id="cb6-95"><a href="#cb6-95" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scalefight"</span>,  <span class="at">method =</span> <span class="st">"gerp45"</span>, </span>
+<span id="cb6-96"><a href="#cb6-96" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_gerp_fight, <span class="at">ams_model =</span> fit_gerp_ams),</span>
+<span id="cb6-97"><a href="#cb6-97" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scaledist"</span>,  <span class="at">method =</span> <span class="st">"gerp45"</span>, </span>
+<span id="cb6-98"><a href="#cb6-98" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_gerp_dist, <span class="at">ams_model =</span> fit_gerp_ams),</span>
+<span id="cb6-99"><a href="#cb6-99" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scalelyre"</span>, <span class="at">method =</span> <span class="st">"high"</span>, </span>
+<span id="cb6-100"><a href="#cb6-100" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_high_lyre, <span class="at">ams_model =</span> fit_high_ams),</span>
+<span id="cb6-101"><a href="#cb6-101" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scaleeyec"</span>,  <span class="at">method =</span> <span class="st">"high"</span>, </span>
+<span id="cb6-102"><a href="#cb6-102" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_high_eyec, <span class="at">ams_model =</span> fit_high_ams),</span>
+<span id="cb6-103"><a href="#cb6-103" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scaleblue"</span>,  <span class="at">method =</span> <span class="st">"high"</span>, </span>
+<span id="cb6-104"><a href="#cb6-104" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_high_blue, <span class="at">ams_model =</span> fit_high_ams),</span>
+<span id="cb6-105"><a href="#cb6-105" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scaleattend"</span>,  <span class="at">method =</span> <span class="st">"high"</span>, </span>
+<span id="cb6-106"><a href="#cb6-106" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_high_attend, <span class="at">ams_model =</span> fit_high_ams),</span>
+<span id="cb6-107"><a href="#cb6-107" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scalefight"</span>,  <span class="at">method =</span> <span class="st">"high"</span>, </span>
+<span id="cb6-108"><a href="#cb6-108" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_high_fight, <span class="at">ams_model =</span> fit_high_ams),</span>
+<span id="cb6-109"><a href="#cb6-109" aria-hidden="true" tabindex="-1"></a>                            <span class="fu">get_indirect</span>(<span class="at">mediator=</span><span class="st">"b_scaledist"</span>,  <span class="at">method =</span> <span class="st">"high"</span>, </span>
+<span id="cb6-110"><a href="#cb6-110" aria-hidden="true" tabindex="-1"></a>                                         <span class="at">trait_model=</span>fit_high_dist, <span class="at">ams_model =</span> fit_high_ams)))</span>
+<span id="cb6-111"><a href="#cb6-111" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-112"><a href="#cb6-112" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-113"><a href="#cb6-113" aria-hidden="true" tabindex="-1"></a><span class="fu">write.csv</span>(effects, <span class="at">file =</span> <span class="st">"output/models/annual/direct_indirect_summary.csv"</span>, <span class="at">quote=</span>F, <span class="at">row.names =</span> F)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+</section>
+<section id="results" class="level3" data-number="5.2.4">
+<h3 data-number="5.2.4" class="anchored" data-anchor-id="results"><span class="header-section-number">5.2.4</span> Results</h3>
+<p>We find significant effects of total GERP and total SnpEff load:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../plots/main/fig_2a.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Total load results</figcaption>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(readxl); <span class="fu">library</span>(dplyr); <span class="fu">library</span>(kableExtra)</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>totals <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../output/models/intervals/total_gerp45_high.csv"</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>totals <span class="sc">%&gt;%</span> <span class="fu">kbl</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">parameter</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">outer_width</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">inner_width</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">point_est</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">ll</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">l</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">m</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">h</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">hh</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">model</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">-0.25</td>
+<td style="text-align: right;">-0.21</td>
+<td style="text-align: right;">-0.17</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: left;">GERP</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.18</td>
+<td style="text-align: right;">-0.16</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: left;">SnpEff</td>
+</tr>
+</tbody>
+</table>
 
 
+</div>
+</div>
+<p>We also find significant effects of both hom and het GERP and SnpEff load:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../plots/main/fig_2b.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Hom het load results</figcaption>
+</figure>
+</div>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>homhet <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../output/models/intervals/hom_het_gerp45_high.csv"</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>homhet <span class="sc">%&gt;%</span> <span class="fu">kbl</span>() </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<table data-quarto-postprocess="true" class="table table-sm table-striped small">
+<thead>
+<tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">parameter</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">outer_width</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">inner_width</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">point_est</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">ll</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">l</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">m</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">h</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">hh</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">model</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">loadtype</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">b_scalehom_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.76</td>
+<td style="text-align: right;">-0.70</td>
+<td style="text-align: right;">-0.57</td>
+<td style="text-align: right;">-0.45</td>
+<td style="text-align: right;">-0.39</td>
+<td style="text-align: left;">Hom</td>
+<td style="text-align: left;">GERP</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scalehet_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.78</td>
+<td style="text-align: right;">-0.72</td>
+<td style="text-align: right;">-0.60</td>
+<td style="text-align: right;">-0.48</td>
+<td style="text-align: right;">-0.41</td>
+<td style="text-align: left;">Het</td>
+<td style="text-align: left;">GERP</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b_scalehom_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.17</td>
+<td style="text-align: right;">-0.15</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: left;">Hom</td>
+<td style="text-align: left;">SnpEff</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scalehet_load</td>
+<td style="text-align: right;">0.95</td>
+<td style="text-align: right;">0.8</td>
+<td style="text-align: left;">median</td>
+<td style="text-align: right;">-0.24</td>
+<td style="text-align: right;">-0.21</td>
+<td style="text-align: right;">-0.15</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: left;">Het</td>
+<td style="text-align: left;">SnpEff</td>
+</tr>
+</tbody>
+</table>
+
+
+</div>
+</div>
+<p>Here you can find the posterior distributions of model set 1 (load on traits) for GERP and SnpEff: <img src="../plots/main/fig_3_left_load_traits.png" class="img-fluid" alt="MS set 1 results GERP"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../plots/sup/high_left_load_traits.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">MS set 1 results SnpEff</figcaption>
+</figure>
+</div>
+<p>And for model set 2 (traits on MS) for GERP and SnpEff: <img src="../plots/main/fig_3_right_traits_ams.png" class="img-fluid" alt="MS set 2 results GERP"></p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../plots/sup/high_right_traits_ams.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">MS set 2 results SnpEff</figcaption>
+</figure>
+</div>
+<p>We can check out the result of the direct and indirect effects as follows:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>effects <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"../output/models/annual/direct_indirect_summary.csv"</span>)</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>effects <span class="sc">%&gt;%</span> <span class="fu">kbl</span>() <span class="sc">%&gt;%</span>  <span class="fu">kable_classic_2</span>() <span class="sc">%&gt;%</span> <span class="fu">scroll_box</span>(<span class="at">width =</span> <span class="st">"99%"</span>, <span class="at">height =</span> <span class="st">"200px"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+<div class="cell-output-display">
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:200px; overflow-x: scroll; width:99%; ">
+<table class="lightable-classic-2 table table-sm table-striped small" data-quarto-postprocess="true">
+<thead>
+<tr class="header">
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">treatment</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">mediator</th>
+<th data-quarto-table-cell-role="th" style="text-align: left; position: sticky; top: 0; background-color: #FFFFFF;">method</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">indirect_median</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">indirect_lower</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">indirect_upper</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">direct_median</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">direct_lower</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">direct_upper</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">total_median</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">total_lower</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">total_upper</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">path1_median</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">path1_lower</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">path1_upper</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">path2_median</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">path2_lower</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">path2_upper</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">indirect_lower_80</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">indirect_upper_80</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">direct_lower_80</th>
+<th data-quarto-table-cell-role="th" style="text-align: right; position: sticky; top: 0; background-color: #FFFFFF;">direct_upper_80</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scalelyre</td>
+<td style="text-align: left;">gerp45</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">-0.10</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.31</td>
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">0.69</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scaleeyec</td>
+<td style="text-align: left;">gerp45</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">0.13</td>
+<td style="text-align: right;">-0.21</td>
+<td style="text-align: right;">0.48</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scaleblue</td>
+<td style="text-align: left;">gerp45</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scaleattend</td>
+<td style="text-align: left;">gerp45</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.28</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-0.26</td>
+<td style="text-align: right;">-0.54</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.10</td>
+<td style="text-align: right;">-0.19</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">1.32</td>
+<td style="text-align: right;">0.71</td>
+<td style="text-align: right;">2.01</td>
+<td style="text-align: right;">-0.22</td>
+<td style="text-align: right;">-0.05</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scalefight</td>
+<td style="text-align: left;">gerp45</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">0.12</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">-0.33</td>
+<td style="text-align: right;">0.21</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scaledist</td>
+<td style="text-align: left;">gerp45</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">-0.13</td>
+<td style="text-align: right;">-0.36</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-0.15</td>
+<td style="text-align: right;">-0.41</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">-0.59</td>
+<td style="text-align: right;">-0.93</td>
+<td style="text-align: right;">-0.23</td>
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-0.29</td>
+<td style="text-align: right;">0.03</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scalelyre</td>
+<td style="text-align: left;">high</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">0.05</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">-0.09</td>
+<td style="text-align: right;">-0.37</td>
+<td style="text-align: right;">0.18</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">0.10</td>
+<td style="text-align: right;">0.33</td>
+<td style="text-align: right;">-0.08</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">0.03</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scaleeyec</td>
+<td style="text-align: left;">high</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">-0.10</td>
+<td style="text-align: right;">0.07</td>
+<td style="text-align: right;">0.14</td>
+<td style="text-align: right;">-0.21</td>
+<td style="text-align: right;">0.49</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scaleblue</td>
+<td style="text-align: left;">high</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">-0.39</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">-0.07</td>
+<td style="text-align: right;">-0.17</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">0.36</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scaleattend</td>
+<td style="text-align: left;">high</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">-0.16</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">-0.44</td>
+<td style="text-align: right;">0.15</td>
+<td style="text-align: right;">-0.03</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">0.06</td>
+<td style="text-align: right;">1.32</td>
+<td style="text-align: right;">0.72</td>
+<td style="text-align: right;">1.94</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">0.04</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scalefight</td>
+<td style="text-align: left;">high</td>
+<td style="text-align: right;">0.00</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">0.02</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">-0.10</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.17</td>
+<td style="text-align: right;">-0.02</td>
+<td style="text-align: right;">-0.12</td>
+<td style="text-align: right;">0.08</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">-0.32</td>
+<td style="text-align: right;">0.20</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">b_scaletotal_load</td>
+<td style="text-align: left;">b_scaledist</td>
+<td style="text-align: left;">high</td>
+<td style="text-align: right;">0.01</td>
+<td style="text-align: right;">-0.06</td>
+<td style="text-align: right;">0.09</td>
+<td style="text-align: right;">-0.11</td>
+<td style="text-align: right;">-0.38</td>
+<td style="text-align: right;">0.16</td>
+<td style="text-align: right;">-0.10</td>
+<td style="text-align: right;">-0.39</td>
+<td style="text-align: right;">0.17</td>
+<td style="text-align: right;">-0.01</td>
+<td style="text-align: right;">-0.14</td>
+<td style="text-align: right;">0.11</td>
+<td style="text-align: right;">-0.57</td>
+<td style="text-align: right;">-0.94</td>
+<td style="text-align: right;">-0.22</td>
+<td style="text-align: right;">-0.04</td>
+<td style="text-align: right;">0.06</td>
+<td style="text-align: right;">-0.27</td>
+<td style="text-align: right;">0.06</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+</div>
+</div>
+
+
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
