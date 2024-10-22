@@ -2,7 +2,7 @@
 #### grouse illustrations added using figma
 
 #packages
-pacman::p_load(brms, bayesplot, tidyverse)
+pacman::p_load(brms, bayesplot, tidyverse, ggridges, performance)
 source("scripts/theme_ggplot.R")
 
 #### GERP - main ####
@@ -91,7 +91,7 @@ ggplot(data = brms_trait_ms_gerp$outer) +
   )-> traits_ms_gerp_posterior
 traits_ms_gerp_posterior
 
-png(file = "plots/main/fig_3_right_traits_ams.png", width=800, height=1200)
+png(file = "plots/main/fig_3_right_traits_ams.png", width=600, height=800, bg='transparent')
 traits_ms_gerp_posterior
 dev.off()
 
@@ -244,7 +244,7 @@ ggplot(data = gerptrait$outer) +
 traits_gerp_posterior
 
 
-png(file = "plots/main/fig_3_left_load_traits.png", width=800, height=1200)
+png(file = "plots/main/fig_3_left_load_traits.png", width=600, height=800, bg='transparent')
 traits_gerp_posterior
 dev.off()
 
@@ -316,10 +316,10 @@ ggplot(data = brms_trait_ms_high$outer) +
   labs(x = expression("Standardised"~beta), y = "Trait")+
   scale_fill_manual(values =alpha(c(clrs_hunting[1],clrs_hunting[1],
                                     clrs_hunting[1],clrs_hunting[1],
-                                    clrs_hunting[1],clr_highlight), 0.5)) +
+                                    clrs_hunting[1],clrs_hunting[1]), 0.5)) +
   scale_color_manual(values =c(clrs_hunting[1],clrs_hunting[1],
                                clrs_hunting[1],clrs_hunting[1],
-                               clrs_hunting[1],clr_highlight)) +
+                               clrs_hunting[1],clrs_hunting[1])) +
   theme(panel.border = element_blank(),
         panel.grid = element_blank(),
         strip.background = element_blank(),
@@ -336,7 +336,7 @@ ggplot(data = brms_trait_ms_high$outer) +
   )-> traits_ms_high_posterior
 traits_ms_high_posterior
 
-png(file = "plots/sup/high_right_traits_ams.png", width=800, height=1200)
+png(file = "plots/sup/high_right_traits_ams.png", width=600, height=800, bg='transparent')
 traits_ms_high_posterior
 dev.off()
 
@@ -488,7 +488,7 @@ ggplot(data = hightrait$outer) +
 traits_high_posterior
 
 
-png(file = "plots/sup/high_left_load_traits.png", width=800, height=1200)
+png(file = "plots/sup/high_left_load_traits.png", width=600, height=800, bg='transparent')
 traits_high_posterior
 dev.off()
 
