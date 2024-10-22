@@ -15,5 +15,5 @@ output/af
 src
 .Rproj.user
 logs/
-
+*.DS_Store
 /.quarto/
