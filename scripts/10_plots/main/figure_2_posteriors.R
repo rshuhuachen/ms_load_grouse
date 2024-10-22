@@ -77,10 +77,15 @@ ggplot(data = brms_plota$outer) +
         strip.background = element_blank(),
         legend.position = "none",
         axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) -> totals
+
 totals
 
 brms_plota_interval <- brms_plota_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_plota_interval, file = "output/models/intervals/total_gerp45_high.csv", quote=F, row.names = F)
+
+png(file = "plots/main/fig_2a.png", width=600, height=600)
+totals
+dev.off()
 
 ##### plot b - hom and het  #####
 
@@ -195,6 +200,10 @@ hom_het
 brms_hom_het_lms_interval <- brms_hom_het_lms_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_hom_het_lms_interval, file = "output/models/intervals/hom_het_gerp45_high.csv", quote=F, row.names = F)
 
+png(file = "plots/main/fig_2b.png", width=800, height=600)
+hom_het
+dev.off()
+
 #### plot c - GERP per region ####
 load(file = "output/models/per_gene_region/lms_total_gerp45_promoter.RData")
 gerp_promoter <- brm_load_t
@@ -308,6 +317,10 @@ posterior_gerpregions
 brms_gerps_regions_interval <- brms_gerps_regions_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_gerps_regions_interval, file = "output/models/intervals/regions_gerp45.csv", quote=F, row.names = F)
 
+png(file = "plots/main/fig_2c.png", width=600, height=800)
+posterior_gerpregions
+dev.off()
+
 #### plot d - high per region ####
 load(file = "output/models/per_gene_region/lms_total_high_promoter.RData")
 high_promoter <- brm_load_t
@@ -420,6 +433,10 @@ posterior_highregions
 
 brms_high_regions_interval <- brms_high_regions_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_high_regions_interval, file = "output/models/intervals/regions_high.csv", quote=F, row.names = F)
+
+png(file = "plots/main/fig_2d.png", width=600, height=800)
+posterior_highregions
+dev.off()
 
 #### combine ####
 

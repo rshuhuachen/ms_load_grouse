@@ -20,7 +20,10 @@ ggplot(gerp_count, aes(x = gerp_cat, y = n_total)) +
   geom_text(aes(label = prettyNum(n_total, big.mark=","), y = n_total), 
             hjust=-0.2, size = 6) +
  coord_flip() -> fig_countgerp
+
+png(file = "plots/main/fig_1a.png", width=600, height=600)
 fig_countgerp
+dev.off()
 
 #### Figure: allele freq combining GERP and SnpEFf ####
 load(file = "output/load/gerp/allelefreq_gerp5.derived.RData")
@@ -44,6 +47,10 @@ ggplot(subset(allelefreq, Method == "GERP score ≥ 4"), aes(x = frequency, fill
   labs(x = "Allele frequency", y = "Frequency", title = "GERP ≥ 4")+
   theme(legend.position = "none") -> fig_af_gerp
 
+png(file = "plots/main/fig_1d.png", width=600, height=600)
+fig_af_gerp
+dev.off()
+
 ggplot(subset(allelefreq, Method == "High impact SnpEff"), aes(x = frequency, fill = Method, col = Method)) + 
   scale_y_continuous(breaks=(c(0, 1000, 2000)),
                      labels=c("0", "1 k", "2 k"))+
@@ -53,6 +60,10 @@ ggplot(subset(allelefreq, Method == "High impact SnpEff"), aes(x = frequency, fi
   scale_fill_manual(values = alpha(c(clr_high), 0.7))+
   labs(x = "Allele frequency", y = "Frequency", title = "High impact SnpEff") +
   theme(legend.position = "none")-> fig_af_high
+
+png(file = "plots/main/fig_1e.png", width=600, height=600)
+fig_af_high
+dev.off()
 
 #### Figure: number of SNPs in each category for snpeff ####
 
@@ -88,6 +99,9 @@ ggplot(n_mutations_per_impact, aes(x = type, y = n_mutations)) +
         text = element_text(size = 18)) + coord_flip() -> fig_countsnpef
 
 fig_countsnpef
+png(file = "plots/main/fig_1b.png", width=600, height=600)
+fig_countsnpef
+dev.off()
 
 #### Figure: count of each SNPeff mutation variant ####
 
@@ -131,6 +145,9 @@ ggplot(n_mutations_pertype, aes(x = reorder(abb, desc(n_mutations)),
   guides(col="none") +
   theme(legend.position = c(0.8,0.8)) -> fig_countsnpef_cat
 
+png(file = "plots/main/fig_1c.png", width=600, height=800)
+fig_countsnpef_cat
+dev.off()
 
 #### Figure: histogram number of loci hom het ######
 
@@ -157,6 +174,9 @@ ggplot(high_loci, aes(x = n_loci)) +
   scale_color_manual(values = c(clr_high, alpha(clr_high, 0.6)))-> hist_n_high
 
 hist_n_high
+png(file = "plots/main/fig_1g.png", width=600, height=600)
+hist_n_high
+dev.off()
 
 # gerp
 gerp_scafs <- list.files(path = "output/gerp", pattern = "count_mutations*", full.names = T)
@@ -194,6 +214,9 @@ ggplot(gerp_loci, aes(x = n_loci)) +
   scale_color_manual(values = c(clr_gerp, alpha(clr_gerp, 0.6))) -> hist_n_gerp
 
 hist_n_gerp
+png(file = "plots/main/fig_1f.png", width=600, height=600)
+hist_n_gerp
+dev.off()
 
 #### Combine in one figure ####
 cowplot::plot_grid(fig_countgerp, fig_countsnpef,
