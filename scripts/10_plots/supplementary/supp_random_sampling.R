@@ -17,10 +17,10 @@ sum_gerp <- draws_gerp %>%
 ggplot(draws_gerp, aes(x = beta)) + 
   xlim(-1.2,1.2)+
   ylim(-50, 600)+
-  geom_histogram(aes(fill = beta < 0, col = beta < 0), linewidth=0.5, bins=40)+
-  scale_fill_manual(values =alpha(c("grey60", clr_gerp), 0.7)) + #
-  scale_color_manual(values =c("grey60", clr_gerp)) +
-  geom_segment(data=sum_gerp, aes(x = lower_95, 
+  geom_histogram(fill = alpha(clr_gerp, 0.7), col = clr_gerp, linewidth=0.5, bins=40)+
+  # scale_fill_manual(values =alpha(c("grey60", clr_gerp), 0.7)) + #
+  # scale_color_manual(values =c("grey60", clr_gerp)) +
+   geom_segment(data=sum_gerp, aes(x = lower_95, 
                              xend = upper_95, 
                              y = 0), col = "black", linewidth=1)+
   geom_segment(data=sum_gerp, aes(x = lower_80, 
@@ -54,9 +54,9 @@ sum_high <- draws_high %>%
 ggplot(draws_high, aes(x = beta)) + 
   xlim(-1.2,1.2)+
   ylim(-50, 600)+
-  geom_histogram(aes(fill = beta < 0, col = beta < 0), linewidth=0.5, bins=40)+
-  scale_fill_manual(values =alpha(c("grey60", clr_high), 0.7)) + #
-  scale_color_manual(values =c("grey60", clr_high)) +
+  geom_histogram(fill = alpha(clr_high, 0.7), col = clr_high, linewidth=0.5, bins=40)+
+  # scale_fill_manual(values =alpha(c("grey60", clr_high), 0.7)) + #
+  # scale_color_manual(values =c("grey60", clr_high)) +
   geom_segment(data=sum_high, aes(x = lower_95, 
                                     xend = upper_95, 
                                     y = 0), col = "black", linewidth=1)+
@@ -100,11 +100,11 @@ sum_gerp <- gerp_regions %>%
 
 ggplot(gerp_regions, aes(x = beta)) + 
  facet_wrap(~region, ncol=1, strip.position = "top", scales="free_y")+
-  geom_histogram(aes(fill = beta < 0, col = beta < 0), linewidth=0.5, bins=40)+
-  scale_fill_manual(values =alpha(c("grey60", clr_gerp), 0.7)) + #
-  scale_color_manual(values =c("grey60", clr_gerp)) +geom_segment(data=sum_gerp, aes(x = lower_95, 
-                             xend = upper_95, 
-                             y = 0), col = "black", linewidth=1)+
+  geom_histogram(fill = alpha(clr_gerp, 0.7), col = clr_gerp, linewidth=0.5, bins=40)+
+  # scale_fill_manual(values =alpha(c("grey60", clr_gerp), 0.7)) + #
+  # scale_color_manual(values =c("grey60", clr_gerp)) +geom_segment(data=sum_gerp, aes(x = lower_95, 
+  #                            xend = upper_95, 
+  #                            y = 0), col = "black", linewidth=1)+
   geom_segment(data=sum_gerp, aes(x = lower_80, 
                              xend = upper_80, 
                              y = 0), col = "black", linewidth=3)+
@@ -145,12 +145,12 @@ sum_high <- high_regions %>%
 
 ggplot(high_regions, aes(x = beta)) + 
   facet_wrap(~region, ncol=1, strip.position = "top", scales="free_y")+
-  geom_histogram(aes(fill = beta < 0, col = beta < 0), linewidth=0.5, bins=40)+
-  scale_fill_manual(values =alpha(c("grey60", clr_high), 0.7)) + #
-  scale_color_manual(values =c("grey60", clr_high)) +geom_segment(data=sum_high, aes(x = lower_95, 
-                                                                                xend = upper_95, 
-                                                                                y = 0), col = "black", linewidth=1)+
-  geom_segment(data=sum_high, aes(x = lower_95, 
+  geom_histogram(fill = alpha(clr_high, 0.7), col = clr_high, linewidth=0.5, bins=40)+
+  # scale_fill_manual(values =alpha(c("grey60", clr_high), 0.7)) + #
+  # scale_color_manual(values =c("grey60", clr_high)) +geom_segment(data=sum_high, aes(x = lower_95, 
+  #                                                                               xend = upper_95, 
+  #                                                                               y = 0), col = "black", linewidth=1)+
+   geom_segment(data=sum_high, aes(x = lower_95, 
                              xend = upper_95, 
                              y = 0), col = "black", linewidth=1)+
   geom_segment(data=sum_high, aes(x = lower_80, 
