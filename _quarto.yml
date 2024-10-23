@@ -24,7 +24,7 @@ bibliography: bibliography.bib
 
 format:
   html:
-    theme: darkly
+    theme: flatly
     toc: true
     mainfont: Georgia, serif
     code-fold: true

@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -38,10 +72,10 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="../site_libs/quarto-html/anchor.min.js"></script>
 <link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dark.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="dark">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -109,7 +143,7 @@ ul.task-list li input[type="checkbox"] {
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../index.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Predicted deleterious mutations reveal the genomic mechanisms underlying fitness variation in a lekking bird</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Mutation load in black grouse</span></span></a>
   </div>
 </li>
         <li class="sidebar-item">
@@ -160,7 +194,15 @@ ul.task-list li input[type="checkbox"] {
 <div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction"><span class="header-section-number">7.1</span> Introduction</a></li>
+  <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods"><span class="header-section-number">7.2</span> Methods</a></li>
+  <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results"><span class="header-section-number">7.3</span> Results</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -182,8 +224,233 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
+<section id="introduction" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="introduction"><span class="header-section-number">7.1</span> Introduction</h2>
+<p>Variation in the effects of mutation load among the various models presented could be attributed to variation in the effect sizes of the individual mutations, or alternatively due to the differences in the number of mutations that contribute to the mutation load estimate. Assuming that all mutations that are identified have negative fitness consequences to some extent, we can expect that a larger number of mutations explain more fitness variation. We tested for the effect of total load on LMS between GERP and SnpEff mutations and the four genomic regions by controlling for the number of mutations.</p>
+</section>
+<section id="methods" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="methods"><span class="header-section-number">7.2</span> Methods</h2>
+<p>We randomly subset over all deleterioius GERP and SnpEff mutations (separately), and per genomic region for the two approaches.</p>
+<p>First, we load in our data and make different subsets of the data: all GERP mutations, GERP mutations per region (4 dataframes) and the same for SnpEff mutations</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="do">### load packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, data.table)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co">#load data mutations</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/snpeff/snpeff_high.RData"</span>)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/gerp/gerp_over4.RData"</span>)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="co"># load annotation data</span></span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/snpeff/snpeff_high_annotated_region.RData"</span>)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>snpef_all<span class="sc">$</span>CHROM <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"__"</span>, <span class="st">";"</span>, snpef_all<span class="sc">$</span>CHROM)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a>snpef_all<span class="sc">$</span>CHROM <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"HRSCAF_"</span>, <span class="st">"HRSCAF="</span>, snpef_all<span class="sc">$</span>CHROM)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a>snpef_all<span class="sc">$</span>chr_pos <span class="ot">&lt;-</span> <span class="fu">paste0</span>(snpef_all<span class="sc">$</span>CHROM, <span class="st">"_"</span>, snpef_all<span class="sc">$</span>POS)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file =</span> <span class="st">"output/load/gerp/gerp_annotated_region.RData"</span>)</span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>gerp_all<span class="sc">$</span>chr <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"__"</span>, <span class="st">";"</span>, gerp_all<span class="sc">$</span>chr)</span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a>gerp_all<span class="sc">$</span>chr <span class="ot">&lt;-</span> <span class="fu">gsub</span>(<span class="st">"HRSCAF_"</span>, <span class="st">"HRSCAF="</span>, gerp_all<span class="sc">$</span>chr)</span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>gerp_all<span class="sc">$</span>chr_pos <span class="ot">&lt;-</span> <span class="fu">paste0</span>(gerp_all<span class="sc">$</span>chr, <span class="st">"_"</span>, gerp_all<span class="sc">$</span>pos)</span>
+<span id="cb1-18"><a href="#cb1-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-19"><a href="#cb1-19" aria-hidden="true" tabindex="-1"></a><span class="do">### make subsets of mutations based on region</span></span>
+<span id="cb1-20"><a href="#cb1-20" aria-hidden="true" tabindex="-1"></a><span class="co"># subset snpef based on annotation</span></span>
+<span id="cb1-21"><a href="#cb1-21" aria-hidden="true" tabindex="-1"></a>snpeff_exons <span class="ot">&lt;-</span> <span class="fu">subset</span>(snpef_all, region_exon <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb1-22"><a href="#cb1-22" aria-hidden="true" tabindex="-1"></a>snpeff_tss <span class="ot">&lt;-</span> <span class="fu">subset</span>(snpef_all, region_tss <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb1-23"><a href="#cb1-23" aria-hidden="true" tabindex="-1"></a>snpeff_introns <span class="ot">&lt;-</span> <span class="fu">subset</span>(snpef_all, region_intron <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb1-24"><a href="#cb1-24" aria-hidden="true" tabindex="-1"></a>snpeff_promoter <span class="ot">&lt;-</span> <span class="fu">subset</span>(snpef_all, region_promoter <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> <span class="fu">is.na</span>(region_tss))</span>
+<span id="cb1-25"><a href="#cb1-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-26"><a href="#cb1-26" aria-hidden="true" tabindex="-1"></a>snpeff<span class="sc">$</span>chr_pos <span class="ot">&lt;-</span> <span class="fu">paste0</span>(snpeff<span class="sc">$</span>CHROM, <span class="st">"_"</span>, snpeff<span class="sc">$</span>POS)</span>
+<span id="cb1-27"><a href="#cb1-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-28"><a href="#cb1-28" aria-hidden="true" tabindex="-1"></a>snpeff_exons_gt <span class="ot">&lt;-</span> <span class="fu">subset</span>(snpeff, chr_pos <span class="sc">%in%</span> snpeff_exons<span class="sc">$</span>chr_pos)</span>
+<span id="cb1-29"><a href="#cb1-29" aria-hidden="true" tabindex="-1"></a>snpeff_tss_gt <span class="ot">&lt;-</span> <span class="fu">subset</span>(snpeff, chr_pos <span class="sc">%in%</span> snpeff_tss<span class="sc">$</span>chr_pos)</span>
+<span id="cb1-30"><a href="#cb1-30" aria-hidden="true" tabindex="-1"></a>snpeff_introns_gt <span class="ot">&lt;-</span> <span class="fu">subset</span>(snpeff, chr_pos <span class="sc">%in%</span> snpeff_introns<span class="sc">$</span>chr_pos)</span>
+<span id="cb1-31"><a href="#cb1-31" aria-hidden="true" tabindex="-1"></a>snpeff_promoter_gt <span class="ot">&lt;-</span> <span class="fu">subset</span>(snpeff, chr_pos <span class="sc">%in%</span> snpeff_promoter<span class="sc">$</span>chr_pos)</span>
+<span id="cb1-32"><a href="#cb1-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-33"><a href="#cb1-33" aria-hidden="true" tabindex="-1"></a><span class="co"># subset gerp based on annotation</span></span>
+<span id="cb1-34"><a href="#cb1-34" aria-hidden="true" tabindex="-1"></a>gerp_exons <span class="ot">&lt;-</span> <span class="fu">subset</span>(gerp_all, region_exon <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb1-35"><a href="#cb1-35" aria-hidden="true" tabindex="-1"></a>gerp_tss <span class="ot">&lt;-</span> <span class="fu">subset</span>(gerp_all, region_tss <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb1-36"><a href="#cb1-36" aria-hidden="true" tabindex="-1"></a>gerp_introns <span class="ot">&lt;-</span> <span class="fu">subset</span>(gerp_all, region_intron <span class="sc">==</span> <span class="dv">1</span>)</span>
+<span id="cb1-37"><a href="#cb1-37" aria-hidden="true" tabindex="-1"></a>gerp_promoter <span class="ot">&lt;-</span> <span class="fu">subset</span>(gerp_all, region_promoter <span class="sc">==</span> <span class="dv">1</span> <span class="sc">&amp;</span> <span class="fu">is.na</span>(region_tss))</span>
+<span id="cb1-38"><a href="#cb1-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-39"><a href="#cb1-39" aria-hidden="true" tabindex="-1"></a>gerp<span class="sc">$</span>chr_pos <span class="ot">&lt;-</span> <span class="fu">paste0</span>(gerp<span class="sc">$</span>chr, <span class="st">"_"</span>, gerp<span class="sc">$</span>pos)</span>
+<span id="cb1-40"><a href="#cb1-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-41"><a href="#cb1-41" aria-hidden="true" tabindex="-1"></a>gerp_exons_gt <span class="ot">&lt;-</span> <span class="fu">subset</span>(gerp, chr_pos <span class="sc">%in%</span> gerp_exons<span class="sc">$</span>chr_pos)</span>
+<span id="cb1-42"><a href="#cb1-42" aria-hidden="true" tabindex="-1"></a>gerp_tss_gt <span class="ot">&lt;-</span> <span class="fu">subset</span>(gerp, chr_pos <span class="sc">%in%</span> gerp_tss<span class="sc">$</span>chr_pos)</span>
+<span id="cb1-43"><a href="#cb1-43" aria-hidden="true" tabindex="-1"></a>gerp_introns_gt <span class="ot">&lt;-</span> <span class="fu">subset</span>(gerp, chr_pos <span class="sc">%in%</span> gerp_introns<span class="sc">$</span>chr_pos)</span>
+<span id="cb1-44"><a href="#cb1-44" aria-hidden="true" tabindex="-1"></a>gerp_promoter_gt <span class="ot">&lt;-</span> <span class="fu">subset</span>(gerp, chr_pos <span class="sc">%in%</span> gerp_promoter<span class="sc">$</span>chr_pos)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We then create a function to execute the subsetting:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="do">## create function to subset X number of SnpEffs and model its effect on fitness</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>random_draws <span class="ot">&lt;-</span> <span class="cf">function</span>(geno, n_draws, n_mutations, file, method, emperical_beta){</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">source</span>(<span class="st">"scripts/theme_ggplot.R"</span>)</span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>  all_draws <span class="ot">&lt;-</span> <span class="fu">data.frame</span>()</span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(method <span class="sc">==</span> <span class="st">"GERP"</span>){</span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_draws){</span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>      draw <span class="ot">&lt;-</span> geno[<span class="fu">sample</span>(<span class="fu">nrow</span>(geno), n_mutations),] <span class="co">#randomly draw snps</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>      <span class="do">## load functions</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>      <span class="fu">source</span>(<span class="st">"scripts/7_calculate_load/function_calculate_load.R"</span>)</span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>      load <span class="ot">&lt;-</span> <span class="fu">calculate_load_gerp</span>(draw, <span class="at">output_vcf =</span> F, <span class="at">loadtype =</span> <span class="st">"random_draw"</span>) <span class="co">#calculate load</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>      model_out <span class="ot">&lt;-</span> <span class="fu">model_load</span>(load, i)</span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>      model_out<span class="sc">$</span>method <span class="ot">&lt;-</span> method</span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>      all_draws <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_draws, model_out)</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    }}</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-19"><a href="#cb2-19" aria-hidden="true" tabindex="-1"></a>  <span class="cf">if</span>(method <span class="sc">==</span> <span class="st">"High impact"</span>){</span>
+<span id="cb2-20"><a href="#cb2-20" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>n_draws){</span>
+<span id="cb2-21"><a href="#cb2-21" aria-hidden="true" tabindex="-1"></a>      draw <span class="ot">&lt;-</span> geno[<span class="fu">sample</span>(<span class="fu">nrow</span>(geno), n_mutations),] <span class="co">#randomly draw snps</span></span>
+<span id="cb2-22"><a href="#cb2-22" aria-hidden="true" tabindex="-1"></a>      <span class="do">## load functions</span></span>
+<span id="cb2-23"><a href="#cb2-23" aria-hidden="true" tabindex="-1"></a>      <span class="fu">source</span>(<span class="st">"scripts/7_calculate_load/function_calculate_load.R"</span>)</span>
+<span id="cb2-24"><a href="#cb2-24" aria-hidden="true" tabindex="-1"></a>      load <span class="ot">&lt;-</span> <span class="fu">calculate_load_snpeff</span>(draw, <span class="at">output_vcf =</span> F, <span class="at">loadtype =</span> <span class="st">"random_draw"</span>) <span class="co">#calculate load</span></span>
+<span id="cb2-25"><a href="#cb2-25" aria-hidden="true" tabindex="-1"></a>      model_out <span class="ot">&lt;-</span> <span class="fu">model_load</span>(load, i)</span>
+<span id="cb2-26"><a href="#cb2-26" aria-hidden="true" tabindex="-1"></a>      model_out<span class="sc">$</span>method <span class="ot">&lt;-</span> method</span>
+<span id="cb2-27"><a href="#cb2-27" aria-hidden="true" tabindex="-1"></a>      </span>
+<span id="cb2-28"><a href="#cb2-28" aria-hidden="true" tabindex="-1"></a>      all_draws <span class="ot">&lt;-</span> <span class="fu">rbind</span>(all_draws, model_out)</span>
+<span id="cb2-29"><a href="#cb2-29" aria-hidden="true" tabindex="-1"></a>    }}</span>
+<span id="cb2-30"><a href="#cb2-30" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-31"><a href="#cb2-31" aria-hidden="true" tabindex="-1"></a>  <span class="do">### conclusion</span></span>
+<span id="cb2-32"><a href="#cb2-32" aria-hidden="true" tabindex="-1"></a>  all_draws <span class="ot">&lt;-</span> all_draws <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">conclusion =</span> <span class="fu">as.factor</span>(<span class="fu">case_when</span>(</span>
+<span id="cb2-33"><a href="#cb2-33" aria-hidden="true" tabindex="-1"></a>    beta <span class="sc">&lt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> pval <span class="sc">&lt;</span> <span class="fl">0.05</span> <span class="sc">~</span> <span class="st">"Significantly negative"</span>,</span>
+<span id="cb2-34"><a href="#cb2-34" aria-hidden="true" tabindex="-1"></a>    beta <span class="sc">&gt;</span> <span class="dv">0</span> <span class="sc">&amp;</span> pval <span class="sc">&lt;</span> <span class="fl">0.05</span> <span class="sc">~</span> <span class="st">"Significantly positive"</span>,</span>
+<span id="cb2-35"><a href="#cb2-35" aria-hidden="true" tabindex="-1"></a>    <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Insignificant"</span></span>
+<span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a>  )))</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(all_draws)</span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>  <span class="fu">save</span>(all_draws, <span class="at">file =</span> file)</span>
+<span id="cb2-40"><a href="#cb2-40" aria-hidden="true" tabindex="-1"></a>}</span>
+<span id="cb2-41"><a href="#cb2-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-42"><a href="#cb2-42" aria-hidden="true" tabindex="-1"></a><span class="do">### the model_load function looks like follows:</span></span>
+<span id="cb2-43"><a href="#cb2-43" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-44"><a href="#cb2-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-45"><a href="#cb2-45" aria-hidden="true" tabindex="-1"></a>model_load <span class="ot">&lt;-</span> <span class="cf">function</span>(load, ndraw){</span>
+<span id="cb2-46"><a href="#cb2-46" aria-hidden="true" tabindex="-1"></a>  <span class="co">#join with phenotypes</span></span>
+<span id="cb2-47"><a href="#cb2-47" aria-hidden="true" tabindex="-1"></a>  <span class="fu">load</span>(<span class="st">"data/phenotypes/phenotypes_lifetime.RData"</span>) <span class="co">#LMS</span></span>
+<span id="cb2-48"><a href="#cb2-48" aria-hidden="true" tabindex="-1"></a>  pheno <span class="ot">&lt;-</span> pheno_wide <span class="sc">%&gt;%</span> <span class="fu">mutate</span>(<span class="at">core =</span> <span class="fu">as.factor</span>(<span class="fu">case_when</span>(<span class="fu">is.na</span>(LMS) <span class="sc">~</span> <span class="st">"no core"</span>, <span class="sc">!</span><span class="fu">is.na</span>(LMS) <span class="sc">~</span> <span class="st">"core"</span>)))</span>
+<span id="cb2-49"><a href="#cb2-49" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-50"><a href="#cb2-50" aria-hidden="true" tabindex="-1"></a>  data_pheno <span class="ot">&lt;-</span> <span class="fu">left_join</span>(load, pheno[,<span class="fu">c</span>(<span class="st">"id"</span>, <span class="st">"LMS"</span>, <span class="st">"LMS_min"</span>, <span class="st">"core"</span>, <span class="st">"site"</span>, <span class="st">"born"</span>)], <span class="at">by =</span> <span class="st">"id"</span>)</span>
+<span id="cb2-51"><a href="#cb2-51" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a>  model <span class="ot">&lt;-</span> glmmTMB<span class="sc">::</span><span class="fu">glmmTMB</span>(LMS_min <span class="sc">~</span> <span class="fu">scale</span>(total_load) <span class="sc">+</span> core <span class="sc">+</span> (<span class="dv">1</span><span class="sc">|</span>site), <span class="at">family =</span> <span class="st">"poisson"</span>, <span class="at">ziformula =</span> <span class="sc">~</span><span class="dv">1</span>, <span class="at">data =</span> data_pheno)</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>  summary <span class="ot">&lt;-</span> <span class="fu">summary</span>(model)</span>
+<span id="cb2-54"><a href="#cb2-54" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-55"><a href="#cb2-55" aria-hidden="true" tabindex="-1"></a>  beta <span class="ot">&lt;-</span> summary<span class="sc">$</span>coefficients<span class="sc">$</span>cond[<span class="st">"scale(total_load)"</span>,<span class="st">"Estimate"</span>]</span>
+<span id="cb2-56"><a href="#cb2-56" aria-hidden="true" tabindex="-1"></a>  se <span class="ot">&lt;-</span> summary<span class="sc">$</span>coefficients<span class="sc">$</span>cond[<span class="st">"scale(total_load)"</span>,<span class="st">"Std. Error"</span>]</span>
+<span id="cb2-57"><a href="#cb2-57" aria-hidden="true" tabindex="-1"></a>  zval <span class="ot">&lt;-</span> summary<span class="sc">$</span>coefficients<span class="sc">$</span>cond[<span class="st">"scale(total_load)"</span>,<span class="st">"z value"</span>]</span>
+<span id="cb2-58"><a href="#cb2-58" aria-hidden="true" tabindex="-1"></a>  pval <span class="ot">&lt;-</span> summary<span class="sc">$</span>coefficients<span class="sc">$</span>cond[<span class="st">"scale(total_load)"</span>,<span class="st">"Pr(&gt;|z|)"</span>]</span>
+<span id="cb2-59"><a href="#cb2-59" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-60"><a href="#cb2-60" aria-hidden="true" tabindex="-1"></a>  out <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">ndraw =</span> ndraw, </span>
+<span id="cb2-61"><a href="#cb2-61" aria-hidden="true" tabindex="-1"></a>                    <span class="at">beta =</span> beta,</span>
+<span id="cb2-62"><a href="#cb2-62" aria-hidden="true" tabindex="-1"></a>                    <span class="at">se =</span> se,</span>
+<span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a>                    <span class="at">zval =</span> zval,</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>                    <span class="at">pval =</span> pval)</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>  </span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>  <span class="fu">return</span>(out)</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>}</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>Then we run this function for the 10 subsets of mutations, with varying number of mutations that get sampled:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># run functions</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># all mutations</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>draws_gerp <span class="ot">&lt;-</span> <span class="fu">random_draws</span>(<span class="at">geno =</span> gerp, <span class="at">n_draws =</span> <span class="dv">5000</span>, <span class="at">n_mutations =</span> <span class="dv">1000</span>, <span class="at">file =</span> <span class="st">"output/random_draws/all_gerp.RData"</span>, <span class="at">method=</span><span class="st">"GERP"</span>, <span class="at">emperical_beta =</span> <span class="sc">-</span><span class="fl">0.21</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(draws_gerp, <span class="at">file =</span> <span class="st">"output/random_draws/all_gerp.RData"</span>)</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>draws_high <span class="ot">&lt;-</span> <span class="fu">random_draws</span>(<span class="at">geno =</span> snpeff, <span class="at">n_draws =</span> <span class="dv">5000</span>, <span class="at">n_mutations =</span> <span class="dv">1000</span>, <span class="at">file =</span> <span class="st">"output/random_draws/all_high.RData"</span>, <span class="at">method =</span> <span class="st">"High impact"</span>, <span class="at">emperical_beta =</span> <span class="sc">-</span><span class="fl">0.07</span>)</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(draws_high, <span class="at">file =</span> <span class="st">"output/random_draws/all_high.RData"</span>)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co"># per region</span></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co"># high</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>draws_high_promoter <span class="ot">&lt;-</span> <span class="fu">random_draws</span>(<span class="at">geno =</span> snpeff_promoter_gt, <span class="at">n_draws =</span> <span class="dv">5000</span>, <span class="at">n_mutations =</span> <span class="dv">500</span>, <span class="at">file =</span> <span class="st">"results/random_draws/promoter_high.RData"</span>, <span class="at">method =</span> <span class="st">"High impact"</span>, <span class="at">emperical_beta =</span> <span class="dv">0</span>)</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(draws_high_promoter, <span class="at">file =</span> <span class="st">"output/random_draws/promoter_high.RData"</span>)</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>draws_high_tss <span class="ot">&lt;-</span> <span class="fu">random_draws</span>(<span class="at">geno =</span> snpeff_tss_gt, <span class="at">n_draws =</span> <span class="dv">5000</span>, <span class="at">n_mutations =</span> <span class="dv">500</span>, <span class="at">file =</span> <span class="st">"results/random_draws/tss_high.RData"</span>, <span class="at">method =</span> <span class="st">"High impact"</span>, <span class="at">emperical_beta =</span> <span class="dv">0</span>)</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(draws_high_tss, <span class="at">file =</span> <span class="st">"output/random_draws/tss_high.RData"</span>)</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>draws_high_intron <span class="ot">&lt;-</span> <span class="fu">random_draws</span>(<span class="at">geno =</span> snpeff_introns_gt, <span class="at">n_draws =</span> <span class="dv">5000</span>, <span class="at">n_mutations =</span> <span class="dv">500</span>, <span class="at">file =</span> <span class="st">"results/random_draws/intron_high.RData"</span>, <span class="at">method =</span> <span class="st">"High impact"</span>, <span class="at">emperical_beta =</span> <span class="dv">0</span>)</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(draws_high_intron, <span class="at">file =</span> <span class="st">"output/random_draws/intron_high.RData"</span>)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>draws_high_exon <span class="ot">&lt;-</span> <span class="fu">random_draws</span>(<span class="at">geno =</span> snpeff_exons_gt, <span class="at">n_draws =</span> <span class="dv">5000</span>, <span class="at">n_mutations =</span> <span class="dv">500</span>, <span class="at">file =</span> <span class="st">"results/random_draws/exon_high.RData"</span>, <span class="at">method =</span> <span class="st">"High impact"</span>, <span class="at">emperical_beta =</span> <span class="dv">0</span>)</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(draws_high_exon, <span class="at">file =</span> <span class="st">"output/random_draws/exon_high.RData"</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co"># gerp</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>draws_gerp_promoter <span class="ot">&lt;-</span> <span class="fu">random_draws</span>(<span class="at">geno =</span> gerp_promoter_gt, <span class="at">n_draws =</span> <span class="dv">5000</span>, <span class="at">n_mutations =</span> <span class="dv">500</span>, <span class="at">file =</span> <span class="st">"results/random_draws/promoter_gerp.RData"</span>, <span class="at">method =</span> <span class="st">"GERP"</span>, <span class="at">emperical_beta =</span> <span class="dv">0</span>)</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(draws_gerp_promoter, <span class="at">file =</span> <span class="st">"output/random_draws/promoter_gerp.RData"</span>)</span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>draws_gerp_tss <span class="ot">&lt;-</span> <span class="fu">random_draws</span>(<span class="at">geno =</span> gerp_tss_gt, <span class="at">n_draws =</span> <span class="dv">5000</span>, <span class="at">n_mutations =</span> <span class="dv">500</span>, <span class="at">file =</span> <span class="st">"results/random_draws/tss_gerp.RData"</span>, <span class="at">method =</span> <span class="st">"GERP"</span>, <span class="at">emperical_beta =</span> <span class="dv">0</span>)</span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(draws_gerp_tss, <span class="at">file =</span> <span class="st">"output/random_draws/tss_gerp.RData"</span>)</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>draws_gerp_intron <span class="ot">&lt;-</span> <span class="fu">random_draws</span>(<span class="at">geno =</span> gerp_introns_gt, <span class="at">n_draws =</span> <span class="dv">5000</span>, <span class="at">n_mutations =</span> <span class="dv">500</span>, <span class="at">file =</span> <span class="st">"results/random_draws/intron_gerp.RData"</span>, <span class="at">method =</span> <span class="st">"GERP"</span>, <span class="at">emperical_beta =</span> <span class="dv">0</span>)</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(draws_gerp_intron, <span class="at">file =</span> <span class="st">"output/random_draws/intron_gerp.RData"</span>)</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>draws_gerp_exon <span class="ot">&lt;-</span> <span class="fu">random_draws</span>(<span class="at">geno =</span> gerp_exons_gt, <span class="at">n_draws =</span> <span class="dv">5000</span>, <span class="at">n_mutations =</span> <span class="dv">500</span>, <span class="at">file =</span> <span class="st">"results/random_draws/exon_gerp.RData"</span>, <span class="at">method =</span> <span class="st">"GERP"</span>, <span class="at">emperical_beta =</span> <span class="dv">0</span>)</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="fu">save</span>(draws_gerp_exon, <span class="at">file =</span> <span class="st">"output/random_draws/exon_gerp.RData"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+</section>
+<section id="results" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="results"><span class="header-section-number">7.3</span> Results</h2>
+<p>We can then plot the results as histograms:</p>
+<div class="cell">
+<details>
+<summary>Code</summary>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="do">### load packages ####</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>pacman<span class="sc">::</span><span class="fu">p_load</span>(tidyverse, ggpubr, extrafont, cowplot, data.table)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="fu">source</span>(<span class="st">"scripts/theme_ggplot.R"</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="do">#### total GERP #####</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file=</span><span class="st">"output/random_draws/all_gerp.RData"</span>)</span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="at">file=</span><span class="st">"output/random_draws/all_high.RData"</span>)</span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a>sum_gerp <span class="ot">&lt;-</span> draws_gerp <span class="sc">%&gt;%</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">lower_95 =</span> <span class="fu">quantile</span>(beta, <span class="at">probs=</span><span class="fu">c</span>(<span class="fl">0.025</span>)),</span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a>            <span class="at">upper_95 =</span> <span class="fu">quantile</span>(beta, <span class="at">probs=</span><span class="fu">c</span>(<span class="fl">0.975</span>)),</span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a>            <span class="at">lower_80 =</span> <span class="fu">quantile</span>(beta, <span class="at">probs=</span><span class="fu">c</span>(<span class="fl">0.1</span>)),</span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a>            <span class="at">upper_80 =</span> <span class="fu">quantile</span>(beta, <span class="at">probs=</span><span class="fu">c</span>(<span class="fl">0.9</span>)),</span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a>            <span class="at">mean =</span> <span class="fu">mean</span>(beta))</span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(draws_gerp, <span class="fu">aes</span>(<span class="at">x =</span> beta)) <span class="sc">+</span> </span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">xlim</span>(<span class="sc">-</span><span class="fl">1.2</span>,<span class="fl">1.2</span>)<span class="sc">+</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ylim</span>(<span class="sc">-</span><span class="dv">50</span>, <span class="dv">600</span>)<span class="sc">+</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_histogram</span>(<span class="fu">aes</span>(<span class="at">fill =</span> beta <span class="sc">&lt;</span> <span class="dv">0</span>, <span class="at">col =</span> beta <span class="sc">&lt;</span> <span class="dv">0</span>), <span class="at">linewidth=</span><span class="fl">0.5</span>, <span class="at">bins=</span><span class="dv">40</span>)<span class="sc">+</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_fill_manual</span>(<span class="at">values =</span><span class="fu">alpha</span>(<span class="fu">c</span>(<span class="st">"grey60"</span>, clr_gerp), <span class="fl">0.7</span>)) <span class="sc">+</span> <span class="co">#</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(<span class="at">values =</span><span class="fu">c</span>(<span class="st">"grey60"</span>, clr_gerp)) <span class="sc">+</span></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data=</span>sum_gerp, <span class="fu">aes</span>(<span class="at">x =</span> lower_95, </span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>                             <span class="at">xend =</span> upper_95, </span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a>                             <span class="at">y =</span> <span class="dv">0</span>), <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">linewidth=</span><span class="dv">1</span>)<span class="sc">+</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="at">data=</span>sum_gerp, <span class="fu">aes</span>(<span class="at">x =</span> lower_80, </span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a>                             <span class="at">xend =</span> upper_80, </span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>                             <span class="at">y =</span> <span class="dv">0</span>), <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">linewidth=</span><span class="dv">3</span>)<span class="sc">+</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">data=</span>sum_gerp,<span class="fu">aes</span>(<span class="at">x =</span> mean, <span class="at">y =</span> <span class="dv">0</span>), <span class="at">fill=</span><span class="st">"white"</span>,  <span class="at">col =</span> <span class="st">"black"</span>, <span class="at">shape=</span><span class="dv">21</span>, <span class="at">size =</span> <span class="dv">6</span>)<span class="sc">+</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_vline</span>(<span class="at">xintercept =</span> <span class="dv">0</span>, <span class="at">col =</span> <span class="st">"#ca562c"</span>, <span class="at">linetype=</span><span class="st">"longdash"</span>, <span class="at">linewidth=</span><span class="fl">0.6</span>)<span class="sc">+</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">plot.title =</span> <span class="fu">element_text</span>(<span class="at">margin=</span><span class="fu">margin</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">30</span>,<span class="dv">0</span>)),</span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.border =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.grid =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a>        <span class="at">panel.spacing =</span> <span class="fu">unit</span>(<span class="dv">3</span>,<span class="st">"lines"</span>),</span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a>        <span class="at">strip.background =</span> <span class="fu">element_blank</span>(),</span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a>        <span class="at">legend.position=</span><span class="st">"none"</span>)<span class="sc">+</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">x =</span> <span class="fu">expression</span>(<span class="st">"Standardised"</span><span class="sc">~</span>beta), <span class="at">y =</span> <span class="st">"# draws"</span>, <span class="at">title =</span> <span class="st">"GERP"</span>) <span class="ot">-&gt;</span> total_gerp</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>We can then repeat this for the other subsets, leading to the following plots:</p>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="../plots/sup/extended_3_random_draws.png" class="img-fluid figure-img"></p>
+<figcaption class="figure-caption">Random subsets</figcaption>
+</figure>
+</div>
 
 
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

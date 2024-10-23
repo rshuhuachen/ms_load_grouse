@@ -4,7 +4,7 @@ title: "Modelling fitness"
 
 ## Introduction
 
-Now that we have mutation load (total, homozygous and heterozygous) load estimates for each individual, based on SnpEff and GERP, we can model their effects on lifetime mating success (LMS).
+Now that we have mutation load (total, homozygous and heterozygous) estimates for each individual, based on SnpEff and GERP, we can model their effects on lifetime mating success (LMS).
 
 Here, we build three sets of models:
 
@@ -18,8 +18,9 @@ We use Bayesian GLMMs using the R package 'brms' to compute these models
 
 ### Total load
 
-The general structure of the total load models is as follows:
-` LMS ~ scale(total_load) + core + (1|site) `
+The general structure of the total load models is as follows: 
+
+`LMS ~ scale(total_load) + core + (1|site)`
 
 This is what the script for each load type looks like:
 
@@ -118,8 +119,9 @@ This is what these plots look like for total GERP load effects:
 
 ### Hom and het load
 
-The general structure of the homozygous and heterozygous load models is as follows:
-` LMS ~ scale(het_load) + scale(hom_load) + core + (1|site) `
+The general structure of the homozygous and heterozygous load models is as follows: 
+
+`LMS ~ scale(het_load) + scale(hom_load) + core + (1|site)`
 
 This is what the script for each load type looks like:
 
@@ -151,7 +153,7 @@ The same diagnostics were applied to each model.
 
 ### Direct and indirect effects
 
-Next, we build models that are based on annual values. There are two sets of models: the first quantifies the effect of load on the six sexual traits (attendance, fighting rate, centrality, lyre size, blue chroma and red eye comb size) in six separate models. The second set analyses the effect of the six traits and load on annual mating success (MS). 
+Next, we build models that are based on annual values. There are two sets of models: the first quantifies the effect of load on the six sexual traits (attendance, fighting rate, centrality, lyre size, blue chroma and red eye comb size) in six separate models. The second set analyses the effect of the six traits and load on annual mating success (MS).
 
 The direct effect is the effect of load on MS while correcting for all mediators. The indirect effect is calculated using a mediation analysis, where this effect is calculated as the product of the effect of the predictor (the total load) on the mediator (the sexual trait) and the effect of the mediator on the response variable (AMS).
 
@@ -193,6 +195,10 @@ save(fit, file = out)
 ```
 
 #### Set 2: trait + load on MS
+
+Then, for both approaches we run the following model:
+
+`MS ~ scale(total_load) + scale(lyre) + scale(eyec) + scale(blue) + scale(dist) + scale(attend) + scale(fight) + age_cat + (1|year) + (1|site/id)`
 
 ```{r}
 
@@ -348,16 +354,16 @@ effects <- data.frame(rbind(get_indirect(mediator="b_scalelyre", method = "gerp4
 write.csv(effects, file = "output/models/annual/direct_indirect_summary.csv", quote=F, row.names = F)
 ```
 
-### Results
+## Results
 
 We find significant effects of total GERP and total SnpEff load:
 
 ![Total load results](../plots/main/fig_2a.png)
 
-```{r, eval=T}
+```{r, eval=T, message=F, warning=F}
 library(readxl); library(dplyr); library(kableExtra)
 totals <- read.csv("../output/models/intervals/total_gerp45_high.csv")
-totals %>% kbl() %>%  kable_classic_2() 
+totals %>% kbl() 
 ```
 
 We also find significant effects of both hom and het GERP and SnpEff load:
@@ -366,18 +372,17 @@ We also find significant effects of both hom and het GERP and SnpEff load:
 
 ```{r, eval=T}
 homhet <- read.csv("../output/models/intervals/hom_het_gerp45_high.csv")
-homhet %>% kbl() %>%  kable_classic_2() 
+homhet %>% kbl() 
 ```
 
-Here you can find the posterior distributions of model set 1 (load on traits) for GERP and SnpEff:
-![MS set 1 results GERP](../plots/main/fig_3_left_load_traits.png, bg="white")
-![MS set 1 results SnpEff](../plots/sup/high_left_load_traits.png, bg="white")
 
+Here you can find the posterior distributions of model set 1 (load on traits) for GERP and SnpEff: ![MS set 1 results GERP](../plots/main/fig_3_left_load_traits.png)
 
-And for model set 2 (traits on MS) for GERP and SnpEff:
-![MS set 2 results GERP](../plots/main/fig_3_right_traits_ams.png, bg = "white")
+![MS set 1 results SnpEff](../plots/sup/extended_4_high_left_load_traits.png)
 
-![MS set 2 results SnpEff](../plots/sup/high_right_traits_ams, bg = "white")
+And for model set 2 (traits on MS) for GERP and SnpEff: ![MS set 2 results GERP](../plots/main/fig_3_right_traits_ams.png)
+
+![MS set 2 results SnpEff](../plots/sup/extended_4_high_right_traits_ams.png)
 
 We can check out the result of the direct and indirect effects as follows:
 
@@ -385,4 +390,3 @@ We can check out the result of the direct and indirect effects as follows:
 effects <- read.csv("../output/models/annual/direct_indirect_summary.csv")
 effects %>% kbl() %>%  kable_classic_2() %>% scroll_box(width = "99%", height = "200px")
 ```
-

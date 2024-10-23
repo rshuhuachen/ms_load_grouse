@@ -4,7 +4,7 @@ title: "Calculating mutation load"
 
 ## Introduction
 
-There are various types of load and in general, mutation load can be divided between potential and realized load. Realized load (also known as expressed load) only includes the deleterious mutations that are expressed in the individual (Bertorelle et al., 2022). Potential load (also known as inbreeding or masked load) is the fitness reduction due to deleterious mutations, of which not all are expressed on an individual level and therefore quantifies recessive deleterious mutations that could be expressed in future generations (Bertorelle et al., 2022).
+There are various types of load and in general, mutation load can be divided between potential and realized load. Realized load (also known as expressed load) only includes the deleterious mutations that are expressed in the individual [@bertorelleGeneticLoadGenomic2022]. Potential load (also known as inbreeding or masked load) is the fitness reduction due to deleterious mutations, of which not all are expressed on an individual level and therefore quantifies recessive deleterious mutations that could be expressed in future generations [@bertorelleGeneticLoadGenomic2022].
 
 However, to be able to distinguish between realized and potential load, you need to know dominance coefficients, which we do not. Therefore, we focus on homozygous and heterozygous load instead, which consists of mutations in homo- and heterozygosity in an individual instead. The total load sums the number of mutations contributing to the load, where heterozygous mutations are counted ones (one per allele) and homozygous mutations twice (one per allele).
 
@@ -12,7 +12,7 @@ From here on onwards, the majority of analyses are computed within R (instead of
 
 ## Mutation load (SnpEff)
 
-Here, we load in the .vcf file outputted by SnpSift with only high impact SnpEff mutations, add column names, include only the 29 largest autosomal scaffolds, exclude warning messages, convert the genotype columns into only 1/1, 1/0, 0/1, 0/0 and ./. values, calculate load per individual, and then merge the load estimates of all individuals together. 
+Here, we load in the .vcf file outputted by SnpSift with only high impact SnpEff mutations, add column names, include only the 29 largest autosomal scaffolds, exclude warning messages, convert the genotype columns into only 1/1, 1/0, 0/1, 0/0 and ./. values, calculate load per individual, and then merge the load estimates of all individuals together.
 
 ```{r}
 ### load packages ###
@@ -100,7 +100,7 @@ high_load <- calculate_load_snpeff(high, output_vcf = TRUE, loadtype = "high")
 
 ## Mutation load (GERP)
 
-Here, we load in the .bed files that contain GERP scores from SNPs, filter for those with GERP values >= 4, add column names, convert the genotype columns into only 1/1, 1/0, 0/1, 0/0 and ./. values, calculate load per individual, and then merge the load estimates of all individuals together. Note this step is quite time-intensive as the .bed files are large in filesize!
+Here, we load in the .bed files that contain GERP scores from SNPs, filter for those with GERP values \>= 4, add column names, convert the genotype columns into only 1/1, 1/0, 0/1, 0/0 and ./. values, calculate load per individual, and then merge the load estimates of all individuals together. Note this step is quite time-intensive as the .bed files are large in filesize!
 
 ```{r}
 # load in all bed files with gerp scores that overlap a SNP
@@ -197,7 +197,7 @@ write.table(load, file = "output/load/all_loads_combined_da_nosex_29scaf.tsv", s
 
 We can then calculate the correlation between the two load estimates and test for lek effects on load.
 
-```{r, eval=TRUE}
+```{r, eval=TRUE,message=F}
 library(dplyr)
 load(file = "../output/load/all_loads_combined_da_nosex_29scaf.RData")
 
@@ -211,5 +211,3 @@ summary(lm(total_load ~ site, data = subset(pheno_load, loadtype == "gerp45")))
 
 summary(lm(total_load ~ site, data = subset(pheno_load, loadtype == "high")))
 ```
-
-
