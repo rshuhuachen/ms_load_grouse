@@ -5,7 +5,7 @@ favicon: plots/img/grouse_silhouette.png
 
 # Introduction
 
-This webpage contains a summary of the workflow used in the manuscript titled "Predicted deleterious mutations reveal the genomic mechanisms underlying fitness variation in a lekking bird", Chen et al. 2024 (in preparation). Please see the [github repository](https://github.com/rshuhuachen/ms_load_grouse) for all scripts and more detailed descriptions of the data and analyses.
+This webpage/document contains a summary of the workflow used in the manuscript titled "Predicted deleterious mutations reveal the genomic mechanisms underlying fitness variation in a lekking bird", Chen et al. 2024 (in preparation). Please see the [github repository](https://github.com/rshuhuachen/ms_load_grouse) for all scripts and more detailed descriptions of the data and analyses.
 
 ![Black grouse](plots/img/grouse.jpeg)
 
@@ -25,6 +25,6 @@ There are generally two most commonly used computational approaches to identify 
 
 -   SNP effect (SnpEff): This approach predicts the consequences of genomic variants on protein sequences and identifies loss of function and missense variants. [@cingolani2012].
 
-# This webpage
+# This webpage / document
 
-On this webpage, you will find some of the scripts for the analysis performed in this study. Note that not all bioinformatic steps are put on here (only from inferring mutations onwards). You can find the complete set of analyses with their explanations in the github repo.
+This [webpage](https://rshuhuachen.github.io/ms_load_grouse/) can also be found in [PDF format](https://github.com/rshuhuachen/ms_load_grouse/docs/Mutation-Load-in-Black-Grouse.pdf) on github. Note that in the PDF format, code is not folded which will end up in a lengthy document, and the html looks aesthetically better ;). In both documents, you will find some of the scripts for the analysis performed in this study. Note that not all bioinformatic steps are put on here (only from inferring mutations onwards). You can find the complete set of analyses with their explanations in the github repo.
