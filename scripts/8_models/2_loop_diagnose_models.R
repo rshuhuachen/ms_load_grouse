@@ -71,17 +71,17 @@ for (i in 1:length(output)){
   
   # save output
   pdf(file=paste0("output/models/diagnosis/", modelname, ".pdf"))
-  diverge_beta
-  diverge_sd
-  collin_beta
-  collin_sd
-  trace_beta
-  trace_sd
-  rhat
-  neff
-  autocor_beta
-  autocor_sd
-  areas
+  print(diverge_beta)
+  print(diverge_sd)
+  print(collin_beta)
+  print(collin_sd)
+  print(trace_beta)
+  print(trace_sd)
+  print(rhat)
+  print(neff)
+  print(autocor_beta)
+  print(autocor_sd)
+  print(areas)
   dev.off()
   
   # add to summary
