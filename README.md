@@ -4,15 +4,13 @@
 
 This is the repository that contains all scripts used for the analysis in the manuscript titled "Predicted deleterious mutations reveal the genomic mechanisms underlying fitness variation in a lekking bird" by Chen et al. (in preparation). Genomic data, including the reference genome, and the 190 resequenced grouse genomes can be found on NCBI (see links below) and phenotypic data as well as the black grouse annotation are stored in this repository.
 
-Below you will find an explanation of which data files can be found where, and the general structure of the workflow.
-You will find a brief overview of the scripts with an explanation here: https://rshuhuachen.github.io/ms_load_grouse/
+Below you will find an explanation of which data files can be found where, and the general structure of the workflow. You will find a brief overview of the scripts with an explanation here: https://rshuhuachen.github.io/ms_load_grouse/
 
 # Data
 
 ## Phenotypes
 
-There are two files stored on GitHub containing phenotypes: one for lifetime phenotypic traits (including lifetime mating success) which can be found under `data/phenotypes/phenotypes_lifetime` both in .csv and .RData format. 
-The second file is in long format, where each row represents a caught male at a lek, one data entry per male per year. This file contains the sexual and behavioural traits for each male, as well as annual mating success, and can be found under `data/phenotypes/phenotyes_annual` again in both .csv and .RData format.
+There are two files stored on GitHub containing phenotypes: one for lifetime phenotypic traits (including lifetime mating success) which can be found under `data/phenotypes/phenotypes_lifetime` both in .csv and .RData format. The second file is in long format, where each row represents a caught male at a lek, one data entry per male per year. This file contains the sexual and behavioural traits for each male, as well as annual mating success, and can be found under `data/phenotypes/phenotyes_annual` again in both .csv and .RData format.
 
 ## Reference genome
 
@@ -20,11 +18,11 @@ The reference genome can be found on NCBI BioProject PRJNA1085187. Please downlo
 
 ## Annotation
 
-The genome annotation can be found in the folder `data/genomic/annotation/` under name PO2979_Lyrurus_tetrix_black_grouse.annotation.gff.
+The genome annotation can be found in the folder `data/genomic/annotation/` under name PO2979_Lyrurus_tetrix_black_grouse.annotation.gff. The RNA seq data generated to annotate the genome can be found under NCBI Bio Accession [SRX24353984](https://www.ncbi.nlm.nih.gov/sra/SRX24353984[accn]])
 
 ## Resequencing
 
-The raw resequencing data can be found on NCBI BioProject PRJNA1085187 under SRA BioAccession Numbers 40722954 - 40723143. Please download the files and store it in the folder `data/genomic/raw/resequencing/`.
+The raw resequencing data can be found on NCBI BioProject [PRJNA1085187](https://www.ncbi.nlm.nih.gov/bioproject/PRJNA1085187) under SRA study [SRP499251](https://trace.ncbi.nlm.nih.gov/Traces/?view=study&acc=SRP499251) with BioAccession Numbers SRR28526036 – SRR28526225. Please download the files and store it in the folder `data/genomic/raw/resequencing/`.
 
 ## HAL file
 
@@ -40,7 +38,7 @@ To allow easier reproducibility, you can use the conda environment listed in `sr
 
 ## Brief explanation of each script's subdirectory
 
-1_variant_calling: here we align the sequences to the reference genome and call SNPs. We next filter the resulting .vcf file for quality as well as HWE, LD, MAF, etc. 
+1_variant_calling: here we align the sequences to the reference genome and call SNPs. We next filter the resulting .vcf file for quality as well as HWE, LD, MAF, etc.
 
 2_cactus: here we manipulate the publicly available 363-avian multiple alignment file according to our needs (i.e. reducing the phylogenetic tree and adding focal genomes) which is a file required to determine the ancestral state of the genome and for GERP++ to infer evolutionary conservation
 
