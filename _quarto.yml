@@ -28,6 +28,19 @@ format:
     toc: true
     mainfont: Georgia, serif
     code-fold: true
+  pdf:
+    toc: true
+    code-fold: true
+    number-sections: true
+    toc-depth: 2
+    highlight-style: github
+    cite-method: biblatex
+    keep-tex: true
+    include-in-header: 
+       text: |
+         \usepackage{fvextra}
+         \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
+         \DefineVerbatimEnvironment{OutputCode}{Verbatim}{breaklines,commandchars=\\\{\}}
 
 editor: visual
 execute: 
