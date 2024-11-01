@@ -18,7 +18,7 @@ gzip data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_HIGH.vcf
 zcat output/ancestral/ltet_filtered_ann_aa.vcf.gz | java -jar src/SnpSift.jar filter " ( ANN[*].IMPACT = 'MODERATE')" > data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_moderate.vcf
 gzip data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_moderate.vcf
 
-## low
+## Low
 zcat output/ancestral/ltet_filtered_ann_aa.vcf.gz | java -jar src/SnpSift.jar filter " ( ANN[*].IMPACT = 'LOW') " > data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_low.vcf
 gzip data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_low.vcf
 
@@ -26,6 +26,16 @@ gzip data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_low.vcf
 zcat output/ancestral/ltet_filtered_ann_aa.vcf.gz | java -jar src/SnpSift.jar filter " (exists LOF[*].PERC )" > data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_LOF.vcf
 gzip data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_LOF.vcf
 
-## missense
+## Missense
 zcat output/ancestral/ltet_filtered_ann_aa.vcf.gz | java -jar src/SnpSift.jar filter " ANN[*].EFFECT has 'missense_variant'" > data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_missense.vcf
 gzip data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_missense.vcf
+
+## Synonymous
+cat output/ancestral/ltet_filtered_ann_aa.vcf | java -jar src/SnpSift.jar filter "( ANN[*].EFFECT has 'synonymous_variant' )" > data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_synonymous.vcf
+gzip  data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_synonymous.vcf
+
+## Non-synonymous: missense, nonsense, NMD
+cat output/ancestral/ltet_filtered_ann_aa.vcf | java -jar src/SnpSift.jar filter "ANN[*].IMPACT = 'MODERATE' | ANN[*].IMPACT = 'MODIFIER' | ANN[*].IMPACT = 'HIGH' " > data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_non_synonymous.vcf
+gzip  data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_non_synonymous.vcf
+
+
