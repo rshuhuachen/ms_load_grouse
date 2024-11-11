@@ -6,7 +6,8 @@ source("scripts/theme_ggplot.R")
 ### Figure: Distribution of GERP load cat ####
 
 load(file = "output/load/gerp/gerps_count_per_cat.RData")
-gerp_count$gerp_cat <- factor(gerp_count$gerp_cat, levels = c("< 0", "0-1", "1-2", "2-3", "3-4", "4-5"))
+gerp_count$gerp_cat <- gsub("4-5", "≥ 4", gerp_count$gerp_cat)
+gerp_count$gerp_cat <- factor(gerp_count$gerp_cat, levels = c("< 0", "0-1", "1-2", "2-3", "3-4", "≥ 4"))
 
 ggplot(gerp_count, aes(x = gerp_cat, y = n_total)) + 
   geom_col(fill = alpha(c(clr_grey, clr_grey, clr_grey, clr_grey, clr_gerp, clr_grey), 0.7), 
@@ -14,15 +15,101 @@ ggplot(gerp_count, aes(x = gerp_cat, y = n_total)) +
   # scale_y_log10(labels = c("0", expression(10^1),
   #                               expression(10^3), expression(10^5), expression(10^7)),
   #                    breaks = c(0, 10, 1000, 100000, 10000000)) +
-  scale_y_log10(limits=c(1,10000000000), labels = c(expression(10^3), expression(10^6), expression(10^9)),
-                breaks=c(1000,1000000,1000000000)) +
+  scale_y_log10(limits=c(1,10000000), labels = c(expression(10^1), expression(10^3), expression(10^6)),
+                breaks=c(1, 1000,1000000)) +
  labs(x = "Category", y= expression('Number of SNPs (log'[10]*')'), title = "GERP") +
   geom_text(aes(label = prettyNum(n_total, big.mark=","), y = n_total), 
-            hjust=-0.2, size = 6) +
+            hjust=1.5, size = 6) +
  coord_flip() -> fig_countgerp
 
 png(file = "plots/main/fig_1a.png", width=600, height=600)
 fig_countgerp
+dev.off()
+
+#### Figure: number of SNPs in each category for snpeff ####
+
+high_counts <- read.csv(file = "output/load/snpeff/n_mutations_per_type")
+
+## only per impact category
+count_high <- high_counts$n_mutations[which(high_counts$type == "total_high")]
+count_moderate <- high_counts$n_mutations[which(high_counts$type == "total_mod")]
+count_low <- high_counts$n_mutations[which(high_counts$type == "total_low")]
+count_modify <- high_counts$n_mutations[which(high_counts$type == "total_modifier")]
+
+## number of mutations per type
+n_mutations_per_impact <- data.frame("type" = c("High", "Moderate", "Low", "Modifier"),
+                                     "n_mutations" = c(count_high,
+                                                       count_moderate,
+                                                       count_low,
+                                                       count_modify))
+
+n_mutations_per_impact$type <- forcats::fct_relevel(n_mutations_per_impact$type, "Modifier", "Low", "Moderate", "High")
+
+
+ggplot(n_mutations_per_impact, aes(x = type, y = n_mutations)) + 
+  geom_col(color=c(clr_high, clr_grey, clr_grey, clr_grey), 
+           fill=alpha(c(clr_high, clr_grey, clr_grey, clr_grey), 0.7)) + 
+  scale_y_log10(labels = c(expression(paste(~10^1)), expression(paste(~10^4)), 
+                           expression(paste(~10^7))),
+                breaks=c(10, 10000, 10000000),
+                limits = c(1, 10000000))+
+  labs(y= expression('Number of SNPs (log'[10]*')'), title = "SnpEff", x = "Category")+
+  scale_fill_manual(values = c(clrs[5], clrs[5], clrs[7], clrs[9]))+
+  geom_text(aes(label = prettyNum(n_mutations, big.mark = ",", scientific=F)), hjust = 1.5, size =6 ) +
+  theme(legend.position="none",
+        text = element_text(size = 18)) + coord_flip() -> fig_countsnpef
+
+fig_countsnpef
+png(file = "plots/main/fig_1b.png", width=600, height=600)
+fig_countsnpef
+dev.off()
+
+#### Figure: count of each SNPeff mutation variant ####
+
+n_mutations_pertype <- subset(high_counts, !is.na(impact))
+n_mutations_pertype$impact <- gsub("low", "Low", n_mutations_pertype$impact)
+n_mutations_pertype$impact <- gsub("moderate", "Moderate", n_mutations_pertype$impact)
+n_mutations_pertype$impact <- gsub("high", "High", n_mutations_pertype$impact)
+n_mutations_pertype$impact <- gsub("modify", "Modifier", n_mutations_pertype$impact)
+n_mutations_pertype$impact <- factor(n_mutations_pertype$impact, 
+                                     levels = c("High", "Moderate", "Low", "Modifier"))
+
+n_mutations_pertype$abb <- c("Downstream gene variant",
+                             "5' UTR premature start codon",
+                             "5' UTR variant",
+                             "Initiator codon variant",
+                             "Intron variant",
+                             "Loss of Function",
+                             "Missense variant",
+                             "Nonsense mediated decay",
+                             "Splice acceptor variant",
+                             "Splice donor variant",
+                             "Splice region variant",
+                             "Start codon lost",
+                             "Stop codon gained",
+                             "Stop codon lost",
+                             "Stop codon retained",
+                             "Synonymous variant",
+                             "3' UTR varaint",
+                             "Upstream gene variant",
+                             "Intergenic region")
+
+
+ggplot(n_mutations_pertype, aes(x = reorder(abb, desc(n_mutations)), 
+                                  y = n_mutations)) + 
+  geom_col(aes(fill = impact, col = impact)) + 
+  scale_y_log10(labels = c(expression(paste(~10^1)), expression(paste(~10^3)), expression(paste(~10^5))), 
+                  breaks = c(10, 1000, 100000))+
+  labs(y = expression('Number of SNPs (log'[10]*')'), fill = "Impact Class", x = "Mutation type")+
+  scale_fill_manual(values = alpha(c(clr_high, "#549F93", "#8EA4CC", clrs_related[1]), 0.7))+
+  scale_color_manual(values = c(clr_high, "#549F93", "#8EA4CC", clrs_related[1]))+
+  coord_flip() +geom_text(aes(label = prettyNum(n_mutations, big.mark = ",", scientific=F)), 
+                          hjust = 1.5, size = 6)+
+  guides(col="none") +
+  theme(legend.position = c(0.7,0.8)) -> fig_countsnpef_cat
+
+png(file = "plots/main/fig_1c.png", width=600, height=800)
+fig_countsnpef_cat
 dev.off()
 
 #### Figure: allele freq combining GERP and SnpEFf ####
@@ -65,90 +152,6 @@ png(file = "plots/main/fig_1e.png", width=600, height=600)
 fig_af_high
 dev.off()
 
-#### Figure: number of SNPs in each category for snpeff ####
-
-high_counts <- read.csv(file = "output/load/snpeff/n_mutations_per_type")
-
-## only per impact category
-count_high <- high_counts$n_mutations[which(high_counts$type == "total_high")]
-count_moderate <- high_counts$n_mutations[which(high_counts$type == "total_mod")]
-count_low <- high_counts$n_mutations[which(high_counts$type == "total_low")]
-count_modify <- high_counts$n_mutations[which(high_counts$type == "total_modifier")]
-
-## number of mutations per type
-n_mutations_per_impact <- data.frame("type" = c("High", "Moderate", "Low", "Modifier"),
-                                     "n_mutations" = c(count_high,
-                                                       count_moderate,
-                                                       count_low,
-                                                       count_modify))
-
-n_mutations_per_impact$type <- forcats::fct_relevel(n_mutations_per_impact$type, "Modifier", "Low", "Moderate", "High")
-
-
-ggplot(n_mutations_per_impact, aes(x = type, y = n_mutations)) + 
-  geom_col(color=c(clr_high, clr_grey, clr_grey, clr_grey), 
-           fill=alpha(c(clr_high, clr_grey, clr_grey, clr_grey), 0.7)) + 
-  scale_y_log10(labels = c(0, expression(paste(~10^2)), 
-                           expression(paste(~10^5)), expression(paste(~10^8)), 
-                           expression(paste(~10^10))),
-                limits = c(1, 10000000000))+
-  labs(y= "Number of SNPs", title = "SnpEff", x = "Category")+
-  scale_fill_manual(values = c(clrs[5], clrs[5], clrs[7], clrs[9]))+
-  geom_text(aes(label = prettyNum(n_mutations, big.mark = ",", scientific=F)), hjust = -0.2, size =6 ) +
-  theme(legend.position="none",
-        text = element_text(size = 18)) + coord_flip() -> fig_countsnpef
-
-fig_countsnpef
-png(file = "plots/main/fig_1b.png", width=600, height=600)
-fig_countsnpef
-dev.off()
-
-#### Figure: count of each SNPeff mutation variant ####
-
-n_mutations_pertype <- subset(high_counts, !is.na(impact))
-n_mutations_pertype$impact <- gsub("low", "Low", n_mutations_pertype$impact)
-n_mutations_pertype$impact <- gsub("moderate", "Moderate", n_mutations_pertype$impact)
-n_mutations_pertype$impact <- gsub("high", "High", n_mutations_pertype$impact)
-n_mutations_pertype$impact <- gsub("modify", "Modifier", n_mutations_pertype$impact)
-n_mutations_pertype$impact <- factor(n_mutations_pertype$impact, 
-                                     levels = c("High", "Moderate", "Low", "Modifier"))
-
-n_mutations_pertype$abb <- c("Downstream gene variant",
-                             "5' UTR premature start codon",
-                             "5' UTR variant",
-                             "Initiator codon variant",
-                             "Intron variant",
-                             "Loss of Function",
-                             "Missense variant",
-                             "Nonsense mediated decay",
-                             "Splice acceptor variant",
-                             "Splice donor variant",
-                             "Splice region variant",
-                             "Start codon lost",
-                             "Stop codon gained",
-                             "Stop codon lost",
-                             "Stop codon retained",
-                             "Synonymous variant",
-                             "3' UTR varaint",
-                             "Upstream gene variant",
-                             "Intergenic region")
-
-ggplot(n_mutations_pertype, aes(x = reorder(abb, desc(n_mutations)), 
-                                  y = n_mutations)) + 
-  geom_col(aes(fill = impact, col = impact)) + 
-  scale_y_log10(labels = c("10", "1000", "100,000"), breaks = c(10, 1000, 100000))+
-  labs(y = "Number of SNPs", fill = "Impact Class", x = "Mutation type")+
-  scale_fill_manual(values = alpha(c(clr_high, "#549F93", "#8EA4CC", clrs_related[1]), 0.7))+
-  scale_color_manual(values = c(clr_high, "#549F93", "#8EA4CC", clrs_related[1]))+
-  coord_flip() +geom_text(aes(label = prettyNum(n_mutations, big.mark = ",", scientific=F)), 
-                          hjust = 1.5, size = 6)+
-  guides(col="none") +
-  theme(legend.position = c(0.8,0.8)) -> fig_countsnpef_cat
-
-png(file = "plots/main/fig_1c.png", width=600, height=800)
-fig_countsnpef_cat
-dev.off()
-
 #### Figure: histogram number of loci hom het ######
 
 # high
@@ -164,7 +167,8 @@ mean(high$n_total_mutations)
 
 high_loci <- gather(high[,c("id", "n_total_id_Heterozygosity", "n_total_id_Homozygosity")], type, n_loci, c(n_total_id_Heterozygosity:n_total_id_Homozygosity), factor_key = T)
 high_loci$type <- gsub("n_total_id_", "", high_loci$type)
-high_loci$type <- factor(high_loci$type, levels = c("Homozygosity", "Heterozygosity"))
+high_loci$type <- gsub("gosity", "gous", high_loci$type)
+high_loci$type <- factor(high_loci$type, levels = c("Homozygous", "Heterozygous"))
 
 ggplot(high_loci, aes(x = n_loci)) +
   geom_histogram(bins = 30, position = "identity", aes(fill = type, col = type)) +
@@ -197,9 +201,9 @@ gerp <- gerp %>% mutate(het_load = het_data / n_genotyped,
 gerp <- subset(gerp, gerp_cat == "4-5")
 
 gerp_loci <- gather(gerp[,c("id", "het_data", "hom_data")], type, n_loci, c(het_data:hom_data), factor_key = T)
-gerp_loci$type <- gsub("het_data", "Heterozygosity", gerp_loci$type)
-gerp_loci$type <- gsub("hom_data", "Homozygosity", gerp_loci$type)
-gerp_loci$type <- factor(gerp_loci$type, levels = c("Homozygosity", "Heterozygosity"))
+gerp_loci$type <- gsub("het_data", "Heterozygous", gerp_loci$type)
+gerp_loci$type <- gsub("hom_data", "Homozygoys", gerp_loci$type)
+gerp_loci$type <- factor(gerp_loci$type, levels = c("Homozygoys", "Heterozygous"))
 
 gerp <- gerp %>% mutate(n_total_mutations = het_data+(hom_data*2))
 sd(gerp$n_total_mutations)

@@ -37,9 +37,9 @@ rule all:
 
 #rule vcf_to_bed:
 #    input: 
-#        vcf = "output/ancestral/ltet_filtered_ann_aa.vcf.gz"
+#        vcf = "data/processed/annotated/ltet_filtered_ann_aa_chick_correct.vcf.gz"
 #    output:
-#        bed = "output/ancestral/ltet_filtered_ann_aa.bed"
+#        bed = "data/processed/annotated/ltet_filtered_ann_aa_chick_correct.bed"
 #    shell:
 #        """
 #        convert2bed -i vcf < {input.vcf} > {output.bed}

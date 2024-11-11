@@ -26,6 +26,7 @@ pheno <- pheno %>% mutate(age_cat = as.factor(case_when(age == 1 ~ "yearling", a
 
 ### modelling ####
 formula <- formula(paste0("scale(", response, ") ~ scale(total_load) + age_cat + (1|year) + (1|site/id)"))
+#summary(lmerTest::lmer(formula, data = pheno))
 
 fit <- brm(formula,
             family = "gaussian",
