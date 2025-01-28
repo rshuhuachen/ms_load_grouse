@@ -1,6 +1,5 @@
 #### calculated allele frequencies of high impact mutations and GERP >= 4 ####
 ### here: load in, assign ancestral and derived alleles and calculate mean ####
-### not sure how vcftool assigns frist and second allele (is it major/minor or ancestral/derived?)
 
 pacman::p_load(tidyverse, data.table)
 

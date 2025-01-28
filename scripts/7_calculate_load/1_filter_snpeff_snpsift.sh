@@ -38,4 +38,7 @@ gzip  data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_synonymous.vcf
 cat output/ancestral/ltet_filtered_ann_aa.vcf | java -jar src/SnpSift.jar filter "ANN[*].IMPACT = 'MODERATE' | ANN[*].IMPACT = 'MODIFIER' | ANN[*].IMPACT = 'HIGH' " > data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_non_synonymous.vcf
 gzip  data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_non_synonymous.vcf
 
+## Modifier
+zcat output/ancestral/ltet_filtered_ann_aa.vcf.gz | java -jar src/SnpSift.jar filter " ( ANN[*].IMPACT = 'MODIFIER') " > data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_modifier.vcf
+gzip data/genomic/intermediate/snpef/ltet_ann_aa_snp_output_modifier.vcf
 

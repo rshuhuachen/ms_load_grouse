@@ -101,52 +101,113 @@ ggplot(n_mutations_pertype, aes(x = reorder(abb, desc(n_mutations)),
   scale_y_log10(labels = c(expression(paste(~10^1)), expression(paste(~10^3)), expression(paste(~10^5))), 
                   breaks = c(10, 1000, 100000))+
   labs(y = expression('Number of SNPs (log'[10]*')'), fill = "Impact Class", x = "Mutation type")+
-  scale_fill_manual(values = alpha(c(clr_high, "#549F93", "#8EA4CC", clrs_related[1]), 0.7))+
-  scale_color_manual(values = c(clr_high, "#549F93", "#8EA4CC", clrs_related[1]))+
+  scale_fill_manual(values = alpha(c(clr_high, "#8EA4CC","#8FAD88",  "#FFCD70"), 0.7))+
+  scale_color_manual(values = c(clr_high, "#8EA4CC","#8FAD88",  "#FFCD70"))+
   coord_flip() +geom_text(aes(label = prettyNum(n_mutations, big.mark = ",", scientific=F)), 
                           hjust = 1.5, size = 6)+
   guides(col="none") +
   theme(legend.position = c(0.7,0.8)) -> fig_countsnpef_cat
+fig_countsnpef_cat
 
 png(file = "plots/main/fig_1c.png", width=600, height=800)
 fig_countsnpef_cat
 dev.off()
 
 #### Figure: allele freq combining GERP and SnpEFf ####
+
+# deleterious
 load(file = "output/load/gerp/allelefreq_gerp5.derived.RData")
 load(file = "output/load/snpeff/allelefreq_snpeff_high.derived.RData")
+# 
+# allele_freq_gerp_long_derived$Method <- "GERP score ≥ 4"
+# allele_freq_high_long_derived$Method <- "High impact SnpEff"
+# names(allele_freq_gerp_long_derived)[7] <- "allele_freq"
+# names(allele_freq_high_long_derived)[7] <- "allele_freq"
+# names(allele_freq_high_long_derived)[6] <- names(allele_freq_gerp_long_derived)[6]
+# 
+# allelefreq <- rbind(allele_freq_gerp_long_derived, allele_freq_high_long_derived)
+# 
+# ggplot(subset(allelefreq, Method == "GERP score ≥ 4"), aes(x = frequency, fill = Method, col = Method)) + 
+#   scale_y_continuous(breaks=(c(50000, 100000, 150000)),
+#                      labels=c("50 k", "100 k", "150 k"))+
+#   geom_histogram(aes(y = after_stat(count)),
+#                  binwidth=0.07, position="dodge") +
+#   scale_color_manual(values = c(clr_gerp)) + 
+#   scale_fill_manual(values = alpha(c(clr_gerp), 0.7))+
+#   labs(x = "Allele frequency", y = "Frequency", title = "GERP ≥ 4")+
+#   theme(legend.position = "none") -> fig_af_gerp
+# 
+# png(file = "plots/main/fig_1d.png", width=600, height=600)
+# fig_af_gerp
+# dev.off()
+# 
+# ggplot(subset(allelefreq, Method == "High impact SnpEff"), aes(x = frequency, fill = Method, col = Method)) + 
+#   scale_y_continuous(breaks=(c(0, 1000, 2000)),
+#                      labels=c("0", "1 k", "2 k"))+
+#   geom_histogram(aes(y = after_stat(count)),
+#                  binwidth=0.07, position="dodge") +
+#   scale_color_manual(values = c(clr_high)) + 
+#   scale_fill_manual(values = alpha(c(clr_high), 0.7))+
+#   labs(x = "Allele frequency", y = "Frequency", title = "High impact SnpEff") +
+#   theme(legend.position = "none")-> fig_af_high
+# 
+# png(file = "plots/main/fig_1e.png", width=600, height=600)
+# fig_af_high
+# dev.off()
 
-allele_freq_gerp_long_derived$Method <- "GERP score ≥ 4"
-allele_freq_high_long_derived$Method <- "High impact SnpEff"
+
+### combine neutral and del in one fig ####
+# neutral
+load(file = "output/load/snpeff/allelefreq_snpeff_low.derived.RData") #allele_freq_low_long_derived
+load(file = "output/load/gerp/allelefreq_gerp0.derived.RData") #allele_freq_gerp0_long_derived
+
+allele_freq_gerp_long_derived$Method <- "GERP"
+allele_freq_high_long_derived$Method <- "SnpEff"
+allele_freq_gerp0_long_derived$Method <- "GERP"
+allele_freq_low_long_derived$Method <- "SnpEff"
+
+allele_freq_gerp_long_derived$Deleteriousness <- "GERP ≥ 4"
+allele_freq_high_long_derived$Deleteriousness <- "High impact"
+allele_freq_gerp0_long_derived$Deleteriousness <- "GERP < 0"
+allele_freq_low_long_derived$Deleteriousness <- "Low impact"
+
 names(allele_freq_gerp_long_derived)[7] <- "allele_freq"
 names(allele_freq_high_long_derived)[7] <- "allele_freq"
+names(allele_freq_gerp0_long_derived)[7] <- "allele_freq"
+names(allele_freq_low_long_derived)[7] <- "allele_freq"
 names(allele_freq_high_long_derived)[6] <- names(allele_freq_gerp_long_derived)[6]
+names(allele_freq_low_long_derived)[6] <- names(allele_freq_gerp_long_derived)[6]
 
-allelefreq <- rbind(allele_freq_gerp_long_derived, allele_freq_high_long_derived)
+allelefreq <- rbind(allele_freq_gerp_long_derived, allele_freq_high_long_derived,
+                    allele_freq_gerp0_long_derived, allele_freq_low_long_derived)
 
-ggplot(subset(allelefreq, Method == "GERP score ≥ 4"), aes(x = frequency, fill = Method, col = Method)) + 
-  scale_y_continuous(breaks=(c(50000, 100000, 150000)),
-                     labels=c("50 k", "100 k", "150 k"))+
-  geom_histogram(aes(y = after_stat(count)),
+ggplot(subset(allelefreq, Method == "GERP"), aes(x = frequency, fill = Deleteriousness, col = Deleteriousness)) + 
+  # scale_y_continuous(breaks=(c(50000, 100000, 150000)),
+  #                    labels=c("50 k", "100 k", "150 k"))+
+  geom_histogram(aes(y=after_stat(c(count[group==1]/sum(count[group==1]),
+                                    count[group==2]/sum(count[group==2]))*100)),
                  binwidth=0.07, position="dodge") +
-  scale_color_manual(values = c(clr_gerp)) + 
-  scale_fill_manual(values = alpha(c(clr_gerp), 0.7))+
-  labs(x = "Allele frequency", y = "Frequency", title = "GERP ≥ 4")+
-  theme(legend.position = "none") -> fig_af_gerp
+  scale_color_manual(values = c("grey", clr_gerp)) + 
+  scale_fill_manual(values = alpha(c("grey", clr_gerp), 0.7))+
+  labs(x = "Allele frequency", y = "Percentage of SNPs", title = "GERP") +
+  theme(legend.position = c(0.8,0.9))-> fig_af_gerp
+fig_af_gerp
 
 png(file = "plots/main/fig_1d.png", width=600, height=600)
 fig_af_gerp
 dev.off()
 
-ggplot(subset(allelefreq, Method == "High impact SnpEff"), aes(x = frequency, fill = Method, col = Method)) + 
-  scale_y_continuous(breaks=(c(0, 1000, 2000)),
-                     labels=c("0", "1 k", "2 k"))+
-  geom_histogram(aes(y = after_stat(count)),
+snpeff_af <- subset(allelefreq, Method == "SnpEff")
+snpeff_af$Deleteriousness <- factor(snpeff_af$Deleteriousness, levels = c("Low impact", "High impact"))
+
+ggplot(snpeff_af, aes(x = frequency, fill = Deleteriousness, col = Deleteriousness)) + 
+  geom_histogram(aes(y=after_stat(c(count[group==1]/sum(count[group==1]),
+                                    count[group==2]/sum(count[group==2]))*100)),
                  binwidth=0.07, position="dodge") +
-  scale_color_manual(values = c(clr_high)) + 
-  scale_fill_manual(values = alpha(c(clr_high), 0.7))+
-  labs(x = "Allele frequency", y = "Frequency", title = "High impact SnpEff") +
-  theme(legend.position = "none")-> fig_af_high
+  scale_color_manual(values = c("grey", clr_high)) + 
+  scale_fill_manual(values = alpha(c("grey", clr_high), 0.7))+
+  labs(x = "Allele frequency", y = "Frequency", title = "SnpEff") +
+  theme(legend.position = c(0.8,0.9))-> fig_af_high
 
 png(file = "plots/main/fig_1e.png", width=600, height=600)
 fig_af_high
@@ -202,8 +263,8 @@ gerp <- subset(gerp, gerp_cat == "4-5")
 
 gerp_loci <- gather(gerp[,c("id", "het_data", "hom_data")], type, n_loci, c(het_data:hom_data), factor_key = T)
 gerp_loci$type <- gsub("het_data", "Heterozygous", gerp_loci$type)
-gerp_loci$type <- gsub("hom_data", "Homozygoys", gerp_loci$type)
-gerp_loci$type <- factor(gerp_loci$type, levels = c("Homozygoys", "Heterozygous"))
+gerp_loci$type <- gsub("hom_data", "Homozygous", gerp_loci$type)
+gerp_loci$type <- factor(gerp_loci$type, levels = c("Homozygous", "Heterozygous"))
 
 gerp <- gerp %>% mutate(n_total_mutations = het_data+(hom_data*2))
 sd(gerp$n_total_mutations)

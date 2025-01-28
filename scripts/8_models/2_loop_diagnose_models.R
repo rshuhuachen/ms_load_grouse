@@ -84,6 +84,9 @@ for (i in 1:length(output)){
   print(areas)
   dev.off()
   
+  # save model output intervals as a table
+  interval <- mcmc_intervals_data(fit, prob =0.8, prob_outer = 0.95)
+  write.csv(interval, file = paste0("output/models/intervals/", modelname, ".csv"), row.names=F, quote=F)
   # add to summary
   diagnose_summary[[modelname]] <- diagnosis
 }
