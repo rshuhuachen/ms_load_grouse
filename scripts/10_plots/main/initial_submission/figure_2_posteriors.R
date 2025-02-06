@@ -6,7 +6,13 @@ pacman::p_load(brms, bayesplot, tidyverse, ggridges, prismatic, ggpubr,
 
 source("scripts/theme_ggplot.R")
 
-#### plot a - total gerp, total snpeff ####
+#### plot a - froh, total gerp, total snpeff ####
+
+
+# gerp
+load(file = "output/models/from_lms.RData")
+brm_froh_lms <- fit
+r2_bayes(brm_froh_lms)
 
 # load models
 
@@ -21,30 +27,35 @@ brm_load_t_add_high_lms <- brm_load_t
 r2_bayes(brm_load_t_add_high_lms)
 
 # get intervals
+brms_froh_lms_interval <- mcmc_intervals_data(brm_froh_lms, prob =0.8, prob_outer = 0.95, pars = "b_scalefroh")
 brms_gerp5_lms_interval <- mcmc_intervals_data(brm_load_t_gerp5_lms, prob =0.8, prob_outer = 0.95, pars = "b_scaletotal_load")
 brms_high_lms_interval <- mcmc_intervals_data(brm_load_t_add_high_lms, prob =0.8, prob_outer = 0.95, pars = "b_scaletotal_load")
 
-brms_plota_interval <- rbind(brms_gerp5_lms_interval,
+brms_plota_interval <- rbind(brms_froh_lms_interval,
+                             brms_gerp5_lms_interval,
                              brms_high_lms_interval)
-brms_plota_interval$model <- c("GERP", "SnpEff")
+brms_plota_interval$model <- c("FROH", "Total GERP load", "Total SnpEff load")
 
 # get areas
+brms_froh_lms_area <- mcmc_areas_data(brm_froh_lms, pars = "b_scalefroh")
 brms_gerp5_lms_area <- mcmc_areas_data(brm_load_t_gerp5_lms, pars = "b_scaletotal_load")
 brms_high_lms_area <- mcmc_areas_data(brm_load_t_add_high_lms, pars = "b_scaletotal_load")
 
-brms_plota_areas <- rbind(brms_gerp5_lms_area,
+brms_plota_areas <- rbind(brms_froh_lms_area,
+                          brms_gerp5_lms_area,
                           brms_high_lms_area)
 
-brms_plota_areas$model <- c(rep("GERP", nrow(brms_gerp5_lms_area)),
-                            rep("SnpEff", nrow(brms_high_lms_area)))
+brms_plota_areas$model <- c(rep("FROH", nrow(brms_froh_lms_area)),
+                            rep("Total GERP load", nrow(brms_gerp5_lms_area)),
+                            rep("Total SnpEff load", nrow(brms_high_lms_area)))
 
 
 #rearrange order for visualization
 brms_plota_interval$model  <- factor(as.factor(brms_plota_interval$model),
-                                     levels= c("SnpEff", "GERP"))
+                                     levels= c("Total SnpEff load", "Total GERP load","FROH"))
 
 brms_plota_areas$model  <- factor(as.factor(brms_plota_areas$model),
-                                  levels= c("SnpEff", "GERP"))
+                                  levels= c("Total SnpEff load", "Total GERP load","FROH"))
 
 ### plot
 
@@ -68,9 +79,11 @@ ggplot(data = brms_plota$outer) +
   geom_segment(data=brms_plota_interval, aes(x = ll, xend = hh, yend = model), col = "black")+
   geom_point(data=brms_plota_interval, aes(x = m, y = model), fill="white",  col = "black", shape=21, size = 6) + 
   geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash")+
-  labs(x = expression("Standardised"~beta), y = "Total load")+
+  labs(x = expression("Standardised"~beta), y = "Parameter")+
   xlim(-0.35, 0.1)+
   scale_fill_manual(values =alpha(c(clr_high, clr_gerp, clr_froh), 0.7)) +
+  scale_y_discrete(labels = c("Total SnpEff load", "Total GERP load", 
+                              expression(italic(F)[ROH])))+
   scale_color_manual(values =c(clr_high, clr_gerp, clr_froh)) +
   theme(panel.border = element_blank(),
         panel.grid = element_blank(),
@@ -81,7 +94,7 @@ ggplot(data = brms_plota$outer) +
 totals
 
 brms_plota_interval <- brms_plota_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
-write.csv(brms_plota_interval, file = "output/models/intervals/total_gerp45_high.csv", quote=F, row.names = F)
+write.csv(brms_plota_interval, file = "output/models/intervals/total_froh_gerp45_high.csv", quote=F, row.names = F)
 
 png(file = "plots/main/fig_2a.png", width=600, height=600)
 totals
