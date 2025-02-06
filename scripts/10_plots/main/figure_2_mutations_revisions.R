@@ -160,7 +160,7 @@ n_mutations_per_impact$type <- factor(n_mutations_per_impact$type,
 
 ggplot(n_mutations_per_impact, aes(x = median, y = type)) + 
   geom_segment(aes(x = quant_25, xend = quant_75, y = type), col = alpha(clr_grey, 0.7), size = 1) + 
-  geom_point(size = 4, fill = clr_grey, col = "black", shape=21) + 
+  geom_point(size = 4, fill = "black", col = "black", shape=21) + 
   labs(x = "GERP score", title = "") +
   geom_vline(xintercept = 0, col = "darkred", linetype = "dotted") + 
   theme(axis.line.y = element_blank(),
