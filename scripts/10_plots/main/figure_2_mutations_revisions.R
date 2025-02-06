@@ -73,7 +73,8 @@ ggplot(sum_high_per_gerp, aes(x = n_high, y = gerp_cat)) +
   theme(plot.margin = margin(0.75, 0.75, 0.75, -1,unit= "cm"))+
   geom_text(aes(label = prettyNum(n_high, big.mark=","), y = gerp_cat), 
             hjust=-0.2, size = 6) +
-  labs(x = "Number of high impact", title = "") -> fig_count_high_per_gerp
+  labs(x = "Number of high impact 
+SnpEff SNPs", title = "") -> fig_count_high_per_gerp
 
 fig_count_high_per_gerp
 
@@ -158,8 +159,8 @@ n_mutations_per_impact$type <- factor(n_mutations_per_impact$type,
 # plot
 
 ggplot(n_mutations_per_impact, aes(x = median, y = type)) + 
-  geom_segment(aes(x = quant_25, xend = quant_75, y = type), col = alpha(clr_gerp, 0.7), size = 1) + 
-  geom_point(size = 4, fill = clr_gerp, col = "black", shape=21) + 
+  geom_segment(aes(x = quant_25, xend = quant_75, y = type), col = alpha(clr_grey, 0.7), size = 1) + 
+  geom_point(size = 4, fill = clr_grey, col = "black", shape=21) + 
   labs(x = "GERP score", title = "") +
   geom_vline(xintercept = 0, col = "darkred", linetype = "dotted") + 
   theme(axis.line.y = element_blank(),
@@ -264,7 +265,8 @@ ggplot(subset(allelefreq, Method == "GERP"), aes(x = frequency, fill = Deleterio
   scale_color_manual(values = c("grey", clr_gerp)) + 
   scale_fill_manual(values = alpha(c("grey", clr_gerp), 0.7))+
   labs(x = "Allele frequency", y = "Percentage of SNPs", title = "GERP") +
-  theme(legend.position = c(0.8,0.9))-> fig_af_gerp
+  theme(legend.position = c(0.8,0.9),
+        legend.title = element_blank())-> fig_af_gerp
 fig_af_gerp
 
 png(file = "plots/main/fig_2d.png", width=600, height=600)
@@ -281,7 +283,8 @@ ggplot(snpeff_af, aes(x = frequency, fill = Deleteriousness, col = Deleteriousne
   scale_color_manual(values = c("grey", clr_high)) + 
   scale_fill_manual(values = alpha(c("grey", clr_high), 0.7))+
   labs(x = "Allele frequency", y = "Frequency", title = "SnpEff") +
-  theme(legend.position = c(0.8,0.9))-> fig_af_high
+  theme(legend.position = c(0.8,0.9),
+        legend.title = element_blank())-> fig_af_high
 
 png(file = "plots/main/fig_2e.png", width=600, height=600)
 fig_af_high
@@ -379,7 +382,7 @@ cowplot::plot_grid(fig_mut_2, fig_mut_3, rel_heights = c(1, 0.5),
                    align = "hv", axis = "lb") -> fig_mut
 
 
-png(file = "plots/main/fig_2.png", width=1400, height=1200)
+png(file = "plots/main/fig_2.png", width=1500, height=1200)
 fig_mut
 dev.off()
 

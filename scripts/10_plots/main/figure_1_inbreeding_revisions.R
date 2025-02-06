@@ -119,6 +119,7 @@ df %>%
     axis.ticks.x = element_blank(),
     axis.ticks.y = element_blank(),
     panel.spacing = unit(0, "lines"),
+    strip.background = element_blank(),
     # plot.margin = margin(r = 0.5, l = 0.1, b = 0.1, t = 0.1, unit = "cm"),
     axis.line.x = element_blank(),
     legend.position="none",
