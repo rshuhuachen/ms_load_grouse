@@ -19,7 +19,7 @@ calculate_load_snpeff <- function(vcf, output_vcf, loadtype){
   # exclude warning messages
   
   vcf <- subset(vcf, !grepl("WARNING", INFO))
-  
+  vcf <- as.data.frame(vcf)
   # only get GT info, PL and DP are filtered by already anyway 
   gt <- c(10:ncol(vcf))
   select_n3 <- function(x){x = substr(x,1,3)}

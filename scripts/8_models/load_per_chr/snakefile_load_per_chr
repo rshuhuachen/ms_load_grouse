@@ -1,0 +1,42 @@
+"""
+snakemake --snakefile scripts/8_models/load_per_chr/snakefile_load_per_chr -n 
+snakemake --snakefile scripts/8_models/load_per_chr/snakefile_load_per_chr --jobs 8 -p --default-resources mem_mb=51200 --use-conda --rerun-triggers mtime --latency-wait 10 --rerun-incomplete
+
+snakemake --jobs 5 --snakefile scripts/8_models/load_per_chr/snakefile_load_per_chr \
+    --latency-wait 30 \
+    -p \
+    --default-resources mem_mb=51200 \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb} ' \
+        --jn mainmodels.{name}.{jobid}.sh \
+        --rerun-incomplete
+"""
+METHODS=["high","gerp45"]
+CHRS=["1","2","3","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","30"]
+
+rule all:
+    input:
+        "scripts/8_models/load_per_chr/model_load_per_chr.R",
+        expand("output/models/per_chr/lms_total_{method}_scaf_{chr}.RData", method=METHODS, chr=CHRS),
+
+rule run_bayes_total:
+    input: 
+        rscript = "scripts/8_models/load_per_chr/model_load_per_chr.R"
+    output:
+        model = "output/models/per_chr/lms_total_{method}_scaf_{chr}.RData"
+    log: "logs/bayesmodel_total_{method}_scaf_{chr}.log"
+    params:
+      iter = 1000000,
+      burn = 500000,
+      thin = 1000
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {wildcards.method} {wildcards.chr} {output.model} {params.iter} {params.burn} {params.thin} &> {log}
+        """

@@ -1,8 +1,9 @@
 ### load packages ####
-pacman::p_load(tidyverse, data.table)
+pacman::p_load(tidyverse, data.table, ggforce)
+source("scripts/theme_ggplot.R")
 
 ### load average gerp scores ####
-beds_windows_files <- list.files(path = "output/gerp/windows", pattern = "average_gerp_10kb*", full.names = T)
+beds_windows_files <- list.files(path = "output/gerp/windows", pattern = "average_gerp_50kb*", full.names = T)
 
 beds_windows <- data.frame()
 for (i in 1:length(beds_windows_files)){
@@ -19,7 +20,6 @@ beds_windows$mean_gerp <- as.numeric(beds_windows$mean_gerp)
 beds_windows <- beds_windows %>% mutate(pos = case_when(mean_gerp >0 ~ "pos",
                                                         mean_gerp < 0 ~"neg"))
 ### plot gerp averages ####
-pacman::p_load(ggforce)
 
 ggplot(subset(beds_windows, scaf_nr == 1), aes(x = start_window/10000000, y= mean_gerp)) + 
   geom_link2(aes(colour = after_stat(ifelse(y > 0, "positve", "negative")))) +
@@ -31,7 +31,7 @@ ggplot(subset(beds_windows, scaf_nr == 1), aes(x = start_window/10000000, y= mea
 ggplot(beds_windows, aes(x = start_window/10000000, y= mean_gerp)) + 
   geom_link2(aes(colour = after_stat(ifelse(y > 0, "positve", "negative")))) +
   labs(x = "Window start in Mb", y = "Mean GERP score") + geom_hline(yintercept = 0, col = "darkred", linetype = "dotted") + 
-  facet_grid(scaf_nr~., scales="free_x") +
+  facet_grid(scaf_nr~., scales="free") +
   theme(legend.position="none")+
   scale_color_manual(values = c("grey40", clr_gerp)) -> mean_gerp_across_scaf
 

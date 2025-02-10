@@ -1,0 +1,42 @@
+"""
+snakemake --snakefile scripts/8_models/lms/snakefile_gerpcats -n 
+snakemake --snakefile scripts/8_models/lms/snakefile_gerpcats --jobs 5 -p --default-resources mem_mb=51200 --use-conda --rerun-triggers mtime --latency-wait 10 --rerun-incomplete
+
+snakemake --jobs 50 --snakefile scripts/8_models/lms/snakefile_gerpcats \
+    --latency-wait 30 \
+    -p \
+    --default-resources mem_mb=51200 \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb} ' \
+        --jn bayes_model.{name}.{jobid}.sh \
+        --rerun-incomplete
+"""
+
+CATS=["0","01", "12", "23", "34"]
+
+rule all:
+    input:
+        "scripts/8_models/lms/model_gerpcats.R",
+        expand("output/models/other_gerp_cats/lms_total_gerp_{cat}.RData", cat=CATS)
+
+rule run_bayes_total:
+    input: 
+        rscript = "scripts/8_models/lms/model_gerpcats.R"
+    output:
+        model = "output/models/other_gerp_cats/lms_total_gerp_{cat}.RData"
+    log: "logs/bayesmodel_total_gerp_{cat}.log"
+    params:
+      iter = 1000000,
+      burn = 500000,
+      thin = 1000
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {wildcards.cat} {output.model} {params.iter} {params.burn} {params.thin} &> {log}
+        """

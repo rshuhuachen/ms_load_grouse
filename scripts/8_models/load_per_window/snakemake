@@ -30,8 +30,10 @@ rule all:
     input: 
         "data/genomic/refgenome/30_largest.scafs_reduced.tsv",
         expand("output/gerp/beds/gerp_scaf_{nscaf}.bed", nscaf = SCAF_NO),
-        expand("output/gerp/windows/average_gerp_10kb_{nscaf}.bed", nscaf = SCAF_NO),
-        expand("output/gerp/windows/windows_10kb_{nscaf}.bed", nscaf = SCAF_NO)
+        expand("output/gerp/windows/average_gerp_100kb_{nscaf}.bed", nscaf = SCAF_NO),
+        expand("output/gerp/windows/windows_100kb_{nscaf}.bed", nscaf = SCAF_NO),
+        expand("output/load_per_window/summary_load_per_window_scaf_{nscaf}.RData", nscaf = SCAF_NO),
+        "scripts/8_models/load_per_window/gerp_load_per_scaf.R"
 #        expand("output/load_per_window/load_per_window_scaf_{nscaf}.txt", nscaf=SCAF_NO)
         
                 
@@ -39,9 +41,9 @@ rule make_windows:
     input:
         genome = "data/genomic/refgenome/30_largest.scafs_reduced.tsv"
     output:
-        windows = "output/gerp/windows/windows_10kb_{nscaf}.bed"
+        windows = "output/gerp/windows/windows_100kb_{nscaf}.bed"
     params:
-        winlength = 10000,
+        winlength = 100000,
         scafname = lambda wc: get_scafnames(wc)
     shell:
         """
@@ -51,25 +53,27 @@ rule make_windows:
 rule mean_gerp_windows:
     input: 
         bed = "output/gerp/beds/gerp_scaf_{nscaf}.bed",
-        window = "output/gerp/windows/windows_10kb_{nscaf}.bed"
+        window = "output/gerp/windows/windows_100kb_{nscaf}.bed"
     output:
-        bed = "output/gerp/windows/average_gerp_10kb_{nscaf}.bed"
+        bed = "output/gerp/windows/average_gerp_100kb_{nscaf}.bed"
     shell:
         """
         bedtools map -a {input.window} -b {input.bed} -c 5 -o mean -F 1 > {output.bed}
         """
 
 #vcftools --vcf output/ancestral/ltet_filtered_ann_aa.vcf --bed output/load/gerp/gerp_over_4_pos.bed --out output/load/gerp/gerps_over4_correct.vcf --recode --keep-INFO-all
+#bgzip -c output/load/gerp/gerps_over4_correct.vcf.recode.vcf > output/load/gerp/gerps_over4_correct.vcf.recode.vcf.gz
+# tabix -p vcf output/load/gerp/gerps_over4_correct.vcf.recode.vcf.gz
 
 rule gerp_load_lms:
     input: 
-        allgerp = "output/load/gerp/gerps_over4_correct.vcf",
-        window = "output/gerp/windows/windows_10kb_{nscaf}.bed",
+        allgerp = "output/load/gerp/gerps_over4_correct.vcf.recode.vcf.gz",
+        window = "output/gerp/windows/windows_100kb_{nscaf}.bed",
         rscript = "scripts/8_models/load_per_window/gerp_load_per_scaf.R"
     output:
-        load = "output/load_per_window/load_per_window_scaf_{nscaf}.txt"
+        summary = "output/load_per_window/summary_load_per_window_scaf_{nscaf}.RData"
     log: "logs/gerp_load_window_scaf_{nscaf}.txt"
     shell:
         """
-        Rscript --vanilla {input.rscript} {wildcard} {input.allgerp} {input.window} {output.load} &> {log}
+        Rscript --vanilla {input.rscript} {input.allgerp} {input.window} {wildcards.nscaf} {output.summary} &> {log}
         """

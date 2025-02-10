@@ -74,47 +74,86 @@ brms_othersnpeff_interval <- brms_othersnpeff_interval %>% mutate(across(where(i
 write.csv(brms_othersnpeff_interval, file = "output/models/intervals/other_snpeff.csv", quote=F, row.names = F)
 
 ### GERP categories ####
+load(file = "output/models/other_gerp_cats/lms_total_gerp_0.RData")
+brm_load_gerp0 <- brm_load_t
+load(file = "output/models/other_gerp_cats/lms_total_gerp_01.RData")
+brm_load_gerp01 <- brm_load_t
+load(file = "output/models/other_gerp_cats/lms_total_gerp_12.RData")
+brm_load_gerp12 <- brm_load_t
+load(file = "output/models/other_gerp_cats/lms_total_gerp_23.RData")
+brm_load_gerp23 <- brm_load_t
+load(file = "output/models/other_gerp_cats/lms_total_gerp_34.RData")
+brm_load_gerp34 <- brm_load_t
 
-load(file = "output/models/total_hom_het/lms_total_gerp34.RData")
-brm_load_t_add_gerp4_lms <- brm_load_t
-r2_bayes(brm_load_t_add_gerp4_lms)
+# load(file = "output/models/total_hom_het/lms_total_gerp34.RData")
+# brm_load_t_add_gerp4_lms <- brm_load_t
+# r2_bayes(brm_load_t_add_gerp4_lms)
 load(file = "output/models/total_hom_het/lms_total_gerp45.RData")
-brm_load_t_add_gerp5_lms <- brm_load_t
+brm_load_gerp4 <- brm_load_t
 
 rm(brm_load_t)
 
 #extract intervals and areas
 #total
-
-gerp4_t_interval <- mcmc_intervals_data(brm_load_t_add_gerp4_lms, prob =0.8, prob_outer = 0.95) %>%
+gerp0_t_interval <- mcmc_intervals_data(brm_load_gerp0, prob =0.8, prob_outer = 0.95) %>%
   subset(grepl("b_scaletotal_load", parameter))
 
-gerp5_t_interval <- mcmc_intervals_data(brm_load_t_add_gerp5_lms, prob =0.8, prob_outer = 0.95) %>%
+gerp01_t_interval <- mcmc_intervals_data(brm_load_gerp01, prob =0.8, prob_outer = 0.95) %>%
   subset(grepl("b_scaletotal_load", parameter))
 
-brms_gerps_interval <- rbind(gerp4_t_interval,
-                             gerp5_t_interval)
+gerp12_t_interval <- mcmc_intervals_data(brm_load_gerp12, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("b_scaletotal_load", parameter))
 
-brms_gerps_interval$cat <- c("3-4", "≥ 4")
+gerp23_t_interval <- mcmc_intervals_data(brm_load_gerp23, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("b_scaletotal_load", parameter))
+
+gerp34_t_interval <- mcmc_intervals_data(brm_load_gerp34, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("b_scaletotal_load", parameter))
+
+gerp4_t_interval <- mcmc_intervals_data(brm_load_gerp4, prob =0.8, prob_outer = 0.95) %>%
+  subset(grepl("b_scaletotal_load", parameter))
+
+brms_gerps_interval <- rbind(gerp01_t_interval,
+                             gerp12_t_interval,
+                             gerp23_t_interval, 
+                             gerp34_t_interval, 
+                             gerp4_t_interval)
+
+brms_gerps_interval$cat <- c("0-1","1-2","2-3","3-4", "≥ 4")
 
 #total
 
-gerp4_t_area <- mcmc_areas_data(brm_load_t_add_gerp4_lms) %>%
+gerp0_t_area <- mcmc_areas_data(brm_load_gerp0) %>%
   subset(grepl("b_scaletotal_load", parameter))
 
-gerp5_t_area <- mcmc_areas_data(brm_load_t_add_gerp5_lms) %>%
+gerp01_t_area <- mcmc_areas_data(brm_load_gerp01) %>%
   subset(grepl("b_scaletotal_load", parameter))
 
+gerp12_t_area <- mcmc_areas_data(brm_load_gerp12) %>%
+  subset(grepl("b_scaletotal_load", parameter))
 
-brms_gerps_area <- rbind(gerp4_t_area,
-                         gerp5_t_area)
+gerp23_t_area <- mcmc_areas_data(brm_load_gerp23) %>%
+  subset(grepl("b_scaletotal_load", parameter))
 
-obs <- nrow(gerp4_t_area)
-brms_gerps_area$cat <- rep(c( "3-4", "≥ 4"), each = obs)
+gerp34_t_area <- mcmc_areas_data(brm_load_gerp34) %>%
+  subset(grepl("b_scaletotal_load", parameter))
+
+gerp4_t_area <- mcmc_areas_data(brm_load_gerp4) %>%
+  subset(grepl("b_scaletotal_load", parameter))
+
+brms_gerps_area <- rbind(#gerp0_t_area,
+                         gerp01_t_area,
+                         gerp12_t_area,
+                         gerp23_t_area,
+                         gerp34_t_area,
+                         gerp4_t_area)
+
+obs <- nrow(gerp01_t_area)
+brms_gerps_area$cat <- rep(c("0-1","1-2","2-3","3-4", "≥ 4"), each = obs)
 
 #rearrange order for visualization
 brms_gerps_area$cat  <- factor(as.factor(brms_gerps_area$cat),
-                               levels= c( "3-4", "≥ 4"))
+                               levels= c("0-1","1-2","2-3","3-4", "≥ 4"))
 
 ### plot
 
@@ -140,8 +179,8 @@ ggplot(data = brms_gerps$outer) +
   geom_point(data=brms_gerps_interval, aes(x = m, y = cat), fill="white",  col = "black", shape=21, size = 6) + 
   geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash")+
   labs(x = expression("Standardised"~beta), y = "GERP score category")+
-  scale_fill_manual(values =alpha(c("#E5988A", clr_gerp), 0.7)) +
-  scale_color_manual(values =c("#E5988A", clr_gerp)) +
+  scale_fill_manual(values =alpha(c("#E5988A", "#E5988A","#E5988A","#E5988A",clr_gerp), 0.7)) +
+  scale_color_manual(values =c("#E5988A", "#E5988A","#E5988A","#E5988A",clr_gerp)) +
   theme(panel.border = element_blank(),
         panel.grid = element_blank(),
         strip.background = element_blank(),
