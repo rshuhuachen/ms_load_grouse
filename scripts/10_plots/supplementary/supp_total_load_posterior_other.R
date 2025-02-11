@@ -113,13 +113,14 @@ gerp34_t_interval <- mcmc_intervals_data(brm_load_gerp34, prob =0.8, prob_outer 
 gerp4_t_interval <- mcmc_intervals_data(brm_load_gerp4, prob =0.8, prob_outer = 0.95) %>%
   subset(grepl("b_scaletotal_load", parameter))
 
-brms_gerps_interval <- rbind(gerp01_t_interval,
+brms_gerps_interval <- rbind(gerp0_t_interval,
+                             gerp01_t_interval,
                              gerp12_t_interval,
                              gerp23_t_interval, 
                              gerp34_t_interval, 
                              gerp4_t_interval)
 
-brms_gerps_interval$cat <- c("0-1","1-2","2-3","3-4", "≥ 4")
+brms_gerps_interval$cat <- c("< 0", "0-1","1-2","2-3","3-4", "≥ 4")
 
 #total
 
@@ -141,7 +142,7 @@ gerp34_t_area <- mcmc_areas_data(brm_load_gerp34) %>%
 gerp4_t_area <- mcmc_areas_data(brm_load_gerp4) %>%
   subset(grepl("b_scaletotal_load", parameter))
 
-brms_gerps_area <- rbind(#gerp0_t_area,
+brms_gerps_area <- rbind(gerp0_t_area,
                          gerp01_t_area,
                          gerp12_t_area,
                          gerp23_t_area,
@@ -149,11 +150,11 @@ brms_gerps_area <- rbind(#gerp0_t_area,
                          gerp4_t_area)
 
 obs <- nrow(gerp01_t_area)
-brms_gerps_area$cat <- rep(c("0-1","1-2","2-3","3-4", "≥ 4"), each = obs)
+brms_gerps_area$cat <- rep(c("< 0", "0-1","1-2","2-3","3-4", "≥ 4"), each = obs)
 
 #rearrange order for visualization
 brms_gerps_area$cat  <- factor(as.factor(brms_gerps_area$cat),
-                               levels= c("0-1","1-2","2-3","3-4", "≥ 4"))
+                               levels= c("< 0", "0-1","1-2","2-3","3-4", "≥ 4"))
 
 ### plot
 
@@ -179,8 +180,8 @@ ggplot(data = brms_gerps$outer) +
   geom_point(data=brms_gerps_interval, aes(x = m, y = cat), fill="white",  col = "black", shape=21, size = 6) + 
   geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash")+
   labs(x = expression("Standardised"~beta), y = "GERP score category")+
-  scale_fill_manual(values =alpha(c("#E5988A", "#E5988A","#E5988A","#E5988A",clr_gerp), 0.7)) +
-  scale_color_manual(values =c("#E5988A", "#E5988A","#E5988A","#E5988A",clr_gerp)) +
+  scale_fill_manual(values =alpha(c("#E5988A", "#E5988A","#E5988A","#E5988A","#E5988A",clr_gerp), 0.7)) +
+  scale_color_manual(values =c("#E5988A", "#E5988A","#E5988A","#E5988A","#E5988A",clr_gerp)) +
   theme(panel.border = element_blank(),
         panel.grid = element_blank(),
         strip.background = element_blank(),

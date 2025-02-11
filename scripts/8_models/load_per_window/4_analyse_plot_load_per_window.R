@@ -1,5 +1,5 @@
 ### packages ####
-pacman::p_load(tidyverse, data.table)
+pacman::p_load(tidyverse, data.table, ggforce)
 
 ### load in summaries per window ####
 
@@ -45,3 +45,35 @@ for (i in 1:length(scafs_windows)){
     }
   }
 }
+
+save(loads_per_scaf_window, file = "output/load_per_window/loads_per_scaf_window.RData")
+
+
+### plot ####
+source("scripts/theme_ggplot.R")
+
+loads_per_scaf_window$window_nr <- as.numeric(loads_per_scaf_window$window_nr)
+loads_per_scaf_window$scaf <- as.numeric(loads_per_scaf_window$scaf)
+loads_per_scaf_window <- loads_per_scaf_window %>% mutate(sig = case_when(
+  pval < 0.05 & est > 0 ~ "sig pos",
+  pval < 0.05 & est < 0 ~ "sig neg",
+  TRUE ~ "nonsig"
+))
+
+loads_per_scaf_window$qval <- p.adjust(loads_per_scaf_window$pval, method="fdr", n = nrow(loads_per_scaf_window))
+loads_per_scaf_window <- loads_per_scaf_window %>% mutate(sig_q = case_when(
+  qval < 0.05 & est > 0 ~ "sig pos",
+  qval < 0.05 & est < 0 ~ "sig neg",
+  TRUE ~ "nonsig"
+))
+
+loads_per_scaf_window %>% 
+  filter(scaf < 10) %>%
+  ggplot(aes(x = window_nr, y = est)) + 
+  geom_line()+
+  geom_hline(yintercept = 0, col = "darkred", linetype = "dotted")+
+  geom_point(aes(col = sig_q), size = 2) + 
+ # geom_segment(aes(y = est - se, yend = est + se, x = window_nr)) +
+  scale_color_manual(values = c(clr_grey, "#703D57",  "#FFCD70")) +
+  facet_wrap(scaf~., scales="free_x", ncol = 1) -> plot_scaf_10
+ggsave(plot_scaf_10, file = "plots/sup/est_across_windows_gerp.png", width=14, height=18)

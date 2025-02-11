@@ -1,3 +1,7 @@
 parameter,outer_width,inner_width,point_est,ll,l,m,h,hh,cat
-b_scaletotal_load,0.95,0.8,median,-0.2,-0.17,-0.12,-0.08,-0.05,3-4
+b_scaletotal_load,0.95,0.8,median,-0.24,-0.21,-0.16,-0.1,-0.07,< 0
+b_scaletotal_load,0.95,0.8,median,-0.2,-0.17,-0.12,-0.06,-0.03,0-1
+b_scaletotal_load,0.95,0.8,median,-0.19,-0.17,-0.12,-0.06,-0.03,1-2
+b_scaletotal_load,0.95,0.8,median,-0.12,-0.09,-0.04,0.02,0.05,2-3
+b_scaletotal_load,0.95,0.8,median,-0.18,-0.15,-0.1,-0.05,-0.03,3-4
 b_scaletotal_load,0.95,0.8,median,-0.27,-0.25,-0.21,-0.17,-0.14,≥ 4

@@ -90,10 +90,29 @@ write.table(load, file = "output/load/all_loads_combined_da_nosex_29scaf.tsv", s
 cor.test(load$total_load[which(load$loadtype == "gerp45")], load$total_load[which(load$loadtype == "high")])
 
 ### Test for lek effects ####
+pacman::p_load(brm, bayesplot)
 load("data/phenotypes/phenotypes_lifetime.RData")
 pheno_load <- left_join(pheno_wide, load, by = "id")
 summary(lm(total_load ~ site, data = subset(pheno_load, loadtype == "gerp45")))
 summary(lm(total_load ~ site, data = subset(pheno_load, loadtype == "high")))
+
+brm_lek_gerp <- brm(scale(total_load) ~ site, data = subset(pheno_load, loadtype == "gerp45"),
+               family = "gaussian",
+               prior = prior(normal(0,1), class = b),
+               cores =8, control = list(adapt_delta = 0.99, max_treedepth = 15),
+               iter = 1000000, thin = 1000, warmup = 500000, seed = 1908)
+
+interval_lek_gerp <- mcmc_intervals_data(brm_lek_gerp, prob = 0.8, prob_outer = 0.95)
+write.csv(interval_lek_gerp, file = "output/load/interval_gerp_load_site_effect.csv", quote=F, row.names = F)
+
+brm_lek_high <- brm(scale(total_load) ~ site, data = subset(pheno_load, loadtype == "high"),
+                     family = "gaussian",
+                     prior = prior(normal(0,1), class = b),
+                     cores =8, control = list(adapt_delta = 0.99, max_treedepth = 15),
+                     iter = 1000000, thin = 1000, warmup = 500000, seed = 1908)
+
+interval_lek_high <- mcmc_intervals_data(brm_lek_high, prob = 0.8, prob_outer = 0.95)
+write.csv(interval_lek_high, file = "output/load/interval_high_load_site_effect.csv", quote=F, row.names = F)
 
 #### Overlap GERP > 4 and high ####
 high_nowarning <- subset(high, !grepl("WARNING", V8))

@@ -178,4 +178,4 @@ cowplot::plot_grid(gerp_load_per_chr, high_load_per_chr,
                    ncol = 1, labels = "auto", label_fontface = "plain", label_size = 22,
                    align = "hv", axis = "lb")  -> loads_per_chr
 
-ggsave(loads_per_chr, file = "plots/sup/extended_loads_per_chr.png", width=18, height = 14)
+ggsave(loads_per_chr, file = "plots/sup/extended_loads_per_chr.png", width=16, height = 12)

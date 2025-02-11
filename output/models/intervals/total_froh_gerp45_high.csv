@@ -1,0 +1,4 @@
+parameter,outer_width,inner_width,point_est,ll,l,m,h,hh,model
+b_scalefroh,0.95,0.8,median,-0.23,-0.2,-0.14,-0.07,-0.05,FROH
+b_scaletotal_load,0.95,0.8,median,-0.27,-0.25,-0.21,-0.17,-0.14,Total GERP load
+b_scaletotal_load,0.95,0.8,median,-0.18,-0.16,-0.11,-0.06,-0.04,Total SnpEff load

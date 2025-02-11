@@ -8,8 +8,7 @@ source("scripts/theme_ggplot.R")
 
 #### plot a - froh, total gerp, total snpeff ####
 
-
-# gerp
+# froh
 load(file = "output/models/from_lms.RData")
 brm_froh_lms <- fit
 r2_bayes(brm_froh_lms)
@@ -35,6 +34,15 @@ brms_plota_interval <- rbind(brms_froh_lms_interval,
                              brms_gerp5_lms_interval,
                              brms_high_lms_interval)
 brms_plota_interval$model <- c("FROH", "Total GERP load", "Total SnpEff load")
+
+# export full intervals for gerp load
+interval_full_gerp <- mcmc_intervals_data(brm_load_t_gerp5_lms, prob =0.8, prob_outer = 0.95)
+interval_full_gerp <- data.frame(parameter = interval_full_gerp$parameter,
+                                 median = round(interval_full_gerp$m, 2),
+                                 ci_95 = paste0(round(interval_full_gerp$ll, 2), ", ", round(interval_full_gerp$hh, 2)),
+                                 ci_80 = paste0(round(interval_full_gerp$l, 2), ", ", round(interval_full_gerp$h, 2)))
+
+write.csv(interval_full_gerp, file = "output/models/intervals/total_gerp45_full.csv", quote=F, row.names = F)
 
 # get areas
 brms_froh_lms_area <- mcmc_areas_data(brm_froh_lms, pars = "b_scalefroh")
