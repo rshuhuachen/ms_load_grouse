@@ -30,8 +30,8 @@ rule all:
     input: 
         "data/genomic/refgenome/30_largest.scafs_reduced.tsv",
         expand("output/gerp/beds/gerp_scaf_{nscaf}.bed", nscaf = SCAF_NO),
-        expand("output/gerp/windows/average_gerp_100kb_{nscaf}.bed", nscaf = SCAF_NO),
-        expand("output/gerp/windows/windows_100kb_{nscaf}.bed", nscaf = SCAF_NO),
+        expand("output/gerp/windows/average_gerp_500kb_{nscaf}.bed", nscaf = SCAF_NO),
+        expand("output/gerp/windows/windows_500kb_{nscaf}.bed", nscaf = SCAF_NO),
         expand("output/load_per_window/summary_load_per_window_scaf_{nscaf}.RData", nscaf = SCAF_NO),
         "scripts/8_models/load_per_window/gerp_load_per_scaf.R"
 #        expand("output/load_per_window/load_per_window_scaf_{nscaf}.txt", nscaf=SCAF_NO)
@@ -41,9 +41,9 @@ rule make_windows:
     input:
         genome = "data/genomic/refgenome/30_largest.scafs_reduced.tsv"
     output:
-        windows = "output/gerp/windows/windows_100kb_{nscaf}.bed"
+        windows = "output/gerp/windows/windows_500kb_{nscaf}.bed"
     params:
-        winlength = 100000,
+        winlength = 500000,
         scafname = lambda wc: get_scafnames(wc)
     shell:
         """
@@ -53,9 +53,9 @@ rule make_windows:
 rule mean_gerp_windows:
     input: 
         bed = "output/gerp/beds/gerp_scaf_{nscaf}.bed",
-        window = "output/gerp/windows/windows_100kb_{nscaf}.bed"
+        window = "output/gerp/windows/windows_500kb_{nscaf}.bed"
     output:
-        bed = "output/gerp/windows/average_gerp_100kb_{nscaf}.bed"
+        bed = "output/gerp/windows/average_gerp_500kb_{nscaf}.bed"
     shell:
         """
         bedtools map -a {input.window} -b {input.bed} -c 5 -o mean -F 1 > {output.bed}
@@ -68,7 +68,7 @@ rule mean_gerp_windows:
 rule gerp_load_lms:
     input: 
         allgerp = "output/load/gerp/gerps_over4_correct.vcf.recode.vcf.gz",
-        window = "output/gerp/windows/windows_100kb_{nscaf}.bed",
+        window = "output/gerp/windows/windows_500kb_{nscaf}.bed",
         rscript = "scripts/8_models/load_per_window/gerp_load_per_scaf.R"
     output:
         summary = "output/load_per_window/summary_load_per_window_scaf_{nscaf}.RData"

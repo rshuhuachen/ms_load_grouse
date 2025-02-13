@@ -20,10 +20,26 @@ load(file = "output/models/total_hom_het/lms_total_gerp45.RData")
 brm_load_t_gerp5_lms <- brm_load_t
 r2_bayes(brm_load_t_gerp5_lms)
 
+interval_full_gerp <- mcmc_intervals_data(brm_load_t_gerp5_lms, prob =0.8, prob_outer = 0.95)
+interval_full_gerp <- data.frame(parameter = interval_full_gerp$parameter,
+                                 median = round(interval_full_gerp$m, 2),
+                                 ci_95 = paste0(round(interval_full_gerp$ll, 2), ", ", round(interval_full_gerp$hh, 2)),
+                                 ci_80 = paste0(round(interval_full_gerp$l, 2), ", ", round(interval_full_gerp$h, 2)))
+
+write_tsv(interval_full_gerp, file = "output/models/intervals/total_gerp45_full.tsv")
+
 # snpeff
 load(file = "output/models/total_hom_het/lms_total_high.RData")
 brm_load_t_add_high_lms <- brm_load_t
 r2_bayes(brm_load_t_add_high_lms)
+
+interval_full_snpeff <- mcmc_intervals_data(brm_load_t_add_high_lms, prob =0.8, prob_outer = 0.95)
+interval_full_snpeff <- data.frame(parameter = interval_full_snpeff$parameter,
+                                 median = round(interval_full_snpeff$m, 2),
+                                 ci_95 = paste0(round(interval_full_snpeff$ll, 2), ", ", round(interval_full_snpeff$hh, 2)),
+                                 ci_80 = paste0(round(interval_full_snpeff$l, 2), ", ", round(interval_full_snpeff$h, 2)))
+
+write_tsv(interval_full_snpeff, file = "output/models/intervals/total_snpeff_full.tsv")
 
 # get intervals
 brms_froh_lms_interval <- mcmc_intervals_data(brm_froh_lms, prob =0.8, prob_outer = 0.95, pars = "b_scalefroh")
@@ -36,13 +52,6 @@ brms_plota_interval <- rbind(brms_froh_lms_interval,
 brms_plota_interval$model <- c("FROH", "Total GERP load", "Total SnpEff load")
 
 # export full intervals for gerp load
-interval_full_gerp <- mcmc_intervals_data(brm_load_t_gerp5_lms, prob =0.8, prob_outer = 0.95)
-interval_full_gerp <- data.frame(parameter = interval_full_gerp$parameter,
-                                 median = round(interval_full_gerp$m, 2),
-                                 ci_95 = paste0(round(interval_full_gerp$ll, 2), ", ", round(interval_full_gerp$hh, 2)),
-                                 ci_80 = paste0(round(interval_full_gerp$l, 2), ", ", round(interval_full_gerp$h, 2)))
-
-write.csv(interval_full_gerp, file = "output/models/intervals/total_gerp45_full.csv", quote=F, row.names = F)
 
 # get areas
 brms_froh_lms_area <- mcmc_areas_data(brm_froh_lms, pars = "b_scalefroh")
@@ -113,6 +122,15 @@ dev.off()
 load(file = "output/models/total_hom_het/lms_het_hom_gerp45.RData")
 brm_load_rp_gerp5_lms <- brm_load_het_hom
 r2_bayes(brm_load_rp_gerp5_lms)
+
+interval_full_homhet_gerp <- mcmc_intervals_data(brm_load_rp_gerp5_lms, prob =0.8, prob_outer = 0.95)
+interval_full_homhet_gerp <- data.frame(parameter = interval_full_homhet_gerp$parameter,
+                                   median = round(interval_full_homhet_gerp$m, 2),
+                                   ci_95 = paste0(round(interval_full_homhet_gerp$ll, 2), ", ", round(interval_full_homhet_gerp$hh, 2)),
+                                   ci_80 = paste0(round(interval_full_homhet_gerp$l, 2), ", ", round(interval_full_homhet_gerp$h, 2)))
+
+write_tsv(interval_full_homhet_gerp, file = "output/models/intervals/homhet_gerp45_full.tsv")
+
 
 load(file = "output/models/total_hom_het/lms_het_hom_high.RData")
 brm_load_rp_high_lms <- brm_load_het_hom

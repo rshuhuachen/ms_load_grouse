@@ -12,6 +12,15 @@ source("scripts/theme_ggplot.R")
 load(file = "output/models/annual/ams/model_trait_ams_gerp45.RData")
 fit_ms_gerp <- fit
 
+interval_full_gerp <- mcmc_intervals_data(fit_ms_gerp, prob =0.8, prob_outer = 0.95)
+interval_full_gerp <- data.frame(parameter = interval_full_gerp$parameter,
+                                        median = round(interval_full_gerp$m, 2),
+                                        ci_95 = paste0(round(interval_full_gerp$ll, 2), ", ", round(interval_full_gerp$hh, 2)),
+                                        ci_80 = paste0(round(interval_full_gerp$l, 2), ", ", round(interval_full_gerp$h, 2)))
+
+write_tsv(interval_full_gerp, file = "output/models/intervals/ams_gerp45_full.tsv")
+
+
 #extract intervals and areas
 brms_trait_ms_gerp_interval <- mcmc_intervals_data(fit_ms_gerp, prob =0.8, prob_outer = 0.95) %>%
   subset(grepl("b_scale", parameter))
@@ -104,26 +113,39 @@ write.csv(brms_trait_ms_gerp_interval, file = "output/models/intervals/gerp_trai
 load(file = "output/models/annual/traits/model_attend_gerp45.RData")
 fit_gerp_attend <- fit
 r2_bayes(fit_gerp_attend)
+mcmc_intervals_data(fit_ms_gerp, prob =0.8, prob_outer = 0.95) %>%
+  write_tsv(file = "output/models/intervals/fit_gerp_attend.tsv")
 
 load(file = "output/models/annual/traits/model_fight_gerp45.RData")
 fit_gerp_fight <- fit
 r2_bayes(fit_gerp_fight)
+mcmc_intervals_data(fit_gerp_fight, prob =0.8, prob_outer = 0.95) %>%
+  write_tsv(file = "output/models/intervals/fit_gerp_fight.tsv")
 
 load(file = "output/models/annual/traits/model_dist_gerp45.RData")
 fit_gerp_dist <- fit
 r2_bayes(fit_gerp_dist)
+mcmc_intervals_data(fit_gerp_dist, prob =0.8, prob_outer = 0.95) %>%
+  write_tsv(file = "output/models/intervals/fit_gerp_dist.tsv")
 
 load(file = "output/models/annual/traits/model_eyec_gerp45.RData")
 fit_gerp_eyec <- fit
 r2_bayes(fit_gerp_eyec)
+mcmc_intervals_data(fit_gerp_eyec, prob =0.8, prob_outer = 0.95) %>%
+  write_tsv(file = "output/models/intervals/fit_gerp_eyec.tsv")
 
 load(file = "output/models/annual/traits/model_blue_gerp45.RData")
 fit_gerp_blue <- fit
 r2_bayes(fit_gerp_blue)
+mcmc_intervals_data(fit_gerp_blue, prob =0.8, prob_outer = 0.95) %>%
+  write_tsv(file = "output/models/intervals/fit_gerp_blue.tsv")
 
 load(file = "output/models/annual/traits/model_lyre_gerp45.RData")
 fit_gerp_lyre <- fit
 r2_bayes(fit_gerp_lyre)
+mcmc_intervals_data(fit_gerp_lyre, prob =0.8, prob_outer = 0.95) %>%
+  write_tsv(file = "output/models/intervals/fit_gerp_lyre.tsv")
+
 rm(fit)
 
 #extract intervals and areas
