@@ -1,6 +1,6 @@
 
 ### load packages ####
-pacman::p_load(brms, bayesplot, tidyverse, ggridges, prismatic, ggpubr, extrafont, cowplot, performance, data.table, effects)
+pacman::p_load(brms, bayesplot, tidyverse, ggridges, prismatic, ggpubr, extrafont, cowplot, performance, data.table, effects, scales)
 
 source("scripts/theme_ggplot.R")
 
@@ -10,8 +10,42 @@ load("output/load/all_loads_combined_da_nosex_29scaf.RData") #loads no sex chr o
 
 pheno_load <- left_join(pheno_wide, load, by = "id")
 
+##### plot a - inbreeding #####
 
-##### plots a+b - GERP models, total and hom/het #####
+load("output/inbreeding/froh.RData")
+
+#load model
+load(file = "output/models/from_lms.RData")
+brm_froh <- fit
+
+## get effects
+effect_froh<- conditional_effects(brm_froh)
+effect_froh <- effect_froh$froh
+
+## combine all in one df
+
+effect_froh<- effect_froh %>% dplyr::select(c(froh, estimate__, lower__, upper__))
+
+## make a long df with the loads and pheno
+pheno_froh <- left_join(pheno_wide, froh, by = "id")
+
+# divide up between total and then masked/expressed
+
+ggplot() + 
+  geom_point(data = pheno_froh, aes(x=froh, y=LMS_min), size = 2.5) + 
+  geom_line(data= effect_froh, aes(x=froh, y=estimate__), col = clr_froh,
+            linewidth = 1) +
+  geom_ribbon(data=effect_froh, aes(x=froh, y=estimate__, ymin=lower__, ymax=upper__), fill = clr_froh, 
+              alpha= 0.3) +
+  labs(x = expression(Inbreeding~coefficient~italic(F)[ROH]), y = "Lifetime mating success") + 
+  coord_cartesian(ylim = c(1, 30))+
+  scale_y_log10(breaks = c(1, 3, 10, 30))+
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none") -> fig_raw_froh
+
+##### plots b + c- GERP models, total and hom/het #####
 
 #load model
 load(file = "output/models/total_hom_het/lms_total_gerp45.RData")
@@ -19,7 +53,7 @@ brm_load_t_gerp5_lms <- brm_load_t
 load(file = "output/models/total_hom_het/lms_het_hom_gerp45.RData")
 brm_load_rp_gerp5_lms <- brm_load_het_hom
 
-##### plot b - raw data GERP models, total and realized/potential #####
+### get effects
 effect_gerpt<- conditional_effects(brm_load_t_gerp5_lms)
 effect_gerpt <- effect_gerpt$total_load
 effect_gerprp<- conditional_effects(brm_load_rp_gerp5_lms)
@@ -86,7 +120,7 @@ ggplot() +
         strip.background = element_blank(),
         legend.position = "none") -> fig_raw_gerp_hom_het
 
-##### plot c+d - SNPEFF models, total and realized/potential #####
+##### plot d+e - SNPEFF models, total and realized/potential #####
 
 #load model
 load(file = "output/models/total_hom_het/lms_total_high.RData")
@@ -94,7 +128,7 @@ brm_load_t_high5_lms <- brm_load_t
 load(file = "output/models/total_hom_het/lms_het_hom_high.RData")
 brm_load_rp_high5_lms <- brm_load_het_hom
 
-##### plot d - raw data high models, total and realized/potential #####
+##### plot f - raw data high models, total and realized/potential #####
 effect_hight<- conditional_effects(brm_load_t_high5_lms)
 effect_hight <- effect_hight$total_load
 effect_highrp<- conditional_effects(brm_load_rp_high5_lms)
@@ -163,14 +197,15 @@ ggplot() +
 
 #### Combine #### 
 
-cowplot::plot_grid(fig_raw_gerp_total, 
+cowplot::plot_grid(fig_raw_froh,
+                   fig_raw_gerp_total, 
                    fig_raw_high_total, 
                    fig_raw_gerp_hom_het,
-                   fig_raw_high_hom_het, ncol = 2, 
+                   fig_raw_high_hom_het, ncol = 3, 
                    rel_heights = c(0.6,1),
                  #  align = "hv", axis = "lb",
                    labels = "auto", label_fontface = "plain", label_size = 22) -> fig_rawdata
 
-png(file = "plots/sup/rawdata_total_homhet_gerp_snp.png", height=1000, width=800)
+png(file = "plots/sup/rawdata_total_homhet_gerp_snp.png", height=1000, width=1200)
 fig_rawdata
 dev.off()
