@@ -83,6 +83,29 @@ png(file = "plots/sup/extended_data_1c.png", width=800, height=600)
 froh_load
 dev.off()
 
+### Cor tests ####
+
+# hom and froh
+cor.test(load_froh_long$froh[which(load_froh_long$loadtype == "GERP ≥ 4" & load_froh_long$zygosity == "Hom")],
+         load_froh_long$load[which(load_froh_long$loadtype == "GERP ≥ 4" & load_froh_long$zygosity == "Hom")])
+
+cor.test(load_froh_long$froh[which(load_froh_long$loadtype == "High impact SnpEff" & load_froh_long$zygosity == "Hom")],
+         load_froh_long$load[which(load_froh_long$loadtype == "High impact SnpEff" & load_froh_long$zygosity == "Hom")])
+
+# het and froh
+cor.test(load_froh_long$froh[which(load_froh_long$loadtype == "GERP ≥ 4" & load_froh_long$zygosity == "Het")],
+         load_froh_long$load[which(load_froh_long$loadtype == "GERP ≥ 4" & load_froh_long$zygosity == "Het")])
+
+cor.test(load_froh_long$froh[which(load_froh_long$loadtype == "High impact SnpEff" & load_froh_long$zygosity == "Het")],
+         load_froh_long$load[which(load_froh_long$loadtype == "High impact SnpEff" & load_froh_long$zygosity == "Het")])
+
+# total and froh
+cor.test(load_froh_long$froh[which(load_froh_long$loadtype == "GERP ≥ 4" & load_froh_long$zygosity == "Total")],
+         load_froh_long$load[which(load_froh_long$loadtype == "GERP ≥ 4" & load_froh_long$zygosity == "Total")])
+
+cor.test(load_froh_long$froh[which(load_froh_long$loadtype == "High impact SnpEff" & load_froh_long$zygosity == "Total")],
+         load_froh_long$load[which(load_froh_long$loadtype == "High impact SnpEff" & load_froh_long$zygosity == "Total")])
+
 ### Combine in one figure ####
 cowplot::plot_grid(hist_loads_gerp, hist_loads_high, froh_load,
                    ncol = 1, labels = c("a", "b", "c"), label_fontface = "plain", label_size = 22,

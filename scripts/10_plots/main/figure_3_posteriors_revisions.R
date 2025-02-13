@@ -125,9 +125,9 @@ r2_bayes(brm_load_rp_gerp5_lms)
 
 interval_full_homhet_gerp <- mcmc_intervals_data(brm_load_rp_gerp5_lms, prob =0.8, prob_outer = 0.95)
 interval_full_homhet_gerp <- data.frame(parameter = interval_full_homhet_gerp$parameter,
-                                   median = round(interval_full_homhet_gerp$m, 2),
-                                   ci_95 = paste0(round(interval_full_homhet_gerp$ll, 2), ", ", round(interval_full_homhet_gerp$hh, 2)),
-                                   ci_80 = paste0(round(interval_full_homhet_gerp$l, 2), ", ", round(interval_full_homhet_gerp$h, 2)))
+                                        median = round(interval_full_homhet_gerp$m, 2),
+                                        ci_95 = paste0(round(interval_full_homhet_gerp$ll, 2), ", ", round(interval_full_homhet_gerp$hh, 2)),
+                                        ci_80 = paste0(round(interval_full_homhet_gerp$l, 2), ", ", round(interval_full_homhet_gerp$h, 2)))
 
 write_tsv(interval_full_homhet_gerp, file = "output/models/intervals/homhet_gerp45_full.tsv")
 
