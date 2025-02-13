@@ -65,11 +65,11 @@ sum_high_per_gerp$gerp_cat <- factor(sum_high_per_gerp$gerp_cat, levels = c("< 0
 ggplot(sum_high_per_gerp, aes(x = n_high, y = gerp_cat)) +
   geom_col(fill = alpha(clr_high, 0.7), col = clr_high) + 
   theme(axis.title.y = element_blank(), 
-          axis.text.y = element_blank(), 
-          axis.ticks.y = element_blank(),
+        axis.text.y = element_blank(), 
+        axis.ticks.y = element_blank(),
         axis.line.y = element_blank()) +
   scale_x_continuous(labels = c("0", "1k", "2k", "3k", "4k"), limits = c(0,4000),
-                breaks=c(0,1000,2000,3000,4000)) +
+                     breaks=c(0,1000,2000,3000,4000)) +
   theme(plot.margin = margin(0.75, 0.75, 0.75, -1,unit= "cm"))+
   geom_text(aes(label = prettyNum(n_high, big.mark=","), y = gerp_cat), 
             hjust=-0.2, size = 6) +
@@ -385,5 +385,4 @@ cowplot::plot_grid(fig_mut_2, fig_mut_3, rel_heights = c(1, 0.5),
 png(file = "plots/main/fig_2.png", width=1500, height=1200)
 fig_mut
 dev.off()
-
 
