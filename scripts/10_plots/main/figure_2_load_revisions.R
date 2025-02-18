@@ -61,19 +61,20 @@ ggplot(gerp_count, aes(x = gerp_cat, y = n_total)) +
 
 sum_high_per_gerp <- read.csv(file = "output/load/sum_stats_high_per_gerp_cat.csv")
 sum_high_per_gerp$gerp_cat <- factor(sum_high_per_gerp$gerp_cat, levels = c("< 0", "0-1", "1-2", "2-3", "3-4", "≥ 4"))
+sum_high_per_gerp <- left_join(sum_high_per_gerp, gerp_count,by = "gerp_cat")
+sum_high_per_gerp$n_perc <- round(sum_high_per_gerp$n_high / sum_high_per_gerp$n_total * 100, 2)
 
-ggplot(sum_high_per_gerp, aes(x = n_high, y = gerp_cat)) +
+ggplot(sum_high_per_gerp, aes(x = n_perc, y = gerp_cat)) +
   geom_col(fill = alpha(clr_high, 0.7), col = clr_high) + 
   theme(axis.title.y = element_blank(), 
         axis.text.y = element_blank(), 
         axis.ticks.y = element_blank(),
         axis.line.y = element_blank()) +
-  scale_x_continuous(labels = c("0", "1k", "2k", "3k", "4k"), limits = c(0,4000),
-                     breaks=c(0,1000,2000,3000,4000)) +
+  xlim(0 ,0.25)+
   theme(plot.margin = margin(0.75, 0.75, 0.75, -1,unit= "cm"))+
-  geom_text(aes(label = prettyNum(n_high, big.mark=","), y = gerp_cat), 
+  geom_text(aes(label = paste0(n_perc, " %"), y = gerp_cat), 
             hjust=-0.2, size = 6) +
-  labs(x = "Number of high impact 
+  labs(x = "Percentage of high impact 
 SnpEff SNPs", title = "") -> fig_count_high_per_gerp
 
 fig_count_high_per_gerp
