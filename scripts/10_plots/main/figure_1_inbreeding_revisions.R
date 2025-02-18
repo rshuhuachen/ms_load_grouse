@@ -92,9 +92,9 @@ shade <- df %>%
   filter(scaf_nr < 11)%>%
   group_by(scaf_nr) %>%
   summarise(min = min(POS1), max = max(POS2)) %>%
-  mutate(min = case_when(scaf_nr == 2 | scaf_nr == 4 | scaf_nr == 6 | scaf_nr == 8 | scaf_nr == 10  ~ 0,
+  mutate(min = case_when(scaf_nr == 2 | scaf_nr == 5 | scaf_nr == 7 | scaf_nr == 9  ~ 0,
                          TRUE ~ min)) %>%
-  mutate(max = case_when(scaf_nr == 2 | scaf_nr == 4 | scaf_nr == 6 | scaf_nr == 8 | scaf_nr == 10  ~ 0,
+  mutate(max = case_when(scaf_nr == 2 | scaf_nr == 5 | scaf_nr == 7 | scaf_nr == 9  ~ 0,
                          TRUE ~ max))
 
 col <- c("#008080", "#b4c8a8")
