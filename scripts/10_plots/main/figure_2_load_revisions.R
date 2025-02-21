@@ -21,8 +21,8 @@ ggplot(gerp_count, aes(x = gerp_cat, y = n_total)) +
             hjust=1.5, size = 6) +
   coord_flip() + theme(plot.margin = margin(0.75,0,0.75,0.75, "cm"))-> fig_countgerp
 
-## how many high impact per gerp score cat
-# load all gerp scores
+# how many high impact per gerp score cat
+# #load all gerp scores
 # gerp_snp_scafs <- list.files(path = "output/gerp/beds", pattern = "gerp_overlapSNP*", full.names = T)
 # gerp_snp_scafs <- gerp_snp_scafs[-22] #empty
 # 
@@ -42,7 +42,7 @@ ggplot(gerp_count, aes(x = gerp_cat, y = n_total)) +
 # idnames <- left_join(filenames[,c("V1")], ids[,c("loc", "id")], by = c("V1" = "loc"))
 # 
 # names(gerp_snp) <- c("chr", "start", "pos", "neutral_rate_n", "rs_score", "ancestral", "derived", "qual", "info","format", idnames$id) #rename columns
-# 
+
 # 
 # ### number of high impact in each cat
 # high_gerp45 <- subset(gerp_snp, grepl("HIGH", gerp_snp$info) & !grepl("WARNING", gerp_snp$info) & rs_score >=4)
@@ -79,10 +79,10 @@ SnpEff SNPs", title = "") -> fig_count_high_per_gerp
 
 fig_count_high_per_gerp
 
-fig_countgerp+ fig_count_high_per_gerp-> fig_count_gerp_plus_high
+#fig_countgerp+ fig_count_high_per_gerp-> fig_count_gerp_plus_high
 
 png(file = "plots/main/fig_2a.png", width=1000, height=800)
-fig_count_gerp_plus_high
+fig_countgerp
 dev.off()
 
 ### Figure 2b: number of SNPs in each category for snpeff ####
@@ -121,27 +121,27 @@ ggplot(n_mutations_per_impact, aes(x = type, y = n_mutations)) +
 ## add: average gerp score for each of the four categories of SnpEff
 
 ### separate in groups of snpeff
-# high <- subset(gerp_snp, grepl("HIGH", gerp_snp$info) & !grepl("WARNING", gerp_snp$info))
-# mod <- subset(gerp_snp, grepl("MODERATE", gerp_snp$info) & !grepl("WARNING", gerp_snp$info))
-# low <- subset(gerp_snp, grepl("LOW", gerp_snp$info) & !grepl("WARNING", gerp_snp$info))
-# modify <- subset(gerp_snp, grepl("MODIFIER", gerp_snp$info) & !grepl("WARNING", gerp_snp$info))
-# 
-# sum_gerp_per_snpeff <- data.frame(cat = c("high", "mod", "low", "modify"),
-#                                   mean = c(mean(high$rs_score), mean(mod$rs_score), mean(low$rs_score), mean(modify$rs_score)),
-#                                   median = c(median(high$rs_score), median(mod$rs_score), median(low$rs_score), median(modify$rs_score)),
-#                                   quant_25 = c(as.vector(quantile(high$rs_score, probs = 0.25)),
-#                                                as.vector(quantile(mod$rs_score, probs = 0.25)),
-#                                                as.vector(quantile(low$rs_score, probs = 0.25)),
-#                                                as.vector(quantile(modify$rs_score, probs = 0.25))),
-#                                   quant_75 = c(as.vector(quantile(high$rs_score, probs = 0.75)),
-#                                                as.vector(quantile(mod$rs_score, probs = 0.75)),
-#                                                as.vector(quantile(low$rs_score, probs = 0.75)),
-#                                                as.vector(quantile(modify$rs_score, probs = 0.75))))
-# 
-# 
-# ## number of mutations per type
-# 
-# write.csv(sum_gerp_per_snpeff, file = "output/load/sum_stats_gerp_per_snpeff_cat.csv", row.names = F, quote=F)
+high <- subset(gerp_snp, grepl("HIGH", gerp_snp$info) & !grepl("WARNING", gerp_snp$info))
+mod <- subset(gerp_snp, grepl("MODERATE", gerp_snp$info) & !grepl("WARNING", gerp_snp$info))
+low <- subset(gerp_snp, grepl("LOW", gerp_snp$info) & !grepl("WARNING", gerp_snp$info))
+modify <- subset(gerp_snp, grepl("MODIFIER", gerp_snp$info) & !grepl("WARNING", gerp_snp$info))
+
+sum_gerp_per_snpeff <- data.frame(cat = c("high", "mod", "low", "modify"),
+                                  mean = c(mean(high$rs_score), mean(mod$rs_score), mean(low$rs_score), mean(modify$rs_score)),
+                                  median = c(median(high$rs_score), median(mod$rs_score), median(low$rs_score), median(modify$rs_score)),
+                                  quant_25 = c(as.vector(quantile(high$rs_score, probs = 0.25)),
+                                               as.vector(quantile(mod$rs_score, probs = 0.25)),
+                                               as.vector(quantile(low$rs_score, probs = 0.25)),
+                                               as.vector(quantile(modify$rs_score, probs = 0.25))),
+                                  quant_75 = c(as.vector(quantile(high$rs_score, probs = 0.75)),
+                                               as.vector(quantile(mod$rs_score, probs = 0.75)),
+                                               as.vector(quantile(low$rs_score, probs = 0.75)),
+                                               as.vector(quantile(modify$rs_score, probs = 0.75))))
+
+
+## number of mutations per type
+
+write.csv(sum_gerp_per_snpeff, file = "output/load/sum_stats_gerp_per_snpeff_cat.csv", row.names = F, quote=F)
 
 sum_gerp_per_snpeff <- read.csv("output/load/sum_stats_gerp_per_snpeff_cat.csv")
 sum_gerp_per_snpeff$cat <- gsub("high", "High", sum_gerp_per_snpeff$cat)
@@ -172,12 +172,15 @@ ggplot(n_mutations_per_impact, aes(x = median, y = type)) +
 
 fig_gerp_per_snpeff
 
-fig_countsnpef+fig_gerp_per_snpeff-> fig_count_snpef_plus_gerp
+#fig_countsnpef+fig_gerp_per_snpeff-> fig_count_snpef_plus_gerp
 
 png(file = "plots/main/fig_2b.png", width=1000, height=800)
-fig_count_snpef_plus_gerp
+fig_countsnpef
 dev.off()
 
+png(file = "plots/main/fig_2b.png", width=1000, height=800)
+fig_countsnpef
+dev.off()
 ### Figure 2c: count of each SNPeff mutation variant ####
 
 n_mutations_pertype <- subset(high_counts, !is.na(impact))
@@ -362,11 +365,11 @@ hist_n_gerp
 dev.off()
 
 ### Combine in one figure ####
-cowplot::plot_grid(fig_count_gerp_plus_high, fig_count_snpef_plus_gerp,
+cowplot::plot_grid(fig_countgerp, fig_countsnpef,
                    ncol = 1, labels = c("a", "b"), label_fontface = "plain", label_size = 22,
                    align = "hv", axis = "lb") -> fig_mut_1
 
-cowplot::plot_grid(fig_mut_1, fig_countsnpef_cat, 
+cowplot::plot_grid(fig_mut_1, fig_countsnpef_cat, rel_widths = c(0.6,1),
                    labels = c("", "c"), label_fontface = "plain", label_size = 22,
                    ncol = 2) -> fig_mut_2
 
@@ -375,15 +378,15 @@ cowplot::plot_grid(fig_af_gerp,
                    hist_n_gerp, 
                    hist_n_high, 
                    labels = c("d", "e", "f", "g"), label_fontface = "plain", label_size = 22,
-                   ncol = 4,
+                   ncol = 2,
                    align = "hv", axis = "lb") -> fig_mut_3
 
-cowplot::plot_grid(fig_mut_2, fig_mut_3, rel_heights = c(1, 0.5),
+cowplot::plot_grid(fig_mut_2, fig_mut_3, #rel_heights = c(1, 0.5),
                    ncol = 1, 
                    align = "hv", axis = "lb") -> fig_mut
 
 
-png(file = "plots/main/fig_2.png", width=1500, height=1200)
+png(file = "plots/main/fig_2.png", width=1200, height=1600)
 fig_mut
 dev.off()
 

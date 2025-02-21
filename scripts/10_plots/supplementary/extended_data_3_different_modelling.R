@@ -1,5 +1,5 @@
 ### Packages ####
-pacman::p_load(tidyverse, brms, bayesplot, data.table, ggridges)
+pacman::p_load(tidyverse, brms, bayesplot, data.table, ggridges, performance)
 
 # theme
 source("scripts/theme_ggplot.R")
@@ -89,14 +89,17 @@ ggsave(plot_posteriors_combined, file = "plots/sup/combined_high_gerp_load.png",
 #### Approach 2: both loads in the same model ####
 load(file = "output/models/total_hom_het/lms_total_gerp45_high_sep.RData")
 brm_load_gerp_high_sep <- brm_load_t
+r2_bayes(brm_load_gerp_high_sep)
 
 # gerp
 load(file = "output/models/total_hom_het/lms_total_gerp45.RData")
 brm_gerp <- brm_load_t
+r2_bayes(brm_gerp)
 
 # snpeff
 load(file = "output/models/total_hom_het/lms_total_high.RData")
 brm_high <- brm_load_t
+r2_bayes(brm_high)
 
 # get intervals
 brms_gerp_both_lms_interval <- mcmc_intervals_data(brm_load_gerp_high_sep, prob =0.8, prob_outer = 0.95, pars = "b_scaletotal_load_gerp45")
