@@ -386,7 +386,7 @@ cowplot::plot_grid(fig_mut_2, fig_mut_3, #rel_heights = c(1, 0.5),
                    align = "hv", axis = "lb") -> fig_mut
 
 
-png(file = "plots/main/fig_2.png", width=1200, height=1600)
+png(file = "plots/main/fig_2.png", width=1000, height=1400)
 fig_mut
 dev.off()
 
