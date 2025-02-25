@@ -1,0 +1,13 @@
+parameter	median	ci_95	ci_80
+b_Intercept	1.75	1.05, 2.32	1.4, 2.07
+b_scaletotal_load	-0.11	-0.2, -0.03	-0.17, -0.06
+b_coreno_core	0.4	0.22, 0.59	0.28, 0.53
+sd_site__Intercept	0.5	0.25, 1.48	0.31, 0.99
+zi	0.5	0.42, 0.57	0.45, 0.54
+r_site[KUM,Intercept]	-0.06	-0.62, 0.66	-0.38, 0.3
+r_site[LEH,Intercept]	-0.24	-0.85, 0.47	-0.59, 0.12
+r_site[NYR,Intercept]	-0.25	-0.82, 0.43	-0.58, 0.11
+r_site[SAA,Intercept]	0.68	0.16, 1.42	0.37, 1.06
+r_site[TEE,Intercept]	0.02	-0.58, 0.73	-0.31, 0.39
+lprior	-5.89	-6.21, -5.67	-6.05, -5.75
+lp__	-595.64	-602.19, -591.67	-599.6, -592.84

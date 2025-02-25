@@ -135,9 +135,16 @@ modify$impact <- "Modify"
 snpeff <- rbind(high, mod, low, modify)
 snpeff$impact <- factor(snpeff$impact, levels = c("Modify", "Low", "Moderate", "High"))
 
-ggplot(snpeff, aes(x = rs_score, y = impact)) + 
+snpeff_means <- snpeff %>% group_by(impact) %>% summarise(mean = mean(rs_score))
+snpeff_means$impact <- factor(snpeff_means$impact, levels = c("Modify", "Low", "Moderate", "High"))
+
+ggplot(snpeff[1:100,], aes(x = rs_score, y = impact)) + 
   geom_vline(xintercept = 0, col = "darkred", linetype = "dotted") + 
-  geom_violin() + labs(x = "GERP score", y = "Impact category") -> violin_gerp
+  geom_violin() + 
+  geom_point(data = snpeff_means, aes(x = mean, y = impact), size = 2)+
+  labs(x = "GERP score", y = "Impact category") -> violin_gerp
+
+violin_gerp
 
 ggsave(violin_gerp, file = "plots/sup/violin_gerp_per_snpeff.png", width=10, height=12)
 ### summary plot with mean/median and quantiles

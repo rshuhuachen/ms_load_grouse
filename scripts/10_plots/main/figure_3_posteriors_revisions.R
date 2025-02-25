@@ -13,6 +13,14 @@ load(file = "output/models/from_lms.RData")
 brm_froh_lms <- fit
 r2_bayes(brm_froh_lms)
 
+interval_full_froh <- mcmc_intervals_data(brm_froh_lms, prob =0.8, prob_outer = 0.95)
+interval_full_froh <- data.frame(parameter = interval_full_froh$parameter,
+                                 median = round(interval_full_froh$m, 2),
+                                 ci_95 = paste0(round(interval_full_froh$ll, 2), ", ", round(interval_full_froh$hh, 2)),
+                                 ci_80 = paste0(round(interval_full_froh$l, 2), ", ", round(interval_full_froh$h, 2)))
+
+write_tsv(interval_full_froh, file = "output/models/intervals/total_froh_full.tsv")
+
 # load models
 
 # gerp
@@ -35,9 +43,9 @@ r2_bayes(brm_load_t_add_high_lms)
 
 interval_full_snpeff <- mcmc_intervals_data(brm_load_t_add_high_lms, prob =0.8, prob_outer = 0.95)
 interval_full_snpeff <- data.frame(parameter = interval_full_snpeff$parameter,
-                                 median = round(interval_full_snpeff$m, 2),
-                                 ci_95 = paste0(round(interval_full_snpeff$ll, 2), ", ", round(interval_full_snpeff$hh, 2)),
-                                 ci_80 = paste0(round(interval_full_snpeff$l, 2), ", ", round(interval_full_snpeff$h, 2)))
+                                   median = round(interval_full_snpeff$m, 2),
+                                   ci_95 = paste0(round(interval_full_snpeff$ll, 2), ", ", round(interval_full_snpeff$hh, 2)),
+                                   ci_80 = paste0(round(interval_full_snpeff$l, 2), ", ", round(interval_full_snpeff$h, 2)))
 
 write_tsv(interval_full_snpeff, file = "output/models/intervals/total_snpeff_full.tsv")
 
@@ -135,6 +143,14 @@ write_tsv(interval_full_homhet_gerp, file = "output/models/intervals/homhet_gerp
 load(file = "output/models/total_hom_het/lms_het_hom_high.RData")
 brm_load_rp_high_lms <- brm_load_het_hom
 r2_bayes(brm_load_rp_high_lms)
+
+interval_full_homhet_high <- mcmc_intervals_data(brm_load_rp_high_lms, prob =0.8, prob_outer = 0.95)
+interval_full_homhet_high <- data.frame(parameter = interval_full_homhet_high$parameter,
+                                        median = round(interval_full_homhet_high$m, 2),
+                                        ci_95 = paste0(round(interval_full_homhet_high$ll, 2), ", ", round(interval_full_homhet_high$hh, 2)),
+                                        ci_80 = paste0(round(interval_full_homhet_high$l, 2), ", ", round(interval_full_homhet_high$h, 2)))
+
+write_tsv(interval_full_homhet_high, file = "output/models/intervals/homhet_high_full.tsv")
 
 #extract intervals and areas
 brms_gerp5_lms_interval_hom <- mcmc_intervals_data(brm_load_rp_gerp5_lms, prob =0.8, prob_outer = 0.95) %>%
@@ -248,17 +264,49 @@ load(file = "output/models/per_gene_region/lms_total_gerp45_promoter.RData")
 gerp_promoter <- brm_load_t
 r2_bayes(gerp_promoter)
 
+interval_full_gerp_promo <- mcmc_intervals_data(gerp_promoter, prob =0.8, prob_outer = 0.95)
+interval_full_gerp_promo <- data.frame(parameter = interval_full_gerp_promo$parameter,
+                                   median = round(interval_full_gerp_promo$m, 2),
+                                   ci_95 = paste0(round(interval_full_gerp_promo$ll, 2), ", ", round(interval_full_gerp_promo$hh, 2)),
+                                   ci_80 = paste0(round(interval_full_gerp_promo$l, 2), ", ", round(interval_full_gerp_promo$h, 2)))
+
+write_tsv(interval_full_gerp_promo, file = "output/models/intervals/total_gerp_promo_full.tsv")
+
 load(file = "output/models/per_gene_region/lms_total_gerp45_tss.RData")
 gerp_tss <- brm_load_t
 r2_bayes(gerp_tss)
+
+interval_full_gerp_tss <- mcmc_intervals_data(gerp_tss, prob =0.8, prob_outer = 0.95)
+interval_full_gerp_tss <- data.frame(parameter = interval_full_gerp_tss$parameter,
+                                       median = round(interval_full_gerp_tss$m, 2),
+                                       ci_95 = paste0(round(interval_full_gerp_tss$ll, 2), ", ", round(interval_full_gerp_tss$hh, 2)),
+                                       ci_80 = paste0(round(interval_full_gerp_tss$l, 2), ", ", round(interval_full_gerp_tss$h, 2)))
+
+write_tsv(interval_full_gerp_tss, file = "output/models/intervals/total_gerp_tss_full.tsv")
 
 load(file = "output/models/per_gene_region/lms_total_gerp45_exon.RData")
 gerp_exon <- brm_load_t
 r2_bayes(gerp_exon)
 
+interval_full_gerp_exon <- mcmc_intervals_data(gerp_exon, prob =0.8, prob_outer = 0.95)
+interval_full_gerp_exon <- data.frame(parameter = interval_full_gerp_exon$parameter,
+                                       median = round(interval_full_gerp_exon$m, 2),
+                                       ci_95 = paste0(round(interval_full_gerp_exon$ll, 2), ", ", round(interval_full_gerp_exon$hh, 2)),
+                                       ci_80 = paste0(round(interval_full_gerp_exon$l, 2), ", ", round(interval_full_gerp_exon$h, 2)))
+
+write_tsv(interval_full_gerp_exon, file = "output/models/intervals/total_gerp_exon_full.tsv")
+
 load(file = "output/models/per_gene_region/lms_total_gerp45_intron.RData")
 gerp_intron <- brm_load_t
 r2_bayes(gerp_intron)
+
+interval_full_gerp_intron <- mcmc_intervals_data(gerp_intron, prob =0.8, prob_outer = 0.95)
+interval_full_gerp_intron <- data.frame(parameter = interval_full_gerp_intron$parameter,
+                                      median = round(interval_full_gerp_intron$m, 2),
+                                      ci_95 = paste0(round(interval_full_gerp_intron$ll, 2), ", ", round(interval_full_gerp_intron$hh, 2)),
+                                      ci_80 = paste0(round(interval_full_gerp_intron$l, 2), ", ", round(interval_full_gerp_intron$h, 2)))
+
+write_tsv(interval_full_gerp_intron, file = "output/models/intervals/total_gerp_intron_full.tsv")
 
 rm(brm_load_t)
 
@@ -365,17 +413,50 @@ load(file = "output/models/per_gene_region/lms_total_high_promoter.RData")
 high_promoter <- brm_load_t
 r2_bayes(high_promoter)
 
+interval_full_high_promoter <- mcmc_intervals_data(high_promoter, prob =0.8, prob_outer = 0.95)
+interval_full_high_promoter <- data.frame(parameter = interval_full_high_promoter$parameter,
+                                        median = round(interval_full_high_promoter$m, 2),
+                                        ci_95 = paste0(round(interval_full_high_promoter$ll, 2), ", ", round(interval_full_high_promoter$hh, 2)),
+                                        ci_80 = paste0(round(interval_full_high_promoter$l, 2), ", ", round(interval_full_high_promoter$h, 2)))
+
+write_tsv(interval_full_high_promoter, file = "output/models/intervals/total_high_promoter_full.tsv")
+
 load(file = "output/models/per_gene_region/lms_total_high_tss.RData")
 high_tss <- brm_load_t
 r2_bayes(high_tss)
+
+interval_full_high_tss <- mcmc_intervals_data(high_tss, prob =0.8, prob_outer = 0.95)
+interval_full_high_tss <- data.frame(parameter = interval_full_high_tss$parameter,
+                                          median = round(interval_full_high_tss$m, 2),
+                                          ci_95 = paste0(round(interval_full_high_tss$ll, 2), ", ", round(interval_full_high_tss$hh, 2)),
+                                          ci_80 = paste0(round(interval_full_high_tss$l, 2), ", ", round(interval_full_high_tss$h, 2)))
+
+write_tsv(interval_full_high_tss, file = "output/models/intervals/total_high_tss_full.tsv")
 
 load(file = "output/models/per_gene_region/lms_total_high_exon.RData")
 high_exon <- brm_load_t
 r2_bayes(high_exon)
 
+interval_full_high_exon <- mcmc_intervals_data(high_exon, prob =0.8, prob_outer = 0.95)
+interval_full_high_exon <- data.frame(parameter = interval_full_high_exon$parameter,
+                                     median = round(interval_full_high_exon$m, 2),
+                                     ci_95 = paste0(round(interval_full_high_exon$ll, 2), ", ", round(interval_full_high_exon$hh, 2)),
+                                     ci_80 = paste0(round(interval_full_high_exon$l, 2), ", ", round(interval_full_high_exon$h, 2)))
+
+write_tsv(interval_full_high_exon, file = "output/models/intervals/total_high_exon_full.tsv")
+
+
 load(file = "output/models/per_gene_region/lms_total_high_intron.RData")
 high_intron <- brm_load_t
 r2_bayes(high_intron)
+
+interval_full_high_intron <- mcmc_intervals_data(high_intron, prob =0.8, prob_outer = 0.95)
+interval_full_high_intron <- data.frame(parameter = interval_full_high_intron$parameter,
+                                     median = round(interval_full_high_intron$m, 2),
+                                     ci_95 = paste0(round(interval_full_high_intron$ll, 2), ", ", round(interval_full_high_intron$hh, 2)),
+                                     ci_80 = paste0(round(interval_full_high_intron$l, 2), ", ", round(interval_full_high_intron$h, 2)))
+
+write_tsv(interval_full_high_intron, file = "output/models/intervals/total_high_intron_full.tsv")
 
 rm(brm_load_t)
 

@@ -38,7 +38,7 @@ brm_load_binary_gerp45 <- brm(LMS_binary ~ scale(total_load_gerp45) + core + (1|
                               family = "bernoulli",
                               prior = prior(normal(0,1), class = b),
                               cores =8, control = list(adapt_delta = 0.99, max_treedepth = 15),
-                            iter = 1000000, thin = 1000, warmup = 500000, seed = 1908)
+                              iter = 1000000, thin = 1000, warmup = 500000, seed = 1908)
 
 save(brm_load_binary_gerp45, file = "output/models/total_hom_het/lms_total_binary_gerp45.RData")
 
@@ -62,7 +62,7 @@ brms_plota_areas <- rbind(brm_load_binary_gerp45_area,
                           brm_load_binary_high_area)
 
 brms_plota_areas$model <- c( rep("Total GERP load", nrow(brm_load_binary_gerp45_area)),
-                            rep("Total SnpEff load", nrow(brm_load_binary_high_area)))
+                             rep("Total SnpEff load", nrow(brm_load_binary_high_area)))
 
 
 #rearrange order for visualization
@@ -116,16 +116,16 @@ pheno_wide_load$LMS_cat <- factor(pheno_wide_load$LMS_cat, levels = c("Low", "Mo
 
 ##### model ####
 brm_load_cat_high <- brm(LMS_cat ~ scale(total_load_high) + core + (1|site), data = pheno_wide_load,
-                            family = "categorical",
-                            cores =8, control = list(adapt_delta = 0.99, max_treedepth = 15),
-                            iter = 1000000, thin = 1000, warmup = 500000, seed = 1908)
+                         family = "categorical",
+                         cores =8, control = list(adapt_delta = 0.99, max_treedepth = 15),
+                         iter = 1000000, thin = 1000, warmup = 500000, seed = 1908)
 
 save(brm_load_cat_high, file = "output/models/total_hom_het/lms_total_cat_high.RData")
 
 brm_load_cat_gerp45 <- brm(LMS_cat ~ scale(total_load_gerp45) + core + (1|site), data = pheno_wide_load,
-                              family = "categorical",
-                              cores =8, control = list(adapt_delta = 0.99, max_treedepth = 15),
-                              iter = 1000000, thin = 1000, warmup = 500000, seed = 1908)
+                           family = "categorical",
+                           cores =8, control = list(adapt_delta = 0.99, max_treedepth = 15),
+                           iter = 1000000, thin = 1000, warmup = 500000, seed = 1908)
 
 save(brm_load_cat_gerp45, file = "output/models/total_hom_het/lms_total_cat_gerp45.RData")
 
@@ -160,9 +160,9 @@ brms_plota_areas$model <- c(rep("Total GERP load", nrow(brm_load_cat_gerp45_area
                             rep("Total SnpEff load", nrow(brm_load_cat_high_area)))
 
 brms_plota_areas$lms_cat <- c(rep("Moderate LMS", 0.5*nrow(brm_load_cat_gerp45_area)),
-                            rep("High LMS", 0.5*nrow(brm_load_cat_gerp45_area)),
-                            rep("Moderate LMS", 0.5*nrow(brm_load_cat_high_area)),
-                            rep("High LMS", 0.5*nrow(brm_load_cat_high_area)))
+                              rep("High LMS", 0.5*nrow(brm_load_cat_gerp45_area)),
+                              rep("Moderate LMS", 0.5*nrow(brm_load_cat_high_area)),
+                              rep("High LMS", 0.5*nrow(brm_load_cat_high_area)))
 
 
 # rearrange order for visualization
@@ -173,10 +173,10 @@ brms_plota_areas$model  <- factor(as.factor(brms_plota_areas$model),
                                   levels= c("Total SnpEff load", "Total GERP load"))
 
 brms_plota_interval$lms_cat  <- factor(as.factor(brms_plota_interval$lms_cat),
-                                     levels= c("Moderate LMS", "High LMS"))
+                                       levels= c("Moderate LMS", "High LMS"))
 
 brms_plota_areas$lms_cat  <- factor(as.factor(brms_plota_areas$lms_cat),
-                                  levels= c("Moderate LMS", "High LMS"))
+                                    levels= c("Moderate LMS", "High LMS"))
 
 ### plot
 
@@ -203,7 +203,7 @@ ggplot(data = brms_plota$outer) +
   labs(x = expression("Standardised"~beta), y = "Parameter")+
   facet_grid(~model)+
   scale_fill_manual(values =alpha(c(clr_high, clr_gerp), 0.7)) +
- # scale_y_discrete(labels = c("Total SnpEff load", "Total GERP load"))+
+  # scale_y_discrete(labels = c("Total SnpEff load", "Total GERP load"))+
   scale_color_manual(values =c(clr_high, clr_gerp)) +
   theme(panel.border = element_blank(),
         panel.grid = element_blank(),
