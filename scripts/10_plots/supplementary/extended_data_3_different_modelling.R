@@ -184,7 +184,7 @@ ggplot(data = brms_plota$outer) +
 
 plot_posteriors_one_model
 
-ggsave(plot_posteriors_one_model, file = "plots/sup/separate_one_model_high_gerp_load.png", width=10, height=12)
+ggsave(plot_posteriors_one_model, file = "plots/sup/separate_one_model_high_gerp_load.png", width=12, height=10)
 
 #### Combine in one figure ####
 cowplot::plot_grid(plot_posteriors_one_model, plot_posteriors_combined,
