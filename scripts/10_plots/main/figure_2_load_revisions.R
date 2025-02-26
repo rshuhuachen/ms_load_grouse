@@ -43,7 +43,7 @@ ggplot(gerp_count, aes(x = gerp_cat, y = n_total)) +
 # 
 # names(gerp_snp) <- c("chr", "start", "pos", "neutral_rate_n", "rs_score", "ancestral", "derived", "qual", "info","format", idnames$id) #rename columns
 
-# 
+#
 # ### number of high impact in each cat
 # high_gerp45 <- subset(gerp_snp, grepl("HIGH", gerp_snp$info) & !grepl("WARNING", gerp_snp$info) & rs_score >=4)
 # high_gerp34 <- subset(gerp_snp, grepl("HIGH", gerp_snp$info) & !grepl("WARNING", gerp_snp$info) & rs_score >= 3 & rs_score< 4)
@@ -135,18 +135,32 @@ modify$impact <- "Modify"
 snpeff <- rbind(high, mod, low, modify)
 snpeff$impact <- factor(snpeff$impact, levels = c("Modify", "Low", "Moderate", "High"))
 
-snpeff_means <- snpeff %>% group_by(impact) %>% summarise(mean = mean(rs_score))
-snpeff_means$impact <- factor(snpeff_means$impact, levels = c("Modify", "Low", "Moderate", "High"))
+sum_gerp_per_snpeff <- data.frame(impact = c("High", "Moderate", "Low", "Modify"),
+                                  mean = c(mean(high$rs_score), mean(mod$rs_score), mean(low$rs_score), mean(modify$rs_score)),
+                                  median = c(median(high$rs_score), median(mod$rs_score), median(low$rs_score), median(modify$rs_score)),
+                                  quant_25 = c(as.vector(quantile(high$rs_score, probs = 0.25)),
+                                               as.vector(quantile(mod$rs_score, probs = 0.25)),
+                                               as.vector(quantile(low$rs_score, probs = 0.25)),
+                                               as.vector(quantile(modify$rs_score, probs = 0.25))),
+                                  quant_75 = c(as.vector(quantile(high$rs_score, probs = 0.75)),
+                                               as.vector(quantile(mod$rs_score, probs = 0.75)),
+                                               as.vector(quantile(low$rs_score, probs = 0.75)),
+                                               as.vector(quantile(modify$rs_score, probs = 0.75))))
 
-ggplot(snpeff[1:100,], aes(x = rs_score, y = impact)) + 
+
+test <- snpeff %>% sample_n(1000)
+ggplot(snpeff, aes(x = rs_score, y = impact)) + 
   geom_vline(xintercept = 0, col = "darkred", linetype = "dotted") + 
-  geom_violin() + 
-  geom_point(data = snpeff_means, aes(x = mean, y = impact), size = 2)+
+  geom_violin(fill = "grey") + 
+#  geom_segment(data = sum_gerp_per_snpeff, aes(x = quant_25, xend = quant_75, yend = impact), 
+#               col = "black", linewidth=0.3)+
+  geom_point(data = sum_gerp_per_snpeff, aes(x = median, y = impact), size = 3)+
   labs(x = "GERP score", y = "Impact category") -> violin_gerp
 
 violin_gerp
 
 ggsave(violin_gerp, file = "plots/sup/violin_gerp_per_snpeff.png", width=10, height=12)
+
 ### summary plot with mean/median and quantiles
 
 
