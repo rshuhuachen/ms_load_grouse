@@ -51,6 +51,11 @@ brms_plota_interval <- rbind(brm_load_core_gerp45_interval, brm_load_core_high_i
 
 brms_plota_interval$model <- c("Total GERP load", "Total SnpEff load")
 
+data.frame(parameter = brms_plota_interval$parameter,
+           median = round(brms_plota_interval$m, 2),
+           ci_95 = paste0(round(brms_plota_interval$ll, 2), ", ", round(brms_plota_interval$hh, 2)),
+           ci_80 = paste0(round(brms_plota_interval$l, 2), ", ", round(brms_plota_interval$h, 2)))
+
 interval_core_gerp <- mcmc_intervals_data(brm_load_core_gerp45, prob =0.8, prob_outer = 0.95)
 interval_core_gerp <- data.frame(parameter = interval_core_gerp$parameter,
                                    median = round(interval_core_gerp$m, 2),
