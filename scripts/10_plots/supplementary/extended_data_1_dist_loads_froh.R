@@ -27,8 +27,8 @@ long_load$zygosity  <- factor(long_load$zygosity, levels=c("Total", "Homozygous"
 ggplot(subset(long_load, loadtype == "GERP ≥ 4"), aes(x = load, fill = zygosity, col = zygosity)) + 
   geom_histogram(position="identity", alpha=0.8, bins = 40) + 
   facet_wrap( ~zygosity, scales="free")+
-  scale_fill_manual(values = alpha(c(clrs_hunting[1:3]), 0.8)) +
-  scale_color_manual(values = c(clrs_hunting[1:3])) +
+  scale_fill_manual(values = alpha(c("#8EA4CC","#703D57",  "#FFCD70"), 0.8)) +
+  scale_color_manual(values = c("#8EA4CC","#703D57",  "#FFCD70")) +
   theme(strip.background = element_blank(),
         legend.position="none")+
   guides(col = "none")+
@@ -43,8 +43,8 @@ dev.off()
 ggplot(subset(long_load, loadtype == "High impact SnpEff"), aes(x = load, fill = zygosity, col = zygosity)) + 
   geom_histogram(position="identity", alpha=0.8, bins = 40) + 
   facet_wrap(~zygosity, scales="free")+ 
-  scale_fill_manual(values = alpha(c(clrs_hunting[1:3]), 0.8)) +
-  scale_color_manual(values = c(clrs_hunting[1:3])) +
+  scale_fill_manual(values = alpha(c("#8EA4CC","#703D57",  "#FFCD70"), 0.8)) +
+  scale_color_manual(values = c("#8EA4CC","#703D57",  "#FFCD70")) +
   guides(col = "none")+
   theme(strip.background = element_blank(),
         legend.position="none")+
@@ -76,9 +76,10 @@ ggplot(load_froh_long, aes(x = froh, y = load, col = zygosity, fill = zygosity))
   theme(strip.background = element_blank(),
         legend.position="bottom")+
   labs(x = expression(italic(F)[ROH]), y= "Load", fill = "Load type") +
-  scale_fill_manual(values = alpha(c(clrs_hunting[1:3]), 0.6)) +
+  scale_fill_manual(values = alpha(c("#8EA4CC","#703D57",  "#FFCD70"), 0.6)) +
   guides(col = "none")+
-  scale_color_manual(values = c(clrs_hunting[1:3]))  -> froh_load 
+  geom_text(aes(label = "Total", x = 0.3, y = 0.15), col="black",size = 6)+
+  scale_color_manual(values = c("#8EA4CC","#703D57",  "#FFCD70"))  -> froh_load 
 
 froh_load
 
