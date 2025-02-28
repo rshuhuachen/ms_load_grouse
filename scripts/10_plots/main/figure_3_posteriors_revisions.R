@@ -77,10 +77,10 @@ brms_plota_areas$model <- c(rep("FROH", nrow(brms_froh_lms_area)),
 
 #rearrange order for visualization
 brms_plota_interval$model  <- factor(as.factor(brms_plota_interval$model),
-                                     levels= c("Total SnpEff load", "Total GERP load","FROH"))
+                                     levels= c("FROH", "Total SnpEff load", "Total GERP load"))
 
 brms_plota_areas$model  <- factor(as.factor(brms_plota_areas$model),
-                                  levels= c("Total SnpEff load", "Total GERP load","FROH"))
+                                  levels= c("FROH", "Total SnpEff load", "Total GERP load"))
 
 ### plot
 
@@ -106,10 +106,10 @@ ggplot(data = brms_plota$outer) +
   geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash")+
   labs(x = expression("Standardised"~beta), y = "Parameter")+
   xlim(-0.35, 0.1)+
-  scale_fill_manual(values =alpha(c(clr_high, clr_gerp, clr_froh), 0.7)) +
-  scale_y_discrete(labels = c("Total SnpEff load", "Total GERP load", 
-                              expression(italic(F)[ROH])))+
-  scale_color_manual(values =c(clr_high, clr_gerp, clr_froh)) +
+  scale_fill_manual(values =alpha(c(clr_froh,
+                                    clr_high, clr_gerp), 0.7)) +
+  scale_y_discrete(labels = c(expression(italic(F)[ROH]), "Total SnpEff load", "Total GERP load"))+
+  scale_color_manual(values =c(clr_froh,clr_high, clr_gerp)) +
   theme(panel.border = element_blank(),
         panel.grid = element_blank(),
         strip.background = element_blank(),
