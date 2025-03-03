@@ -78,7 +78,6 @@ ggplot(load_froh_long, aes(x = froh, y = load, col = zygosity, fill = zygosity))
   labs(x = expression(italic(F)[ROH]), y= "Load", fill = "Load type") +
   scale_fill_manual(values = alpha(c("#8EA4CC","#703D57",  "#FFCD70"), 0.6)) +
   guides(col = "none")+
-  geom_text(aes(label = "Total", x = 0.3, y = 0.15), col="black",size = 6)+
   scale_color_manual(values = c("#8EA4CC","#703D57",  "#FFCD70"))  -> froh_load 
 
 froh_load
