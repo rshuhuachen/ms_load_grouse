@@ -197,9 +197,9 @@ ggplot() +
 
 #### Combine #### 
 
-cowplot::plot_grid(fig_raw_froh,
-                   fig_raw_gerp_total, 
+cowplot::plot_grid(fig_raw_gerp_total, 
                    fig_raw_high_total, 
+                   fig_raw_froh,
                    fig_raw_gerp_hom_het,
                    fig_raw_high_hom_het, ncol = 3, 
                    rel_heights = c(0.6,1),

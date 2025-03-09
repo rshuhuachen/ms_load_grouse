@@ -74,6 +74,31 @@ View(check[,c("total_load.x", "total_load.y")])
 gerp <- gerp_45_load_check$vcf
 save(gerp, file = "output/load/gerp/gerp_over4.RData")
 
+# randomly subset 20 individuals for review
+set.seed(1980)
+random_ids <- sample(11:200, 20)
+random_ids
+
+sub_gerp <- gerp_snp[c(1:10,random_ids)]
+
+# only select variant sites
+gt <- c(11:ncol(sub_gerp))
+select_n3 <- function(x){x = substr(x,1,3)}
+sub_gerp[gt] <- lapply(sub_gerp[gt], select_n3)
+sub_gerp[c(11:ncol(sub_gerp))] <- lapply(sub_gerp[c(11:ncol(sub_gerp))] , gsub, pattern = "0/0", replacement = "0")
+sub_gerp[c(11:ncol(sub_gerp))] <- lapply(sub_gerp[c(11:ncol(sub_gerp))] , gsub, pattern = "0/1", replacement = "1")
+sub_gerp[c(11:ncol(sub_gerp))] <- lapply(sub_gerp[c(11:ncol(sub_gerp))] , gsub, pattern = "1/0", replacement = "1")
+sub_gerp[c(11:ncol(sub_gerp))] <- lapply(sub_gerp[c(11:ncol(sub_gerp))] , gsub, pattern = "1/1", replacement = "2")
+sub_gerp[c(11:ncol(sub_gerp))] <- lapply(sub_gerp[c(11:ncol(sub_gerp))] , gsub, pattern = "./.", replacement = NA)
+
+sub_gerp[c(11:ncol(sub_gerp))] <- lapply(sub_gerp[c(11:ncol(sub_gerp))], as.numeric)
+
+# sum by row
+sub_gerp$n_allele <- rowSums(sub_gerp[,c(11:ncol(sub_gerp))],na.rm=T)
+nrow(sub_gerp)
+nrow(subset(sub_gerp, n_allele > 0))
+
+# from 413558 to 270255
 #### Save in a single file #####
 
 load <- rbind(high_load$load[,c("id", "het_load", "hom_load", "total_load", "loadtype")] ,
