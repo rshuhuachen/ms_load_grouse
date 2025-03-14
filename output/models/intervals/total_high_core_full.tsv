@@ -1,0 +1,22 @@
+parameter	median	ci_95	ci_80
+b_Intercept	1.65	0.91, 2.25	1.23, 2.01
+b_scaletotal_load_high	-0.24	-0.33, -0.15	-0.3, -0.18
+sd_born__Intercept	0.42	0.21, 0.99	0.26, 0.73
+sd_site__Intercept	0.41	0.17, 1.36	0.23, 0.83
+zi	0.53	0.45, 0.6	0.47, 0.57
+Intercept	1.65	0.91, 2.25	1.23, 2.01
+r_born[2001,Intercept]	-0.42	-0.92, 0.03	-0.72, -0.14
+r_born[2002,Intercept]	-0.27	-0.82, 0.21	-0.61, 0.02
+r_born[2003,Intercept]	0.29	-0.23, 0.92	-0.06, 0.67
+r_born[2004,Intercept]	0.29	-0.13, 0.76	0.04, 0.55
+r_born[2005,Intercept]	-0.32	-0.76, 0.13	-0.57, -0.06
+r_born[2006,Intercept]	0.13	-0.29, 0.58	-0.12, 0.41
+r_born[2007,Intercept]	0.36	-0.05, 0.86	0.09, 0.66
+r_born[2008,Intercept]	0	-1.06, 1.08	-0.6, 0.57
+r_site[KUM,Intercept]	-0.09	-0.55, 0.57	-0.38, 0.22
+r_site[LEH,Intercept]	-0.21	-0.77, 0.45	-0.54, 0.12
+r_site[NYR,Intercept]	0.23	-0.24, 0.89	-0.05, 0.56
+r_site[SAA,Intercept]	0.43	-0.05, 1.1	0.15, 0.76
+r_site[TEE,Intercept]	-0.27	-0.83, 0.35	-0.59, 0.05
+lprior	-6.57	-6.91, -6.3	-6.76, -6.4
+lp__	-449.84	-458.62, -443.15	-455.28, -445.15
