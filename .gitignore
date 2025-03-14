@@ -35,3 +35,4 @@ logs/
 plots/old
 scripts/12_plots/old
 .Rhistory
+*.DS_Store
