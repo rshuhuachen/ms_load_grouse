@@ -220,4 +220,4 @@ ggplot(draws_gerp, aes(x = beta)) +
 
 We can then repeat this for the other subsets, leading to the following plots:
 
-![Random subsets](../plots/sup/extended_3_random_draws.png)
+![Random subsets](../plots/sup/sup_3_random_draws.png)

@@ -4,7 +4,7 @@ title: "Load per genomic region"
 
 ## Introduction
 
-Both functional noncoding and protein-coding regions can be under selective constraint48,49. However, the former include various regulatory elements such as promoters, enhancers and silencers, which play different roles in gene regulation and might therefore be expected to experience different strengths of purifying selection. To investigate whether the fitness effects of deleterious mutations vary by genomic region, we classified each deleterious mutation according to whether it was located within a promoter, transcription start site, intron or exon. Then, we calculate total load based on these subsets and model their effects on LMS.
+Both functional noncoding and protein-coding regions can be under selective constraint. However, the former include various regulatory elements such as promoters, enhancers and silencers, which play different roles in gene regulation and might therefore be expected to experience different strengths of purifying selection. To investigate whether the fitness effects of deleterious mutations vary by genomic region, we classified each deleterious mutation according to whether it was located within a promoter, transcription start site, intron or exon. Then, we calculate total load based on these subsets and model their effects on LMS.
 
 ### Genomic regions
 

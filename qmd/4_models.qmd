@@ -22,6 +22,9 @@ The general structure of the total load models is as follows:
 
 `LMS ~ scale(total_load) + core + (1|site)`
 
+To test for inbreeding depression, we ran a similar model:
+`LMS ~ scale(froh) + core + (1|site)`
+
 This is what the script for each load type looks like:
 
 ```{r}
@@ -162,6 +165,7 @@ The direct effect is the effect of load on MS while correcting for all mediators
 For each trait, we run this model:
 
 `scale(trait) ~ scale(total_load) + age_cat + (1|year) + (1|site/id)`
+
 
 ```{r}
 ### load data ###
@@ -356,7 +360,7 @@ write.csv(effects, file = "output/models/annual/direct_indirect_summary.csv", qu
 
 ## Results
 
-We find significant effects of total GERP and total SnpEff load:
+We find significant effects of total GERP and total SnpEff load, and significant effects of inbreeding.
 
 ![Total load results](../plots/main/fig_2a.png)
 
@@ -376,13 +380,14 @@ homhet %>% kbl()
 ```
 
 
-Here you can find the posterior distributions of model set 1 (load on traits) for GERP and SnpEff: ![MS set 1 results GERP](../plots/main/fig_3_left_load_traits.png)
+Here you can find the posterior distributions of model set 1 (load on traits) for GERP : 
+![MS set 1 results GERP](../plots/main/fig_4_left_load_traits.png)
 
-![MS set 1 results SnpEff](../plots/sup/extended_4_high_left_load_traits.png)
+![MS set 1 results SnpEff](../plots/extended/extended_7_high_left_load_traits.png)
 
-And for model set 2 (traits on MS) for GERP and SnpEff: ![MS set 2 results GERP](../plots/main/fig_3_right_traits_ams.png)
-
-![MS set 2 results SnpEff](../plots/sup/extended_4_high_right_traits_ams.png)
+And for model set 2 (traits on MS) for GERP and SnpEff: 
+![MS set 2 results GERP](../plots/main/fig_4_right_traits_ams.png)
+![MS set 2 results SnpEff](../plots/extended/extended_7_high_right_traits_ams.png)
 
 We can check out the result of the direct and indirect effects as follows:
 
