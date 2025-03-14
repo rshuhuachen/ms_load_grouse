@@ -1,0 +1,79 @@
+"""
+snakemake --snakefile scripts/8_models/load_per_window/snakemake -n 
+
+snakemake --jobs 50 --snakefile scripts/8_models/load_per_window/snakemake \
+    --latency-wait 30 \
+    -p \
+    --default-resources mem_mb=51200 threads=1 \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb} ' \
+        --jn gerp_bed.{name}.{jobid}.sh \
+        --rerun-incomplete
+"""
+
+SCAF_NO=["1","2","3","4", "5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26","27","28","29","30"]
+import pandas as pd
+SCAF_LOOKUP = pd.read_table('data/genomic/refgenome/30_largest.scafs.tsv').set_index("scaf_no", drop = True)
+SCAF_NO = SCAF_LOOKUP.index
+
+def get_scafnames(wildcards):
+    return( SCAF_LOOKUP["scaf"][int(wildcards.nscaf)] )
+
+rule all:
+    input: 
+        "data/genomic/refgenome/30_largest.scafs_reduced.tsv",
+        expand("output/gerp/beds/gerp_scaf_{nscaf}.bed", nscaf = SCAF_NO),
+        expand("output/gerp/windows/average_gerp_500kb_{nscaf}.bed", nscaf = SCAF_NO),
+        expand("output/gerp/windows/windows_500kb_{nscaf}.bed", nscaf = SCAF_NO),
+        expand("output/load_per_window/summary_load_per_window_scaf_{nscaf}.RData", nscaf = SCAF_NO),
+        "scripts/8_models/load_per_window/gerp_load_per_scaf.R"
+#        expand("output/load_per_window/load_per_window_scaf_{nscaf}.txt", nscaf=SCAF_NO)
+        
+                
+rule make_windows:
+    input:
+        genome = "data/genomic/refgenome/30_largest.scafs_reduced.tsv"
+    output:
+        windows = "output/gerp/windows/windows_500kb_{nscaf}.bed"
+    params:
+        winlength = 500000,
+        scafname = lambda wc: get_scafnames(wc)
+    shell:
+        """
+        Rscript --vanilla scripts/8_models/load_per_window/make_windows.R {input.genome} '{params.scafname}' {output.windows} {params.winlength}
+        """
+
+rule mean_gerp_windows:
+    input: 
+        bed = "output/gerp/beds/gerp_scaf_{nscaf}.bed",
+        window = "output/gerp/windows/windows_500kb_{nscaf}.bed"
+    output:
+        bed = "output/gerp/windows/average_gerp_500kb_{nscaf}.bed"
+    shell:
+        """
+        bedtools map -a {input.window} -b {input.bed} -c 5 -o mean -F 1 > {output.bed}
+        """
+
+#vcftools --vcf output/ancestral/ltet_filtered_ann_aa.vcf --bed output/load/gerp/gerp_over_4_pos.bed --out output/load/gerp/gerps_over4_correct.vcf --recode --keep-INFO-all
+#bgzip -c output/load/gerp/gerps_over4_correct.vcf.recode.vcf > output/load/gerp/gerps_over4_correct.vcf.recode.vcf.gz
+# tabix -p vcf output/load/gerp/gerps_over4_correct.vcf.recode.vcf.gz
+
+rule gerp_load_lms:
+    input: 
+        allgerp = "output/load/gerp/gerps_over4_correct.vcf.recode.vcf.gz",
+        window = "output/gerp/windows/windows_500kb_{nscaf}.bed",
+        rscript = "scripts/8_models/load_per_window/gerp_load_per_scaf.R"
+    output:
+        summary = "output/load_per_window/summary_load_per_window_scaf_{nscaf}.RData"
+    log: "logs/gerp_load_window_scaf_{nscaf}.txt"
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {input.allgerp} {input.window} {wildcards.nscaf} {output.summary} &> {log}
+        """

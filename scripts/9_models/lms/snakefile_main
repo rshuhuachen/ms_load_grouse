@@ -1,0 +1,58 @@
+"""
+snakemake --snakefile scripts/9_models/lms/snakefile_main -n 
+snakemake --snakefile scripts/9_models/lms/snakefile_main --jobs 8 -p --default-resources mem_mb=51200 --use-conda --rerun-triggers mtime --latency-wait 10 --rerun-incomplete
+
+snakemake --jobs 5 --snakefile scripts/9_models/lms/snakefile_main \
+    --latency-wait 30 \
+    -p \
+    --default-resources mem_mb=51200 \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb} ' \
+        --jn mainmodels.{name}.{jobid}.sh \
+        --rerun-incomplete
+"""
+METHODS=["high","gerp45","gerp34","lof","missense"]
+
+rule all:
+    input:
+        "scripts/9_models/lms/model_total.R",
+        "scripts/9_models/lms/model_het_hom.R",
+        expand("output/models/total_hom_het/lms_total_{method}.RData", method=METHODS),
+        expand("output/models/total_hom_het/lms_het_hom_{method}.RData", method=METHODS)
+
+rule run_bayes_total:
+    input: 
+        rscript = "scripts/9_models/lms/model_total.R"
+    output:
+        model = "output/models/total_hom_het/lms_total_{method}.RData"
+    log: "logs/bayesmodel_total_{method}.log"
+    params:
+      iter = 1000000,
+      burn = 500000,
+      thin = 1000
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {wildcards.method} {output.model} {params.iter} {params.burn} {params.thin} &> {log}
+        """
+
+rule run_bayes_het_hom:
+    input: 
+        rscript = "scripts/9_models/lms/model_het_hom.R"
+    output:
+        model = "output/models/total_hom_het/lms_het_hom_{method}.RData"
+    log: "logs/bayesmodel_het_hom_{method}.log"
+    params:
+      iter = 1000000,
+      burn = 500000,
+      thin = 1000
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {wildcards.method}  {output.model} {params.iter} {params.burn} {params.thin} &> {log}
+        """    

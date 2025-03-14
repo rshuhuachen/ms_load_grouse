@@ -1,0 +1,11 @@
+go,snps_promo,snps_exon,snps_intron,snps_total,og_genes_total
+androgen,1,1,0,2,38
+cellularresp,7,15,8,30,8064
+corticosteroid,0,0,0,0,17
+developmentgrowth,32,56,49,137,3163
+fattyacid,4,24,13,41,12448
+immune,1749,2963,1631,6343,14782
+muscle,17,38,26,81,1369
+oxidativestress,25,47,26,98,7769
+stress,146,264,186,596,36073
+all,2360,4161,2504,9025,1483

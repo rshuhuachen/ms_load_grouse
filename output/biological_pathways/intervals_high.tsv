@@ -1,0 +1,16 @@
+parameter	region	go	median	ci_95	ci_80
+b_scaletotal_load	Exon	Cellular respiration	0.19	0.1, 0.28	0.13, 0.25
+b_scaletotal_load	Exon	Developmental growth	-0.02	-0.1, 0.06	-0.07, 0.03
+b_scaletotal_load	Exon	Immune response	-0.14	-0.23, -0.05	-0.2, -0.08
+b_scaletotal_load	Exon	Muscle tissue development	0.01	-0.07, 0.08	-0.04, 0.06
+b_scaletotal_load	Exon	Response to oxidative stress	-0.07	-0.15, 0.02	-0.12, -0.02
+b_scaletotal_load	Intron	Cellular respiration	0.09	0.02, 0.17	0.04, 0.14
+b_scaletotal_load	Intron	Developmental growth	0.29	0.2, 0.38	0.23, 0.35
+b_scaletotal_load	Intron	Immune response	-0.08	-0.15, 0	-0.13, -0.03
+b_scaletotal_load	Intron	Muscle tissue development	0.2	0.11, 0.29	0.14, 0.26
+b_scaletotal_load	Intron	Response to oxidative stress	0.37	0.28, 0.45	0.31, 0.42
+b_scaletotal_load	Promoter	Cellular respiration	0	-0.09, 0.09	-0.06, 0.06
+b_scaletotal_load	Promoter	Developmental growth	-0.05	-0.14, 0.03	-0.11, 0
+b_scaletotal_load	Promoter	Immune response	-0.25	-0.34, -0.17	-0.31, -0.2
+b_scaletotal_load	Promoter	Muscle tissue development	0.05	-0.03, 0.13	0, 0.1
+b_scaletotal_load	Promoter	Response to oxidative stress	0.11	0.03, 0.19	0.06, 0.16

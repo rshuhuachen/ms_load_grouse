@@ -1,0 +1,95 @@
+SRD5A3	UniProtKB:H0ZB17	Polyprenal reductase		GO:0006702	"{""relationship"": {""relation"": [{""id"": ""BFO:0000066"", ""label"": ""occurs in""}], ""id"": ""UBERON:0001893"", ""label"": ""telencephalon""}}|{""relationship"": {""relation"": [{""id"": ""RO:0002233"", ""label"": ""has input""}], ""id"": ""CHEBI:16422"", ""label"": ""androst-4-ene-3,17-dione""}}|{""relationship"": {""relation"": [{""id"": ""RO:0002234"", ""label"": ""has output""}], ""id"": ""CHEBI:15994"", ""label"": ""5alpha-androstane-3,17-dione""}}|{""relationship"": {""relation"": [{""id"": ""RO:0002233"", ""label"": ""has input""}], ""id"": ""CHEBI:17347"", ""label"": ""testosterone""}}|{""relationship"": {""relation"": [{""id"": ""RO:0002234"", ""label"": ""has output""}], ""id"": ""CHEBI:16330"", ""label"": ""17beta-hydroxy-5alpha-androstan-3-one""}}"	AgBase	NCBITaxon:59729	IMP			protein		PMID:9098536	20151007
+MED1	UniProtKB:F7E5Q9	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:9544	ISS	UniProtKB:Q15648		protein		GO_REF:0000024	20111029
+AKR1D1	UniProtKB:H0ZPZ0	NADP-dependent oxidoreductase domain-containing protein		GO:0006702	"{""relationship"": {""relation"": [{""id"": ""BFO:0000066"", ""label"": ""occurs in""}], ""id"": ""UBERON:0001893"", ""label"": ""telencephalon""}}|{""relationship"": {""relation"": [{""id"": ""RO:0002233"", ""label"": ""has input""}], ""id"": ""CHEBI:16422"", ""label"": ""androst-4-ene-3,17-dione""}}|{""relationship"": {""relation"": [{""id"": ""RO:0002234"", ""label"": ""has output""}], ""id"": ""CHEBI:17263"", ""label"": ""estrone""}}|{""relationship"": {""relation"": [{""id"": ""RO:0002233"", ""label"": ""has input""}], ""id"": ""CHEBI:17347"", ""label"": ""testosterone""}}"	AgBase	NCBITaxon:59729	IMP			protein		PMID:9098536	20151007
+MED1	UniProtKB:G1QJ97	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:61853	ISS	UniProtKB:Q15648		protein		GO_REF:0000024	20111029
+3 beta-HSD	UniProtKB:Q91381	3-beta hydroxysteroid dehydrogenase/isomerase domain-containing protein		GO:0006702		AgBase	NCBITaxon:8022	IMP			protein		PMID:8070583	20150127
+MED1	UniProtKB:F6SJK0	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:13616	ISS	UniProtKB:Q15648	PANTHER:PTHR12881	protein		GO_REF:0000024	20111029
+MED1	UniProtKB:G1TW10	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:9986	ISS	UniProtKB:Q15648		protein		GO_REF:0000024	20111029
+MED1	UniProtKB:G1P7G3	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:59463	ISS	UniProtKB:Q15648		protein		GO_REF:0000024	20111029
+Q7SZK9	UniProtKB:Q7SZK9	11-beta-hydroxysteroid dehydrogenase type 2		GO:0006702	"{""relationship"": {""relation"": [{""id"": ""RO:0002233"", ""label"": ""has input""}], ""id"": ""CHEBI:81481"", ""label"": ""11beta-hydroxytestosterone""}}|{""relationship"": {""relation"": [{""id"": ""RO:0002234"", ""label"": ""has output""}], ""id"": ""CHEBI:34133"", ""label"": ""11-oxotestosterone""}}"	AgBase	NCBITaxon:8022	IDA			protein		DOI:10.1023/A:1007833315734	20160307
+Hsd3b1	RGD:1308676	hydroxy-delta-5-steroid dehydrogenase, 3 beta- and steroid delta-isomerase 1		GO:0006702		RGD	NCBITaxon:10116	ISO	MGI:96233	PANTHER:PTHR10366	gene		RGD:1624291	20240710
+srd5a1	ZFIN:ZDB-GENE-060929-938	steroid-5-alpha-reductase, alpha polypeptide 1 (3-oxo-5 alpha-steroid delta 4-dehydrogenase alpha 1)		GO:0006702		UniProt	NCBITaxon:7955	IEA	ARBA:ARBA00029222	PANTHER:PTHR10556	protein_coding_gene	UniProtKB:Q08C19	ZFIN:ZDB-PUB-221108-21	20241014
+hsd17b3	ZFIN:ZDB-GENE-040426-1339	hydroxysteroid (17-beta) dehydrogenase 3		GO:0006702		ZFIN	NCBITaxon:7955	IDA		PANTHER:PTHR43899	protein_coding_gene		PMID:16216911	20060412
+srd5a2a	ZFIN:ZDB-GENE-050417-199	steroid-5-alpha-reductase, alpha polypeptide 2a		GO:0006702		UniProt	NCBITaxon:7955	IEA	ARBA:ARBA00029222	PANTHER:PTHR10556	protein_coding_gene		ZFIN:ZDB-PUB-221108-21	20241014
+srd5a2b	ZFIN:ZDB-GENE-050417-182	steroid-5-alpha-reductase, alpha polypeptide 2b		GO:0006702		UniProt	NCBITaxon:7955	IEA	ARBA:ARBA00029222		protein_coding_gene	UniProtKB:Q566V2	ZFIN:ZDB-PUB-221108-21	20241014
+SRD5A2	UniProtKB:P31213	3-oxo-5-alpha-steroid 4-dehydrogenase 2		GO:0006702		Reactome	NCBITaxon:9606	TAS		PANTHER:PTHR10556	protein	UniProtKB:P31213	Reactome:R-HSA-193048	20240830
+CYP17A1	UniProtKB:P05093	Steroid 17-alpha-hydroxylase/17,20 lyase		GO:0006702		Reactome	NCBITaxon:9606	TAS		PANTHER:PTHR24289	protein	UniProtKB:P05093	Reactome:R-HSA-193048	20240829
+SRD5A1	UniProtKB:P18405	3-oxo-5-alpha-steroid 4-dehydrogenase 1		GO:0006702		Reactome	NCBITaxon:9606	TAS		PANTHER:PTHR10556	protein	UniProtKB:P18405	Reactome:R-HSA-193048	20240830
+HSD3B1	UniProtKB:P14060	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 1		GO:0006702		UniProt	NCBITaxon:9606	TAS		PANTHER:PTHR10366	protein	UniProtKB:P14060	PMID:1944309	20051116
+Hsd3b6	MGI:MGI:109598	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 6		GO:0006702		GO_Central	NCBITaxon:10090	ISO	RGD:67377	PANTHER:PTHR10366	protein		GO_REF:0000096	20250206
+Hsd17b2	MGI:MGI:1096386	Estradiol 17-beta-dehydrogenase 2		GO:0006702		GO_Central	NCBITaxon:10090	ISO	RGD:621803	PANTHER:PTHR43313	protein		GO_REF:0000096	20250206
+Scarb1	MGI:MGI:893578	Scavenger receptor class B member 1		GO:0006702		GO_Central	NCBITaxon:10090	ISO	RGD:2302	PANTHER:PTHR11923	protein		GO_REF:0000096	20250206
+Srd5a1	MGI:MGI:98400	3-oxo-5-alpha-steroid 4-dehydrogenase 1		GO:0006702		GO_Central	NCBITaxon:10090	ISO	RGD:3757	PANTHER:PTHR10556	protein		GO_REF:0000096	20250206
+Srd5a1	MGI:MGI:98400	3-oxo-5-alpha-steroid 4-dehydrogenase 1		GO:0006702		MGI	NCBITaxon:10090	IMP	MGI:MGI:1857454	PANTHER:PTHR10556	protein		PMID:21731732	20240710
+Srd5a1	MGI:MGI:98400	3-oxo-5-alpha-steroid 4-dehydrogenase 1		GO:0006702		MGI	NCBITaxon:10090	IMP	MGI:MGI:1857454	PANTHER:PTHR10556	protein		PMID:15249131	20240703
+Srd5a1	MGI:MGI:98400	3-oxo-5-alpha-steroid 4-dehydrogenase 1		GO:0006702		MGI	NCBITaxon:10090	IMP	MGI:MGI:1857454	PANTHER:PTHR10556	protein		PMID:15249131	20040903
+Cyp17a1	MGI:MGI:88586	Steroid 17-alpha-hydroxylase/17,20 lyase		GO:0006702		MGI	NCBITaxon:10090	IMP	MGI:MGI:3047328	PANTHER:PTHR24289	protein		PMID:15169901	20240703
+Cyp17a1	MGI:MGI:88586	Steroid 17-alpha-hydroxylase/17,20 lyase		GO:0006702		MGI	NCBITaxon:10090	IDA		PANTHER:PTHR24289	protein		PMID:6090441	20240703
+MED1	UniProtKB:F1RWL2	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:9823	ISS	UniProtKB:Q15648	PANTHER:PTHR12881	protein	UniProtKB:F1RWL2	GO_REF:0000024	20111029
+Med1	MGI:MGI:1100846	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:10090	ISS	UniProtKB:Q15648	PANTHER:PTHR12881	protein		GO_REF:0000024	20111029
+Med1	MGI:MGI:1100846	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		GO_Central	NCBITaxon:10090	ISO	UniProtKB:Q15648	PANTHER:PTHR12881	protein		GO_REF:0000119	20250206
+Akr1c14	MGI:MGI:2145458	aldo-keto reductase family 1, member C14		GO:0006702		MGI	NCBITaxon:10090	ISO	RGD:708361	PANTHER:PTHR11732	gene_product		PMID:10803568	20240703
+MED1	UniProtKB:F6XFN5	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:9796	ISS	UniProtKB:Q15648	PANTHER:PTHR12881	protein		GO_REF:0000024	20111029
+HSD3B2	UniProtKB:Q64421	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 2		GO:0006702		UniProt	NCBITaxon:10036	ISS	UniProtKB:P26439		protein		GO_REF:0000024	20200804
+GTH alpha	UniProtKB:Q9DG94	Glycoprotein hormones alpha chain		GO:0006702		AgBase	NCBITaxon:8022	IDA			protein		PMID:24194844	20150522
+GTH alpha	UniProtKB:Q9DG94	Glycoprotein hormones alpha chain		GO:0006702		AgBase	NCBITaxon:8022	IDA			protein		PMID:23045716	20150522
+FSH beta	UniProtKB:Q9DG93	Glycoprotein hormone subunit beta domain-containing protein		GO:0006702		AgBase	NCBITaxon:8022	IDA			protein		PMID:24194844	20150522
+FSH beta	UniProtKB:Q9DG93	Glycoprotein hormone subunit beta domain-containing protein		GO:0006702		AgBase	NCBITaxon:8022	IDA			protein		PMID:23045716	20150522
+LH beta	UniProtKB:Q9DG92	Glycoprotein hormone subunit beta domain-containing protein		GO:0006702		AgBase	NCBITaxon:8022	IDA			protein		PMID:23045716	20150522
+MED1	UniProtKB:G1LBE5	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:9646	ISS	UniProtKB:Q15648		protein		GO_REF:0000024	20111029
+Srd5a2	MGI:MGI:2150380	3-oxo-5-alpha-steroid 4-dehydrogenase 2		GO:0006702		GO_Central	NCBITaxon:10090	ISO	RGD:621480	PANTHER:PTHR10556	protein		GO_REF:0000096	20250206
+Srd5a2	MGI:MGI:2150380	3-oxo-5-alpha-steroid 4-dehydrogenase 2		GO:0006702		MGI	NCBITaxon:10090	IMP	MGI:MGI:2178039	PANTHER:PTHR10556	protein		PMID:35613877	20240710
+Srd5a2	MGI:MGI:2150380	3-oxo-5-alpha-steroid 4-dehydrogenase 2		GO:0006702		MGI	NCBITaxon:10090	IMP	MGI:MGI:2178039	PANTHER:PTHR10556	protein		PMID:15249131	20240703
+Srd5a2	MGI:MGI:2150380	3-oxo-5-alpha-steroid 4-dehydrogenase 2		GO:0006702		MGI	NCBITaxon:10090	IMP		PANTHER:PTHR10556	protein		PMID:15249131	20050726
+Scarb1	RGD:2302	scavenger receptor class B, member 1		GO:0006702		RGD	NCBITaxon:10116	IDA		PANTHER:PTHR11923	gene		PMID:12746305|RGD:1304382	20060127
+Hsd17b2	RGD:621803	hydroxysteroid (17-beta) dehydrogenase 2		GO:0006702		RGD	NCBITaxon:10116	IDA		PANTHER:PTHR43313	gene		PMID:8612487|RGD:728619	20110105
+Hsd3b2	RGD:67377	hydroxy-delta-5-steroid dehydrogenase, 3 beta- and steroid delta-isomerase 2		GO:0006702		RGD	NCBITaxon:10116	IDA		PANTHER:PTHR10366	gene		PMID:1985917|RGD:632871	20101207
+Hsd3b2	RGD:67377	hydroxy-delta-5-steroid dehydrogenase, 3 beta- and steroid delta-isomerase 2		GO:0006702		RGD	NCBITaxon:10116	ISO	UniProtKB:P26439	PANTHER:PTHR10366	gene		RGD:1624291	20200804
+Cyp17a1	RGD:2456	cytochrome P450, family 17, subfamily a, polypeptide 1		GO:0006702		Ensembl	NCBITaxon:10116	IEA	UniProtKB:P27786|ensembl:ENSMUSP00000026012	PANTHER:PTHR24289	gene	UniProtKB:A0A0G2JSR8	GO_REF:0000107|RGD:1600115	20241119
+Cyp17a1	RGD:2456	cytochrome P450, family 17, subfamily a, polypeptide 1		GO:0006702		RGD	NCBITaxon:10116	TAS		PANTHER:PTHR24289	gene		PMID:7702752|RGD:1298833	20060324
+Cyp17a1	RGD:2456	cytochrome P450, family 17, subfamily a, polypeptide 1		GO:0006702		RGD	NCBITaxon:10116	ISO	MGI:88586	PANTHER:PTHR24289	gene		RGD:1624291	20240703
+Srd5a1	RGD:3757	steroid 5 alpha-reductase 1		GO:0006702		RGD	NCBITaxon:10116	ISO	MGI:98400	PANTHER:PTHR10556	gene		RGD:1624291	20040903
+Srd5a1	RGD:3757	steroid 5 alpha-reductase 1		GO:0006702		RGD	NCBITaxon:10116	IDA		PANTHER:PTHR10556	gene		PMID:12606426|RGD:4891962	20110125
+Srd5a1	RGD:3757	steroid 5 alpha-reductase 1		GO:0006702		RGD	NCBITaxon:10116	ISO	MGI:98400	PANTHER:PTHR10556	gene		RGD:1624291	20240710
+srdf-2.1	WB:WBGene00008959			GO:0006702		UniProt	NCBITaxon:6239	IEA		PANTHER:PTHR10556	gene		GO_REF:0000117	20240610
+MED1	UniProtKB:Q15648	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:9606	IMP		PANTHER:PTHR12881	protein	UniProtKB:Q15648	PMID:19497978	20100730
+HSD3B2	UniProtKB:P26439	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 2		GO:0006702		UniProt	NCBITaxon:9606	IMP		PANTHER:PTHR10366	protein	UniProtKB:P26439	PMID:25322271	20200804
+SRD5A3	UniProtKB:Q9H8P0	Polyprenal reductase		GO:0006702		Reactome	NCBITaxon:9606	TAS		PANTHER:PTHR14624	protein	UniProtKB:Q9H8P0	Reactome:R-HSA-193048	20240830
+HSD17B3	UniProtKB:P37058	17-beta-hydroxysteroid dehydrogenase type 3		GO:0006702		Reactome	NCBITaxon:9606	TAS		PANTHER:PTHR43899	protein	UniProtKB:P37058	Reactome:R-HSA-193048	20240830
+HSD17B6	UniProtKB:O14756	17-beta-hydroxysteroid dehydrogenase type 6		GO:0006702		UniProt	NCBITaxon:9606	NAS		PANTHER:PTHR43313	protein	UniProtKB:O14756	PMID:9188497	20011003
+CYP17A1	UniProtKB:P19100	Steroid 17-alpha-hydroxylase/17,20 lyase		GO:0006702		Ensembl	NCBITaxon:9823	IEA	UniProtKB:P27786|ensembl:ENSMUSP00000026012	PANTHER:PTHR24289	protein	UniProtKB:P19100	GO_REF:0000107	20241119
+HSD17B3	UniProtKB:F1S4L6	17beta-estradiol 17-dehydrogenase		GO:0006702		Ensembl	NCBITaxon:9823	IEA	UniProtKB:P70385|ensembl:ENSMUSP00000132011	PANTHER:PTHR43899	protein	UniProtKB:F1S4L6	GO_REF:0000107	20241119
+SRD5A2	UniProtKB:O18765	3-oxo-5-alpha-steroid 4-dehydrogenase 2		GO:0006702		UniProt	NCBITaxon:9823	IEA	ARBA:ARBA00029222		protein	UniProtKB:O18765	GO_REF:0000117	20241216
+SRD5A1	UniProtKB:F1S0R8	3-oxo-5-alpha-steroid 4-dehydrogenase		GO:0006702		UniProt	NCBITaxon:9823	IEA	ARBA:ARBA00029222	PANTHER:PTHR10556	protein	UniProtKB:F1S0R8	GO_REF:0000117	20241216
+HSD17B3	UniProtKB:A0A1L1RTH3	Testosterone 17-beta-dehydrogenase 3		GO:0006702		Ensembl	NCBITaxon:9031	IEA	UniProtKB:P70385|ensembl:ENSMUSP00000132011	PANTHER:PTHR43899	protein	UniProtKB:A0A1L1RTH3	GO_REF:0000107	20241119
+CYP17A1	UniProtKB:A0A8V0Z6E2	Steroid 17-alpha-hydroxylase/17,20 lyase		GO:0006702		Ensembl	NCBITaxon:9031	IEA	UniProtKB:P27786|ensembl:ENSMUSP00000026012	PANTHER:PTHR24289	protein	UniProtKB:A0A8V0Z6E2	GO_REF:0000107	20241119
+SRD5A2	UniProtKB:F1NUW1	3-oxo-5-alpha-steroid 4-dehydrogenase		GO:0006702		UniProt	NCBITaxon:9031	IEA	ARBA:ARBA00029222	PANTHER:PTHR10556	protein	UniProtKB:F1NUW1	GO_REF:0000117	20241216
+MED1	UniProtKB:E1BUI5	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:9031	ISS	UniProtKB:Q15648	PANTHER:PTHR12881	protein	UniProtKB:E1BUI5	GO_REF:0000024	20111029
+SRD5A2	UniProtKB:E1BJY8	3-oxo-5-alpha-steroid 4-dehydrogenase		GO:0006702		UniProt	NCBITaxon:9913	IEA	ARBA:ARBA00029222	PANTHER:PTHR10556	protein	UniProtKB:E1BJY8	GO_REF:0000117	20241216
+HSD17B3	UniProtKB:F6RUH3	17beta-estradiol 17-dehydrogenase		GO:0006702		Ensembl	NCBITaxon:9913	IEA	UniProtKB:P70385|ensembl:ENSMUSP00000132011	PANTHER:PTHR43899	protein	UniProtKB:F6RUH3	GO_REF:0000107	20241119
+SRD5A1	UniProtKB:A0AAF6Z1H8	3-oxo-5-alpha-steroid 4-dehydrogenase		GO:0006702		UniProt	NCBITaxon:9913	IEA	ARBA:ARBA00029222		protein	UniProtKB:A0AAF6Z1H8	GO_REF:0000117	20241216
+MED1	UniProtKB:E1B7Q6	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		UniProt	NCBITaxon:9913	ISS	UniProtKB:Q15648	PANTHER:PTHR12881	protein	UniProtKB:E1B7Q6	GO_REF:0000024	20111029
+SRD5A1	UniProtKB:A5PJS2	3-oxo-5-alpha-steroid 4-dehydrogenase 1		GO:0006702		UniProt	NCBITaxon:9913	IEA	ARBA:ARBA00029222	PANTHER:PTHR10556	protein	UniProtKB:A5PJS2	GO_REF:0000117	20241216
+SRD5A2	UniProtKB:A0A8I3NQ64	3-oxo-5-alpha-steroid 4-dehydrogenase		GO:0006702		UniProt	NCBITaxon:9615	IEA	ARBA:ARBA00029222	PANTHER:PTHR10556	protein	UniProtKB:A0A8I3NQ64	GO_REF:0000117	20241216
+MED1	UniProtKB:A0A8I3NEL7	Mediator of RNA polymerase II transcription subunit 1		GO:0006702		Ensembl	NCBITaxon:9615	IEA	UniProtKB:Q15648|ensembl:ENSP00000300651	PANTHER:PTHR12881	protein	UniProtKB:A0A8I3NEL7	GO_REF:0000107	20241119
+SRD5A1	UniProtKB:A0A8I3PTX9	3-oxo-5-alpha-steroid 4-dehydrogenase		GO:0006702		UniProt	NCBITaxon:9615	IEA	ARBA:ARBA00029222	PANTHER:PTHR10556	protein	UniProtKB:A0A8I3PTX9	GO_REF:0000117	20241216
+Hsd17b3	MGI:MGI:107177	17-beta-hydroxysteroid dehydrogenase type 3		GO:0006702		MGI	NCBITaxon:10090	IMP		PANTHER:PTHR43899	protein		PMID:32557858	20240710
+Hsd17b3	MGI:MGI:107177	17-beta-hydroxysteroid dehydrogenase type 3		GO:0006702		MGI	NCBITaxon:10090	IMP		PANTHER:PTHR43899	protein		PMID:32557858	20240703
+Med1	RGD:1559552	mediator complex subunit 1		GO:0006702		UniProt	NCBITaxon:10116	ISS	UniProtKB:Q15648	PANTHER:PTHR12881	gene	UniProtKB:D3ZRN2	GO_REF:0000024|RGD:1600115	20170208
+Med1	RGD:1559552	mediator complex subunit 1		GO:0006702		RGD	NCBITaxon:10116	ISO	UniProtKB:Q15648	PANTHER:PTHR12881	gene		RGD:1624291	20100730
+Hsd3b3	MGI:MGI:96235	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 3		GO:0006702		GO_Central	NCBITaxon:10090	ISO	RGD:67377	PANTHER:PTHR10366	protein		GO_REF:0000096	20250206
+Hsd3b2	MGI:MGI:96234	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 2		GO:0006702		UniProt	NCBITaxon:10090	ISS	UniProtKB:P26439	PANTHER:PTHR10366	protein		GO_REF:0000024	20200804
+Hsd3b2	MGI:MGI:96234	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 2		GO:0006702		GO_Central	NCBITaxon:10090	ISO	RGD:67377	PANTHER:PTHR10366	protein		GO_REF:0000096	20250206
+Hsd3b1	MGI:MGI:96233	3 beta-hydroxysteroid dehydrogenase/Delta 5-->4-isomerase type 1		GO:0006702		MGI	NCBITaxon:10090	IDA		PANTHER:PTHR10366	protein		PMID:1924345	20240710
+Srd5a2	RGD:621480	steroid 5 alpha-reductase 2		GO:0006702		RGD	NCBITaxon:10116	ISO	MGI:2150380	PANTHER:PTHR10556	gene		RGD:1624291	20050726
+Srd5a2	RGD:621480	steroid 5 alpha-reductase 2		GO:0006702		RGD	NCBITaxon:10116	IDA		PANTHER:PTHR10556	gene		PMID:12606426|RGD:4891962	20110125
+Srd5a2	RGD:621480	steroid 5 alpha-reductase 2		GO:0006702		RGD	NCBITaxon:10116	ISO	MGI:2150380	PANTHER:PTHR10556	gene		RGD:1624291	20240703
+srdf-2.2	WB:WBGene00009635			GO:0006702		UniProt	NCBITaxon:6239	IEA		PANTHER:PTHR10556	gene		GO_REF:0000117	20240610
+ZK1251.3	WB:WBGene00014241			GO:0006702		UniProt	NCBITaxon:6239	IEA		PANTHER:PTHR10556	gene		GO_REF:0000117	20240610
+srd5a2	Xenbase:XB-GENE-940949	steroid 5 alpha-reductase 2		GO:0006702		UniProt	NCBITaxon:8364	IEA	ARBA:ARBA00029222	PANTHER:PTHR10556	protein		GO_REF:0000117	20241216
+srd5a1.S	Xenbase:XB-GENE-6253938	steroid-5-alpha-reductase, alpha polypeptide 1 (3-oxo-5 alpha-steroid delta 4-dehydrogenase alpha 1) S homeolog		GO:0006702		UniProt	NCBITaxon:8355	IEA	ARBA:ARBA00029222		protein		GO_REF:0000117	20241216
+srd5a1	Xenbase:XB-GENE-1000046	steroid-5-alpha-reductase, alpha polypeptide 1 (3-oxo-5 alpha-steroid delta 4-dehydrogenase alpha 1)		GO:0006702		UniProt	NCBITaxon:8364	IEA	ARBA:ARBA00029222	PANTHER:PTHR10556	protein		GO_REF:0000117	20241216
+srd5a2.L	Xenbase:XB-GENE-6488238	steroid 5 alpha-reductase 2 L homeolog		GO:0006702		UniProt	NCBITaxon:8355	IEA	ARBA:ARBA00029222		protein		GO_REF:0000117	20241216
+srd5a2.S	Xenbase:XB-GENE-17346729	steroid 5 alpha-reductase 2 S homeolog		GO:0006702		UniProt	NCBITaxon:8355	IEA	ARBA:ARBA00029222		protein		GO_REF:0000117	20241216
+Hsd17b3	RGD:621805	hydroxysteroid (17-beta) dehydrogenase 3		GO:0006702		Ensembl	NCBITaxon:10116	IEA	UniProtKB:P70385|ensembl:ENSMUSP00000132011	PANTHER:PTHR43899	gene	UniProtKB:F1LMA3	GO_REF:0000107|RGD:1600115	20241119
+Hsd17b3	RGD:621805	hydroxysteroid (17-beta) dehydrogenase 3		GO:0006702		RGD	NCBITaxon:10116	ISO	MGI:107177	PANTHER:PTHR43899	gene		RGD:1624291	20240710

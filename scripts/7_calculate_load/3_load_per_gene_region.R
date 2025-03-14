@@ -1,5 +1,5 @@
 #### Packages #####
-pacman::p_load(BiocManager, rtracklayer, GenomicFeatures, BiocGenerics, data.table, dplyr, genomation, GenomicRanges, tibble)
+pacman::p_load(BiocManager, rtracklayer, GenomicFeatures, BiocGenerics, data.table, dplyr, stringr, genomation, GenomicRanges, tibble)
 
 #### Genome data ####
 # first change scaffold names
@@ -178,3 +178,25 @@ for (region in regions){
 
 save(load_per_region, file = "output/load/all_loads_combined_da_nosex_29scaf_plus_per_region.RData")
 
+#### Also save the gene names from the annotation, which are not located in the official column but in the 'notes'#####
+
+#### Genome data ####
+# first change scaffold names
+gff_raw <- fread("data/genomic/annotation/PO2979_Lyrurus_tetrix_black_grouse.annotation.gff.gz") 
+gff_raw$V1 <- gsub(";", "__", gff_raw$V1)
+gff_raw$V1 <- gsub("=", "_", gff_raw$V1)
+
+## make a look up list to match ANN* to 'similar to' proteins
+
+original = str_extract(gff_raw$V9, "ID=(.*?);")
+original <- gsub("ID=", "", original)
+original <- gsub(";", "", original)
+#original <- gsub(":.*", "", original)
+
+similar <- str_extract(gff_raw$V9, "Similar to (.*?):")
+similar <- gsub("Similar to ", "", similar)
+similar <- gsub(":", "", similar)
+
+lookup <- cbind(original, similar)
+
+write.table(lookup, file = "data/genomic/annotation/lookup_ANN_gene_id.txt", sep = "\t", col.names = FALSE, quote=F, row.names = FALSE)

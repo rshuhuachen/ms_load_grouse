@@ -1,0 +1,5 @@
+In this subdirectory, we subset deleterious mutations according to what genes they're located in. We hypothesized that deleterious mutations in six biological processes would be deleterious to male reproductive success (LMS). We extracted the genes that are associated with the six corresponding gene ontology (GO) terms. These list of genes can be found in `data/gene_lists_go`.
+
+For each GO term, we extract the deleterious mutations in the promoters, introns and exons of the associated genes, separately for GERP and SnpEff. The workflow for this step can be found in `1_extract_genes_per_region.R`.
+
+Next, we model the effect of each GO- and region- specific total load on LMS in the scripts `2_bayesian_gerp_lms_per_region` and `2_bayesian_high_lms_per_region` for GERP and SnpEff respectively. The scripts can be activated using the two snakefiles `snakefile_gerp` and `snakefile_high` respectively, which will generate all the output. 

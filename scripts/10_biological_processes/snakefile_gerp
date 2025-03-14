@@ -1,0 +1,42 @@
+"""
+snakemake --snakefile scripts/10_biological_processes/snakefile_gerp -n 
+
+snakemake --jobs 50 --snakefile scripts/10_biological_processes/snakefile_gerp -R region \
+    -p \
+    --default-resources mem_mb=51200 \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb} ' \
+        --jn brm.{name}.{jobid}.sh \
+        --rerun-incomplete
+"""
+
+GOS=["androgen","cellularresp","developmentgrowth","immune","muscle","oxidativestress"]
+REGIONS=["promo","intron","exon"]
+
+rule all:
+    input:
+        "scripts/10_biological_processes/2_bayesian_gerp_lms_per_region.R",
+        expand("output/biological_pathways/lms_per_region_{region}_gerp_{go}.RData",go=GOS,region=REGIONS)
+       
+     
+rule region:
+    input: 
+        rscript = "scripts/10_biological_processes/2_bayesian_gerp_lms_per_region.R"
+    output:
+        model = "output/biological_pathways/lms_per_region_{region}_gerp_{go}.RData"
+    log: "logs/brm_gerp_lms_{go}_{region}.log"
+    params:
+        iter = 100000,
+        burn = 50000,
+        thin = 100
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {wildcards.go} {wildcards.region} {output.model} {params.iter} {params.burn} #{params.thin} &> {log}
+        """        

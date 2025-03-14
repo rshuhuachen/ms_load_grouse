@@ -1,0 +1,61 @@
+"""
+snakemake --snakefile scripts/9_models/annual/snakefile_megamodels_traits -n 
+
+snakemake --jobs 50 --snakefile scripts/9/annual/snakefile_megamodels_traits \
+    -p \
+    --default-resources mem_mb=51200 \
+    --use-conda \
+    --rerun-triggers mtime \
+    --cluster '
+      sbatch \
+        --export=ALL \
+        -n {threads} \
+        -e logs/{name}.{jobid}.err \
+        -o logs/{name}.{jobid}.out \
+        --mem={resources.mem_mb} ' \
+        --jn ams.{name}.{jobid}.sh \
+        --rerun-incomplete
+"""
+
+RESPONSES=["blue","eyec","lyre","attend","fight","dist"]
+METHODS=["gerp45","high"]
+
+rule all:
+    input:
+        "scripts/9_models/annual/model_relationship_load_trait.R",
+        "scripts/9_models/annual/model_trait_ams.R",
+        expand("output/models/annual/traits/model_{response}_{method}.RData",response=RESPONSES,method=METHODS),
+        expand("logs/traits_bayesmodel_{response}_{method}.log",response=RESPONSES,method=METHODS),
+        expand("output/models/annual/ams/model_trait_ams_{method}.RData",method=METHODS),
+        expand("logs/bayes_annual_mating_success{method}.log",method=METHODS)
+        
+
+rule trait_load:
+    input: 
+        rscript = "scripts/9_models/annual/model_relationship_load_trait.R"
+    output:
+        model = "output/models/annual/traits/model_{response}_{method}.RData"
+    log: "logs/traits_bayesmodel_{response}_{method}.log"
+    params:
+        iter = 1000000,
+        burn = 500000,
+        thin = 1000
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {wildcards.method} {wildcards.response} {output.model} {params.iter} {params.burn} {params.thin} &> {log}
+        """
+
+rule load_ams:
+    input: 
+        rscript = "scripts/9_models/annual/model_trait_ams.R"
+    output:
+        model = "output/models/annual/ams/model_trait_ams_{method}.RData"
+    log: "logs/bayes_annual_mating_success{method}.log"
+    params:
+        iter = 1000000,
+        burn = 500000,
+        thin = 1000
+    shell:
+        """
+        Rscript --vanilla {input.rscript} {wildcards.method} {output.model} {params.iter} {params.burn} {params.thin} &> {log}
+        """        
