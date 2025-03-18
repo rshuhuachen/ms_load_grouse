@@ -1,4 +1,4 @@
-# Predicted deleterious mutations reveal the genomic mechanisms underlying fitness variation in a lekking bird
+# Genetic architecture of male reproductive success in a lekking bird: insights from predicted deleterious mutations
 
 # General
 
