@@ -2,7 +2,7 @@
 
 # General
 
-This is the repository that contains all scripts used for the analysis in the manuscript titled "Predicted deleterious mutations reveal the genomic mechanisms underlying fitness variation in a lekking bird" by Chen et al. (in preparation). Genomic data, including the reference genome, and the 190 resequenced grouse genomes can be found on NCBI (see links below) and phenotypic data as well as the black grouse annotation are stored in this repository.
+This is the repository that contains all scripts used for the analysis in the manuscript titled "Genetic architecture of male reproductive success in a lekking bird: insights from predicted deleterious mutations", Chen et al. 2024 ([in review](https://doi.org/10.21203/rs.3.rs-5579350/v1)). Genomic data, including the reference genome, and the 190 resequenced grouse genomes can be found on NCBI (see links below) and phenotypic data as well as the black grouse annotation are stored in this repository.
 
 Below you will find an explanation of which data files can be found where, and the general structure of the workflow. You will find a brief overview of the scripts with an explanation here: https://rshuhuachen.github.io/ms_load_grouse/
 
@@ -52,10 +52,14 @@ To allow easier reproducibility, you can use the conda environment listed in `sr
 
 7_calculate_load: here we use the snpeff and gerp results to filter for the most deleterious mutations and calculated a proxy for total load, as well as homozygous and heterozygous load. Within this folder, we repeat the above per gene region (promoter, TSS, intron, exon) using the genome annotation.
 
-8_models: here we use Bayesian mixed effect modelling to understand the relationship between mutation load and lifetime mating success (LMS), as well as their effects on sexual and behavioural traits. We also calculate allele frequencies in this directory
+8_inbreeding: here, we calculate genomic inbreeding using BCFtools where we first identify runs of homozygosity, and then calculate FROH. We further model the effect of FROH on lifetime mating success to quantify inbreeding depression.
 
-9_random_draws: in this subfolder, we use a subsampling approach to select a random set of mutations to control for the number of mutations that contribute to the mutation load estimate
+9_models: here we use Bayesian mixed effect modelling to understand the relationship between mutation load and lifetime mating success (LMS), as well as their effects on sexual and behavioural traits. We also calculate allele frequencies in this directory
 
-10_plots: in this folder, we produce the plots used in the main manuscript as well as in the supplementary materials
+10_biological_processes: here we utilise gene ontology annotations to select genes that are important for hypothesized relevant biological processes. We calculate the total load based on subsets of mutations and model their effect on LMS.
 
-Lastly, please see our full Methods for further details.
+11_random_draws: in this subfolder, we use a subsampling approach to select a random set of mutations to control for the number of mutations that contribute to the mutation load estimate
+
+12_plots: in this folder, we produce the plots used in the main manuscript as well as in the supplementary materials
+
+Lastly, please see our full Methods in the main manuscript for further details.
