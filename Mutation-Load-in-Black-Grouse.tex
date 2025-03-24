@@ -43,14 +43,28 @@
 \setlength{\emergencystretch}{3em} % prevent overfull lines
 \setcounter{secnumdepth}{5}
 % Make \paragraph and \subparagraph free-standing
+\makeatletter
 \ifx\paragraph\undefined\else
   \let\oldparagraph\paragraph
-  \renewcommand{\paragraph}[1]{\oldparagraph{#1}\mbox{}}
+  \renewcommand{\paragraph}{
+    \@ifstar
+      \xxxParagraphStar
+      \xxxParagraphNoStar
+  }
+  \newcommand{\xxxParagraphStar}[1]{\oldparagraph*{#1}\mbox{}}
+  \newcommand{\xxxParagraphNoStar}[1]{\oldparagraph{#1}\mbox{}}
 \fi
 \ifx\subparagraph\undefined\else
   \let\oldsubparagraph\subparagraph
-  \renewcommand{\subparagraph}[1]{\oldsubparagraph{#1}\mbox{}}
+  \renewcommand{\subparagraph}{
+    \@ifstar
+      \xxxSubParagraphStar
+      \xxxSubParagraphNoStar
+  }
+  \newcommand{\xxxSubParagraphStar}[1]{\oldsubparagraph*{#1}\mbox{}}
+  \newcommand{\xxxSubParagraphNoStar}[1]{\oldsubparagraph{#1}\mbox{}}
 \fi
+\makeatother
 
 \usepackage{color}
 \usepackage{fancyvrb}
@@ -104,15 +118,17 @@
 \makesavenoteenv{longtable}
 \usepackage{graphicx}
 \makeatletter
-\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
-\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
-\makeatother
-% Scale images if necessary, so that they will not overflow the page
-% margins by default, and it is still possible to overwrite the defaults
-% using explicit options in \includegraphics[width, height, ...]{}
-\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
 % Set default figure placement to htbp
-\makeatletter
 \def\fps@figure{htbp}
 \makeatother
 
@@ -134,8 +150,6 @@
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{breaklines,commandchars=\\\{\}}
 \DefineVerbatimEnvironment{OutputCode}{Verbatim}{breaklines,commandchars=\\\{\}}
 \KOMAoption{captions}{tableheading}
-\makeatletter
-\makeatother
 \makeatletter
 \@ifpackageloaded{bookmark}{}{\usepackage{bookmark}}
 \makeatother
@@ -175,25 +189,16 @@
 \newcommand*\listoflistings{\listof{codelisting}{List of Listings}}
 \makeatother
 \makeatletter
+\makeatother
+\makeatletter
 \@ifpackageloaded{caption}{}{\usepackage{caption}}
 \@ifpackageloaded{subcaption}{}{\usepackage{subcaption}}
 \makeatother
-\makeatletter
-\@ifpackageloaded{tcolorbox}{}{\usepackage[skins,breakable]{tcolorbox}}
-\makeatother
-\makeatletter
-\@ifundefined{shadecolor}{\definecolor{shadecolor}{rgb}{.97, .97, .97}}
-\makeatother
-\makeatletter
-\makeatother
-\makeatletter
-\makeatother
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
+
 \usepackage[]{biblatex}
 \addbibresource{bibliography.bib}
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\usepackage{bookmark}
+
 \IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
 \urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
@@ -206,13 +211,13 @@
   urlcolor={Blue},
   pdfcreator={LaTeX via pandoc}}
 
+
 \title{Mutation Load in Black Grouse}
 \author{Rebecca S. Chen}
 \date{}
 
 \begin{document}
 \maketitle
-\ifdefined\Shaded\renewenvironment{Shaded}{\begin{tcolorbox}[boxrule=0pt, interior hidden, borderline west={3pt}{0pt}{shadecolor}, sharp corners, enhanced, frame hidden, breakable]}{\end{tcolorbox}}\fi
 
 \renewcommand*\contentsname{Table of contents}
 {
@@ -220,47 +225,48 @@
 \setcounter{tocdepth}{1}
 \tableofcontents
 }
+
 \bookmarksetup{startatroot}
 
-\hypertarget{mutation-load-in-black-grouse}{%
 \chapter{Mutation load in black
-grouse}\label{mutation-load-in-black-grouse}}
+grouse}\label{mutation-load-in-black-grouse}
 
 \bookmarksetup{startatroot}
 
-\hypertarget{introduction}{%
-\chapter{Introduction}\label{introduction}}
+\chapter{Introduction}\label{introduction}
 
 This webpage/document contains a summary of the workflow used in the
-manuscript titled ``Predicted deleterious mutations reveal the genomic
-mechanisms underlying fitness variation in a lekking bird'', Chen et
-al.~2024 (in preparation). Please see the
-\href{https://github.com/rshuhuachen/ms_load_grouse}{github repository}
-for all scripts and more detailed descriptions of the data and analyses.
+manuscript titled ``\textbf{Genetic architecture of male reproductive
+success in a lekking bird: insights from predicted deleterious
+mutations}'', Chen et al.~2024
+(\href{https://doi.org/10.21203/rs.3.rs-5579350/v1}{in review}). Please
+see the \href{https://github.com/rshuhuachen/ms_load_grouse}{github
+repository} for all scripts and more detailed descriptions of the data
+and analyses.
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics{plots/img/grouse.jpeg}
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{plots/img/grouse.jpeg}}
 
 }
 
 \caption{Black grouse}
 
-\end{figure}
+\end{figure}%
 
 \bookmarksetup{startatroot}
 
-\hypertarget{main-goals}{%
-\chapter{Main goals}\label{main-goals}}
+\chapter{Main goals}\label{main-goals}
 
 In the current study, we used a long-term dataset to (i) quantify the
-fitness effects of homozygous and heterozygous individual genomic
-mutation loads; (ii) compare the fitness effects of deleterious
-mutations in coding versus noncoding regions; and (iii) unravel the
-behavioural and / or ornamental pathways through which deleterious
-mutations impact lifetime reproductive success. We used whole genome
-resequencing, phenotypic and fitness data of 190 male black grouse
-sampled annually across five study sites in Central Finland.
+fitness effects of total, homozygous and heterozygous individual genomic
+mutation loads; (ii) evaluate the relative contributions of deleterious
+mutations across different genomic regions and biological processes to
+fitness variation (iii) unravel the behavioural and / or ornamental
+pathways through which deleterious mutations impact lifetime
+reproductive success. We used whole genome resequencing, phenotypic and
+fitness data of 190 male black grouse sampled annually across five study
+sites in Central
 
 Mutation load can be defined as a statistic that summarizes the
 selection and dominance coefficients of deleterious mutations as a
@@ -279,8 +285,7 @@ demography. The genetic load is made up of realized plus masked load.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{calculating-genetic-load}{%
-\chapter{Calculating genetic load}\label{calculating-genetic-load}}
+\chapter{Calculating genetic load}\label{calculating-genetic-load}
 
 There are generally two most commonly used computational approaches to
 identify putative deleterious variants from whole genome re-sequencing
@@ -307,8 +312,7 @@ We used two common approaches:
 
 \bookmarksetup{startatroot}
 
-\hypertarget{this-webpage-document}{%
-\chapter{This webpage / document}\label{this-webpage-document}}
+\chapter{This webpage / document}\label{this-webpage-document}
 
 This \href{https://rshuhuachen.github.io/ms_load_grouse/}{webpage} can
 also be found in
@@ -322,11 +326,9 @@ the complete set of analyses with their explanations in the github repo.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{snpeff}{%
-\chapter{SnpEff}\label{snpeff}}
+\chapter{SnpEff}\label{snpeff}
 
-\hypertarget{introduction-1}{%
-\section{Introduction}\label{introduction-1}}
+\section{Introduction}\label{introduction-1}
 
 \href{https://pcingola.github.io/SnpEff/}{SnpEff} annotates genetic
 variants and predicts the functional effects. The output includes a VCF
@@ -336,11 +338,9 @@ moderate, high, modifier). In this study, we focus on high impact
 mutations, which include loss of function (LoF) and nonsense mediate
 decay (NMD) mutations.
 
-\hypertarget{methods}{%
-\section{Methods}\label{methods}}
+\section{Methods}\label{methods}
 
-\hypertarget{building-the-database}{%
-\subsection{Building the database}\label{building-the-database}}
+\subsection{Building the database}\label{building-the-database}
 
 As the black grouse (\emph{Lyrurus tetrix}) is no common model species
 with a pre-built database, a custom database was built from the
@@ -394,8 +394,7 @@ vcf file.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{ancestral-alleles}{%
-\subsection{Ancestral alleles}\label{ancestral-alleles}}
+\subsection{Ancestral alleles}\label{ancestral-alleles}
 
 SnpEff annotates mutations according to the change from the reference
 allele to the focal allele. Hence, it assumes that the reference allele
@@ -409,8 +408,7 @@ leucura} (white tailed ptarmigan). This way, any derived allele was
 assumed to be `deleterious' compared to the ancestral allele, as opposed
 to a reference-non reference comparison.
 
-\hypertarget{filtering}{%
-\subsection{Filtering}\label{filtering}}
+\subsection{Filtering}\label{filtering}
 
 We then used SnpSift to filter annotated mutations based on the four
 impact categories: modifier, low, moderate and
@@ -434,44 +432,41 @@ impact} using the following commands.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{results}{%
-\section{Results}\label{results}}
+\section{Results}\label{results}
 
 We identified 5,341 high impact mutations:
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics{qmd/../plots/main/fig_1b.png}
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/main/fig_1b.png}}
 
 }
 
 \caption{SnpEff annotation}
 
-\end{figure}
+\end{figure}%
 
 Existing of mostly LoF mutations and gained stop codons (non-mutually
 exclusive)
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics{qmd/../plots/main/fig_1c.png}
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/main/fig_1c.png}}
 
 }
 
 \caption{Detailed SnpEff annotation}
 
-\end{figure}
+\end{figure}%
 
 The mutations in the `high impact' category were used to calculate
 individual genomic mutation load estimates.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{gerp}{%
-\chapter{GERP}\label{gerp}}
+\chapter{GERP}\label{gerp}
 
-\hypertarget{introduction-2}{%
-\section{Introduction}\label{introduction-2}}
+\section{Introduction}\label{introduction-2}
 
 \href{https://bio.tools/gerp}{GERP++} annotates a focal genome based on
 evolutionary conserveration, where regions in the genome that show
@@ -483,11 +478,9 @@ GERP scores indicate higher evolutionary constraint. First, we create
 this MAF file using Progressive Cactus, then we calculate GERP scores
 genome-wide, and select genomic positions with SNPs in our population.
 
-\hypertarget{methods-1}{%
-\section{Methods}\label{methods-1}}
+\section{Methods}\label{methods-1}
 
-\hypertarget{creating-the-maf}{%
-\subsection{Creating the MAF}\label{creating-the-maf}}
+\subsection{Creating the MAF}\label{creating-the-maf}
 
 We use the publicly available 363 avian genomes
 \href{https://cgl.gi.ucsc.edu/data/cactus/363-avian-2020.hal}{multi-alignment
@@ -664,8 +657,7 @@ substitutions/site (rather than million years ago). This analysis can be
 found on github and will not be included here as it contains many small
 steps integrated with in a snakemake workflow.
 
-\hypertarget{calculate-gerp-scores}{%
-\subsection{Calculate GERP scores}\label{calculate-gerp-scores}}
+\subsection{Calculate GERP scores}\label{calculate-gerp-scores}
 
 GERP scores were calculated per scaffold using snakemake using the
 following rule:
@@ -688,9 +680,8 @@ following rule:
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{overlap-gerp-scores-with-snps}{%
 \subsection{Overlap GERP scores with
-SNPs}\label{overlap-gerp-scores-with-snps}}
+SNPs}\label{overlap-gerp-scores-with-snps}
 
 We are only interested in genomic locations where SNPs were found in our
 population. Therefore, we convert our VCF file and GERP files to bed
@@ -807,21 +798,19 @@ script).
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{results-1}{%
-\section{Results}\label{results-1}}
+\section{Results}\label{results-1}
 
 We identified 413,489 mutations with a GERP score higher than or equal
-to 4: \includegraphics{qmd/../plots/main/fig_1a.png}
+to 4:
+\pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/main/fig_1a.png}}
 
 These mutations were used to calculate mutation load in the next script.
 
 \bookmarksetup{startatroot}
 
-\hypertarget{calculating-mutation-load}{%
-\chapter{Calculating mutation load}\label{calculating-mutation-load}}
+\chapter{Calculating mutation load}\label{calculating-mutation-load}
 
-\hypertarget{introduction-3}{%
-\section{Introduction}\label{introduction-3}}
+\section{Introduction}\label{introduction-3}
 
 There are various types of load and in general, mutation load can be
 divided between potential and realized load. Realized load (also known
@@ -844,8 +833,7 @@ mutations twice (one per allele).
 From here on onwards, the majority of analyses are computed within R
 (instead of bash scripts/snakemake).
 
-\hypertarget{mutation-load-snpeff}{%
-\section{Mutation load (SnpEff)}\label{mutation-load-snpeff}}
+\section{Mutation load (SnpEff)}\label{mutation-load-snpeff}
 
 Here, we load in the .vcf file outputted by SnpSift with only high
 impact SnpEff mutations, add column names, include only the 29 largest
@@ -939,8 +927,7 @@ together.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{mutation-load-gerp}{%
-\section{Mutation load (GERP)}\label{mutation-load-gerp}}
+\section{Mutation load (GERP)}\label{mutation-load-gerp}
 
 Here, we load in the .bed files that contain GERP scores from SNPs,
 filter for those with GERP values \textgreater= 4, add column names,
@@ -1027,8 +1014,7 @@ the .bed files are large in filesize!
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{combine-loads}{%
-\subsection{Combine loads}\label{combine-loads}}
+\subsection{Combine loads}\label{combine-loads}
 
 Note: the analyses done above was also done for other mutation
 categories, e.g.~low and moderate impact classes and GERP scores between
@@ -1143,11 +1129,9 @@ F-statistic: 0.5289 on 4 and 185 DF,  p-value: 0.7146
 
 \bookmarksetup{startatroot}
 
-\hypertarget{modelling-fitness}{%
-\chapter{Modelling fitness}\label{modelling-fitness}}
+\chapter{Modelling fitness}\label{modelling-fitness}
 
-\hypertarget{introduction-4}{%
-\section{Introduction}\label{introduction-4}}
+\section{Introduction}\label{introduction-4}
 
 Now that we have mutation load (total, homozygous and heterozygous)
 estimates for each individual, based on SnpEff and GERP, we can model
@@ -1169,15 +1153,16 @@ Here, we build three sets of models:
 
 We use Bayesian GLMMs using the R package `brms' to compute these models
 
-\hypertarget{methods-2}{%
-\section{Methods}\label{methods-2}}
+\section{Methods}\label{methods-2}
 
-\hypertarget{total-load}{%
-\subsection{Total load}\label{total-load}}
+\subsection{Total load}\label{total-load}
 
 The general structure of the total load models is as follows:
 
 \texttt{LMS\ \textasciitilde{}\ scale(total\_load)\ +\ core\ +\ (1\textbar{}site)}
+
+To test for inbreeding depression, we ran a similar model:
+\texttt{LMS\ \textasciitilde{}\ scale(froh)\ +\ core\ +\ (1\textbar{}site)}
 
 This is what the script for each load type looks like:
 
@@ -1279,8 +1264,7 @@ This is what these plots look like for total GERP load effects:
 \href{https://github.com/rshuhuachen/ms_load_grouse/blob/main/output/models/diagnosis/lms_total_gerp45.pdf}{Diagnostics
 GERP total load model}
 
-\hypertarget{hom-and-het-load}{%
-\subsection{Hom and het load}\label{hom-and-het-load}}
+\subsection{Hom and het load}\label{hom-and-het-load}
 
 The general structure of the homozygous and heterozygous load models is
 as follows:
@@ -1317,9 +1301,8 @@ This is what the script for each load type looks like:
 
 The same diagnostics were applied to each model.
 
-\hypertarget{direct-and-indirect-effects}{%
 \subsection{Direct and indirect
-effects}\label{direct-and-indirect-effects}}
+effects}\label{direct-and-indirect-effects}
 
 Next, we build models that are based on annual values. There are two
 sets of models: the first quantifies the effect of load on the six
@@ -1334,8 +1317,7 @@ where this effect is calculated as the product of the effect of the
 predictor (the total load) on the mediator (the sexual trait) and the
 effect of the mediator on the response variable (AMS).
 
-\hypertarget{set-1-load-on-traits}{%
-\subsubsection{Set 1: load on traits}\label{set-1-load-on-traits}}
+\subsubsection{Set 1: load on traits}\label{set-1-load-on-traits}
 
 For each trait, we run this model:
 
@@ -1374,8 +1356,7 @@ For each trait, we run this model:
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{set-2-trait-load-on-ms}{%
-\subsubsection{Set 2: trait + load on MS}\label{set-2-trait-load-on-ms}}
+\subsubsection{Set 2: trait + load on MS}\label{set-2-trait-load-on-ms}
 
 Then, for both approaches we run the following model:
 
@@ -1415,9 +1396,7 @@ Then, for both approaches we run the following model:
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{direct-indirect-effects}{%
-\subsubsection{Direct / indirect
-effects}\label{direct-indirect-effects}}
+\subsubsection{Direct / indirect effects}\label{direct-indirect-effects}
 
 The direct/indirect effects are then calculated after loading in all
 model outputs:
@@ -1540,20 +1519,20 @@ model outputs:
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{results-2}{%
-\section{Results}\label{results-2}}
+\section{Results}\label{results-2}
 
-We find significant effects of total GERP and total SnpEff load:
+We find significant effects of total GERP and total SnpEff load, and
+significant effects of inbreeding.
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics{qmd/../plots/main/fig_2a.png}
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/main/fig_2a.png}}
 
 }
 
 \caption{Total load results}
 
-\end{figure}
+\end{figure}%
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1576,15 +1555,15 @@ b\_scaletotal\_load & 0.95 & 0.8 & median & -0.18 & -0.16 & -0.11 & -0.06 & -0.0
 We also find significant effects of both hom and het GERP and SnpEff
 load:
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics{qmd/../plots/main/fig_2b.png}
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/main/fig_2b.png}}
 
 }
 
 \caption{Hom het load results}
 
-\end{figure}
+\end{figure}%
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1608,31 +1587,22 @@ b\_scalehet\_load & 0.95 & 0.8 & median & -0.24 & -0.21 & -0.15 & -0.09 & -0.06 
 \end{tabular}
 
 Here you can find the posterior distributions of model set 1 (load on
-traits) for GERP and SnpEff:
-\includegraphics{qmd/../plots/main/fig_3_left_load_traits.png}
+traits) for GERP :
+\pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/main/fig_4_left_load_traits.png}}
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics{qmd/../plots/sup/extended_4_high_left_load_traits.png}
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/extended/extended_7_high_left_load_traits.png}}
 
 }
 
 \caption{MS set 1 results SnpEff}
 
-\end{figure}
+\end{figure}%
 
 And for model set 2 (traits on MS) for GERP and SnpEff:
-\includegraphics{qmd/../plots/main/fig_3_right_traits_ams.png}
-
-\begin{figure}
-
-{\centering \includegraphics{qmd/../plots/sup/extended_4_high_right_traits_ams.png}
-
-}
-
-\caption{MS set 2 results SnpEff}
-
-\end{figure}
+\pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/main/fig_4_right_traits_ams.png}}
+\pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/extended/extended_7_high_right_traits_ams.png}}
 
 We can check out the result of the direct and indirect effects as
 follows:
@@ -1679,31 +1649,27 @@ b\_scaletotal\_load & b\_scaledist & high & 0.01 & -0.06 & 0.09 & -0.11 & -0.38 
 
 \bookmarksetup{startatroot}
 
-\hypertarget{load-per-genomic-region}{%
-\chapter{Load per genomic region}\label{load-per-genomic-region}}
+\chapter{Load per genomic region}\label{load-per-genomic-region}
 
-\hypertarget{introduction-5}{%
-\section{Introduction}\label{introduction-5}}
+\section{Introduction}\label{introduction-5}
 
 Both functional noncoding and protein-coding regions can be under
-selective constraint48,49. However, the former include various
-regulatory elements such as promoters, enhancers and silencers, which
-play different roles in gene regulation and might therefore be expected
-to experience different strengths of purifying selection. To investigate
+selective constraint. However, the former include various regulatory
+elements such as promoters, enhancers and silencers, which play
+different roles in gene regulation and might therefore be expected to
+experience different strengths of purifying selection. To investigate
 whether the fitness effects of deleterious mutations vary by genomic
 region, we classified each deleterious mutation according to whether it
 was located within a promoter, transcription start site, intron or exon.
 Then, we calculate total load based on these subsets and model their
 effects on LMS.
 
-\hypertarget{genomic-regions}{%
-\subsection{Genomic regions}\label{genomic-regions}}
+\subsection{Genomic regions}\label{genomic-regions}
 
 We use a combination of GenomicRanges and rtracklayer and other packages
 to divide up the genome annotation file into the four genomic regions.
 
-\hypertarget{subset-reference-genome}{%
-\subsubsection{Subset reference genome}\label{subset-reference-genome}}
+\subsubsection{Subset reference genome}\label{subset-reference-genome}
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1736,9 +1702,8 @@ to divide up the genome annotation file into the four genomic regions.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{annotate-deleterious-mutations}{%
 \subsubsection{Annotate deleterious
-mutations}\label{annotate-deleterious-mutations}}
+mutations}\label{annotate-deleterious-mutations}
 
 Then, we load in all deleterious mutations for GERP and SnpEff
 separately and annotate the mutations according to the four regions.
@@ -1836,8 +1801,7 @@ separately and annotate the mutations according to the four regions.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{calculate-mutation-load}{%
-\subsubsection{Calculate mutation load}\label{calculate-mutation-load}}
+\subsubsection{Calculate mutation load}\label{calculate-mutation-load}
 
 These two files (gerp\_all and snpeff\_all) contain the SNP locations
 and additional binary columns whether the mutations was located in one
@@ -1913,8 +1877,7 @@ of mutations only.
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{modelling}{%
-\subsection{Modelling}\label{modelling}}
+\subsection{Modelling}\label{modelling}
 
 We then computed the exact same models as the total load models
 presented before with the following model structure:
@@ -1924,30 +1887,28 @@ presented before with the following model structure:
 Where total load is not a measure taken from a subset of deleterious
 mutations located within a specific genomic region.
 
-\hypertarget{results-3}{%
-\subsection{Results}\label{results-3}}
+\subsection{Results}\label{results-3}
 
 Below you find the posterior distributions:
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics{qmd/../plots/main/fig_2c.png}
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/main/fig_2c.png}}
 
 }
 
 \caption{Results per genomic region GERP}
 
-\end{figure}
+\end{figure}%%
+\begin{figure}[H]
 
-\begin{figure}
-
-{\centering \includegraphics{qmd/../plots/main/fig_2d.png}
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/main/fig_2d.png}}
 
 }
 
 \caption{Results per genomic region SnpEff}
 
-\end{figure}
+\end{figure}%
 
 \begin{Shaded}
 \begin{Highlighting}[]
@@ -1997,11 +1958,508 @@ regions (SnpEff) are very important!
 
 \bookmarksetup{startatroot}
 
-\hypertarget{random-subsampling}{%
-\chapter{Random subsampling}\label{random-subsampling}}
+\chapter{Load per biological process}\label{load-per-biological-process}
 
-\hypertarget{introduction-6}{%
-\section{Introduction}\label{introduction-6}}
+\section{Introduction}\label{introduction-6}
+
+Deleterious mutations that disrupt certain biological processes might
+affect LMS more negatively than in others. To test if there are certain
+biological processes where deleterious mutations have negative fitness
+effects, we hypothesized six processes and used gene ontology
+annotations. We used
+\href{http://amigo.geneontology.org/amigo\%5D}{Amigo} to extract
+deleterious mutations associated with the GO terms: androgen metabolism,
+cellular respiration, developmental growth, immunity, muslce tissue
+development and response to oxidative stress. In the scripts below,
+you'll see how we calculate total load based on these GO terms.
+
+\subsubsection{Subset mutations}\label{subset-mutations}
+
+First, we subset the mutations located in genes associated with each GO
+term, and calculate total load based on that subset. We also divide it
+per genomic region (promoter, intron, exon). We work with lists to
+iterate the process with ease by looping over the list items.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\#\# load packages \#\#\#\#}
+\NormalTok{pacman}\SpecialCharTok{::}\FunctionTok{p\_load}\NormalTok{(BiocManager, rtracklayer, GenomicFeatures, BiocGenerics, data.table, tidyverse, genomation, GenomicRanges, tibble)}
+
+\DocumentationTok{\#\#\#\# load the list of genes per GO term \#\#\#\#}
+\NormalTok{files }\OtherTok{\textless{}{-}} \FunctionTok{list.files}\NormalTok{(}\AttributeTok{path =} \StringTok{"data/gene\_lists\_go"}\NormalTok{, }\AttributeTok{pattern =} \StringTok{"*.txt"}\NormalTok{, }\AttributeTok{full.names =}\NormalTok{ T)}
+
+\NormalTok{list }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(files))\{}
+\NormalTok{  data }\OtherTok{\textless{}{-}} \FunctionTok{fread}\NormalTok{(files[i])}
+\NormalTok{  list[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ data}
+\NormalTok{\}}
+
+\FunctionTok{names}\NormalTok{(list) }\OtherTok{\textless{}{-}} \FunctionTok{gsub}\NormalTok{(}\StringTok{"data/gene\_lists\_go/|.txt"}\NormalTok{, }\StringTok{""}\NormalTok{, files)}
+
+\DocumentationTok{\#\#\#\# extract only the unique gene names per GO term \#\#\#\#}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  list[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ list[[i]] }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\StringTok{\textasciigrave{}}\AttributeTok{V1}\StringTok{\textasciigrave{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{mutate}\NormalTok{(}\AttributeTok{go\_term =} \FunctionTok{names}\NormalTok{(list[i])) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{    dplyr}\SpecialCharTok{::}\FunctionTok{rename}\NormalTok{(}\AttributeTok{gene\_id =} \StringTok{\textasciigrave{}}\AttributeTok{V1}\StringTok{\textasciigrave{}}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{unique}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+    \FunctionTok{mutate}\NormalTok{(}\AttributeTok{gene\_id =} \FunctionTok{toupper}\NormalTok{(gene\_id))}
+\NormalTok{\}}
+
+\DocumentationTok{\#\#\#\# GERP \#\#\#\#}
+\DocumentationTok{\#\#\#\# import gerp data \#\#\#\#}
+\FunctionTok{load}\NormalTok{(}\StringTok{"output/load/gerp/gerp\_over4.RData"}\NormalTok{)}
+\NormalTok{gerp}\SpecialCharTok{$}\NormalTok{chr }\OtherTok{\textless{}{-}} \FunctionTok{gsub}\NormalTok{(}\StringTok{";"}\NormalTok{, }\StringTok{"\_\_"}\NormalTok{, gerp}\SpecialCharTok{$}\NormalTok{chr)}
+\NormalTok{gerp}\SpecialCharTok{$}\NormalTok{chr }\OtherTok{\textless{}{-}} \FunctionTok{gsub}\NormalTok{(}\StringTok{"="}\NormalTok{, }\StringTok{"\_"}\NormalTok{, gerp}\SpecialCharTok{$}\NormalTok{chr)}
+\NormalTok{gerp}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(gerp}\SpecialCharTok{$}\NormalTok{chr, }\StringTok{"\_"}\NormalTok{, gerp}\SpecialCharTok{$}\NormalTok{pos)}
+
+\CommentTok{\# extract only the positions for annotation}
+\NormalTok{gerp\_snps }\OtherTok{\textless{}{-}}\NormalTok{ gerp }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(chr, pos)}
+\NormalTok{gerp\_snps}\SpecialCharTok{$}\NormalTok{end }\OtherTok{\textless{}{-}}\NormalTok{ gerp\_snps}\SpecialCharTok{$}\NormalTok{pos}
+\NormalTok{gerp\_snps}\SpecialCharTok{$}\NormalTok{start }\OtherTok{\textless{}{-}}\NormalTok{ gerp\_snps}\SpecialCharTok{$}\NormalTok{pos}
+\NormalTok{gerp\_gr }\OtherTok{\textless{}{-}} \FunctionTok{as}\NormalTok{(gerp\_snps, }\StringTok{"GRanges"}\NormalTok{)}
+
+\DocumentationTok{\#\#\#\# import gene regions \#\#\#\#}
+
+\DocumentationTok{\#\#\# load annotation data \#\#\#\#}
+\NormalTok{annotation\_dir }\OtherTok{\textless{}{-}} \StringTok{"data/genomic/annotation"}
+
+\NormalTok{promoter}\OtherTok{=}\FunctionTok{unique}\NormalTok{(}\FunctionTok{gffToGRanges}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(annotation\_dir, }\StringTok{"/promoters.gff3"}\NormalTok{)))}
+\NormalTok{exons\_gene}\OtherTok{=}\FunctionTok{unique}\NormalTok{(}\FunctionTok{gffToGRanges}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(annotation\_dir, }\StringTok{"/exons\_gene.gff3"}\NormalTok{)))}
+\NormalTok{introns}\OtherTok{=}\FunctionTok{unique}\NormalTok{(}\FunctionTok{gffToGRanges}\NormalTok{(}\FunctionTok{paste0}\NormalTok{(annotation\_dir, }\StringTok{"/introns\_transcripts.gff3"}\NormalTok{)))}
+
+\DocumentationTok{\#\#\#\# annotate gerp mutations \#\#\#\#}
+
+\NormalTok{gerp\_promoter }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{mergeByOverlaps}\NormalTok{(gerp\_gr, promoter)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{add\_column}\NormalTok{(}\StringTok{"region\_promoter"} \OtherTok{=} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{unique}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{\textasciigrave{}}\AttributeTok{gerp\_gr.seqnames}\StringTok{\textasciigrave{}}\NormalTok{, pos, region\_promoter,ID)) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{rename}\NormalTok{(}\AttributeTok{chr =}\NormalTok{ gerp\_gr.seqnames)}
+
+\NormalTok{gerp\_exons }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{mergeByOverlaps}\NormalTok{(gerp\_gr, exons\_gene))}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{add\_column}\NormalTok{(}\StringTok{"region\_exon"} \OtherTok{=} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{unique}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\FunctionTok{c}\NormalTok{(gerp\_gr.seqnames, pos, region\_exon,ID)) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{rename}\NormalTok{(}\AttributeTok{chr =}\NormalTok{ gerp\_gr.seqnames)}
+
+\NormalTok{gerp\_intron }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(}\FunctionTok{mergeByOverlaps}\NormalTok{(gerp\_gr, introns))}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{add\_column}\NormalTok{(}\StringTok{"region\_intron"} \OtherTok{=} \StringTok{"1"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{unique}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\FunctionTok{c}\NormalTok{(gerp\_gr.seqnames, pos, region\_intron,ID)) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{rename}\NormalTok{(}\AttributeTok{chr =}\NormalTok{ gerp\_gr.seqnames)}
+
+
+\NormalTok{gerp\_list }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(gerp\_promoter, gerp\_exons, gerp\_intron)}
+
+\DocumentationTok{\#\#\#\# merge with \textquotesingle{}similar to\textquotesingle{} column to get gene IDs \#\#\#\#}
+\NormalTok{lookup }\OtherTok{\textless{}{-}} \FunctionTok{fread}\NormalTok{(}\StringTok{"../grouse{-}annotation/data/lookup\_ANN\_gene\_id.txt"}\NormalTok{)}
+\FunctionTok{names}\NormalTok{(lookup) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"ann"}\NormalTok{, }\StringTok{"gene\_id"}\NormalTok{)}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(gerp\_list))\{}
+\NormalTok{  gerp\_list[[i]] }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(gerp\_list[[i]], lookup, }\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"ID"} \OtherTok{=} \StringTok{"ann"}\NormalTok{))}
+  \FunctionTok{names}\NormalTok{(gerp\_list[[i]])[}\DecValTok{4}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"ann"}\NormalTok{)}
+\NormalTok{  gerp\_list[[i]]}\SpecialCharTok{$}\NormalTok{gene\_id }\OtherTok{\textless{}{-}} \FunctionTok{toupper}\NormalTok{(gerp\_list[[i]]}\SpecialCharTok{$}\NormalTok{gene\_id)}
+\NormalTok{\}}
+
+\DocumentationTok{\#\#\#\# extract snps per GO term \#\#\#\#}
+
+\NormalTok{go\_snps\_promo }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  overlap }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(gerp\_list[[}\DecValTok{1}\NormalTok{]], gene\_id }\SpecialCharTok{\%in\%}\NormalTok{ list[[i]]}\SpecialCharTok{$}\NormalTok{gene\_id)}
+\NormalTok{  go\_snps\_promo[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ overlap\}}
+
+\NormalTok{go\_snps\_exon }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  overlap }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(gerp\_list[[}\DecValTok{2}\NormalTok{]], gene\_id }\SpecialCharTok{\%in\%}\NormalTok{ list[[i]]}\SpecialCharTok{$}\NormalTok{gene\_id)}
+\NormalTok{  go\_snps\_exon[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ overlap\}}
+
+\NormalTok{go\_snps\_intron }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  overlap }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(gerp\_list[[}\DecValTok{3}\NormalTok{]], gene\_id }\SpecialCharTok{\%in\%}\NormalTok{ list[[i]]}\SpecialCharTok{$}\NormalTok{gene\_id)}
+\NormalTok{  go\_snps\_intron[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ overlap\}}
+
+\CommentTok{\# name}
+\FunctionTok{names}\NormalTok{(go\_snps\_promo) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(list)}
+\FunctionTok{names}\NormalTok{(go\_snps\_exon) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(list)}
+\FunctionTok{names}\NormalTok{(go\_snps\_intron) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(list)}
+
+\NormalTok{summary\_snps\_per\_go }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  snps\_go }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{go =} \FunctionTok{names}\NormalTok{(list[i]),}
+                        \AttributeTok{snps\_promo =} \FunctionTok{nrow}\NormalTok{(}\FunctionTok{subset}\NormalTok{(go\_snps\_promo[[i]], region\_promoter }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)),}
+                        \AttributeTok{snps\_exon =} \FunctionTok{nrow}\NormalTok{(}\FunctionTok{subset}\NormalTok{(go\_snps\_exon[[i]], region\_exon }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)),}
+                        \AttributeTok{snps\_intron =} \FunctionTok{nrow}\NormalTok{(}\FunctionTok{subset}\NormalTok{(go\_snps\_intron[[i]], region\_intron }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)),}
+                        \AttributeTok{og\_genes\_total =} \FunctionTok{nrow}\NormalTok{(list[[i]]))}
+\NormalTok{  summary\_snps\_per\_go }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(summary\_snps\_per\_go, snps\_go)}
+\NormalTok{\}}
+
+\CommentTok{\# how many genes}
+\NormalTok{genes\_n }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  promo }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(go\_snps\_promo[[i]], region\_promoter }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)}
+\NormalTok{  exon }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(go\_snps\_exon[[i]], region\_exon }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)}
+\NormalTok{  intron }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(go\_snps\_intron[[i]], region\_intron }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)}
+\NormalTok{  genes }\OtherTok{\textless{}{-}} \FunctionTok{unique}\NormalTok{(}\FunctionTok{c}\NormalTok{(promo}\SpecialCharTok{$}\NormalTok{gene\_id, exon}\SpecialCharTok{$}\NormalTok{gene\_id, intron}\SpecialCharTok{$}\NormalTok{gene\_id))}
+\NormalTok{  genes\_go }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{go =} \FunctionTok{names}\NormalTok{(list[i]),}
+                        \AttributeTok{n\_genes =} \FunctionTok{length}\NormalTok{(genes))}
+\NormalTok{  genes\_n }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(genes\_n, genes\_go)}
+\NormalTok{\}}
+
+\FunctionTok{write\_tsv}\NormalTok{(genes\_n, }\AttributeTok{file =} \StringTok{"output/biological\_pathways/n\_genes\_gerp\_per\_go.tsv"}\NormalTok{)}
+\CommentTok{\#note: there are snps for every go term!}
+
+\DocumentationTok{\#\#\#\# extract genotypes per GO term \#\#\#\#}
+\CommentTok{\#promo}
+\NormalTok{genotypes\_go\_promo }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(go\_snps\_promo))\{}
+\NormalTok{  go\_snps\_promo[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(go\_snps\_promo[[i]]}\SpecialCharTok{$}\NormalTok{chr, }\StringTok{"\_"}\NormalTok{, go\_snps\_promo[[i]]}\SpecialCharTok{$}\NormalTok{pos)}
+\NormalTok{  geno }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(gerp, chr\_pos }\SpecialCharTok{\%in\%}\NormalTok{ go\_snps\_promo[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos)}
+\NormalTok{  geno}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+\NormalTok{  genotypes\_go\_promo[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ geno}
+\NormalTok{\}}
+\FunctionTok{names}\NormalTok{(genotypes\_go\_promo) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(list)}
+
+\CommentTok{\#exon}
+\NormalTok{genotypes\_go\_exon }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(go\_snps\_exon))\{}
+\NormalTok{  go\_snps\_exon[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(go\_snps\_exon[[i]]}\SpecialCharTok{$}\NormalTok{chr, }\StringTok{"\_"}\NormalTok{, go\_snps\_exon[[i]]}\SpecialCharTok{$}\NormalTok{pos)}
+\NormalTok{  geno }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(gerp, chr\_pos }\SpecialCharTok{\%in\%}\NormalTok{ go\_snps\_exon[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos)}
+\NormalTok{  geno}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+\NormalTok{  genotypes\_go\_exon[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ geno}
+\NormalTok{\}}
+\FunctionTok{names}\NormalTok{(genotypes\_go\_exon) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(list)}
+
+\CommentTok{\#intron}
+\NormalTok{genotypes\_go\_intron }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(go\_snps\_intron))\{}
+\NormalTok{  go\_snps\_intron[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(go\_snps\_intron[[i]]}\SpecialCharTok{$}\NormalTok{chr, }\StringTok{"\_"}\NormalTok{, go\_snps\_intron[[i]]}\SpecialCharTok{$}\NormalTok{pos)}
+\NormalTok{  geno }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(gerp, chr\_pos }\SpecialCharTok{\%in\%}\NormalTok{ go\_snps\_intron[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos)}
+\NormalTok{  geno}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+\NormalTok{  genotypes\_go\_intron[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ geno}
+\NormalTok{\}}
+\FunctionTok{names}\NormalTok{(genotypes\_go\_intron) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(list)}
+
+\DocumentationTok{\#\#\#\# SnpEff \#\#\#\#}
+\DocumentationTok{\#\#\#\# extract only the unique gene names per GO term \#\#\#\#}
+
+\DocumentationTok{\#\#\#\# import snpeff data \#\#\#\#}
+\FunctionTok{load}\NormalTok{(}\StringTok{"output/load/snpeff/snpeff\_high.RData"}\NormalTok{)}
+\NormalTok{snpeff}\SpecialCharTok{$}\NormalTok{CHROM }\OtherTok{\textless{}{-}} \FunctionTok{gsub}\NormalTok{(}\StringTok{";"}\NormalTok{, }\StringTok{"\_\_"}\NormalTok{, snpeff}\SpecialCharTok{$}\NormalTok{CHROM)}
+\NormalTok{snpeff}\SpecialCharTok{$}\NormalTok{CHROM }\OtherTok{\textless{}{-}} \FunctionTok{gsub}\NormalTok{(}\StringTok{"="}\NormalTok{, }\StringTok{"\_"}\NormalTok{, snpeff}\SpecialCharTok{$}\NormalTok{CHROM)}
+\NormalTok{snpeff}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(snpeff}\SpecialCharTok{$}\NormalTok{CHROM, }\StringTok{"\_"}\NormalTok{, snpeff}\SpecialCharTok{$}\NormalTok{POS)}
+
+\CommentTok{\# extract only the positions for annotation}
+\NormalTok{snpeff\_snps }\OtherTok{\textless{}{-}}\NormalTok{ snpeff }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(CHROM, POS)}
+\NormalTok{snpeff\_snps}\SpecialCharTok{$}\NormalTok{end }\OtherTok{\textless{}{-}}\NormalTok{ snpeff\_snps}\SpecialCharTok{$}\NormalTok{POS}
+\NormalTok{snpeff\_snps}\SpecialCharTok{$}\NormalTok{start }\OtherTok{\textless{}{-}}\NormalTok{ snpeff\_snps}\SpecialCharTok{$}\NormalTok{POS}
+\NormalTok{snpeff\_gr }\OtherTok{\textless{}{-}} \FunctionTok{as}\NormalTok{(snpeff\_snps, }\StringTok{"GRanges"}\NormalTok{)}
+
+\DocumentationTok{\#\#\#\# import gene regions \#\#\#\#}
+
+\DocumentationTok{\#\#\#\# annotate snpeff mutations \#\#\#\#}
+\NormalTok{snpeff\_promoter }\OtherTok{\textless{}{-}} \FunctionTok{mergeByOverlaps}\NormalTok{(snpeff\_gr, promoter)}
+\NormalTok{snpeff\_promoter }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(snpeff\_promoter}\SpecialCharTok{@}\NormalTok{listData)}
+\NormalTok{snpeff\_promoter }\OtherTok{\textless{}{-}}\NormalTok{ snpeff\_promoter }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{add\_column}\NormalTok{(}\StringTok{"region\_promoter"} \OtherTok{=} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{unique}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{\textasciigrave{}}\AttributeTok{snpeff\_gr.seqnames}\StringTok{\textasciigrave{}}\NormalTok{, POS, region\_promoter,ID)) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{rename}\NormalTok{(}\AttributeTok{chr =}\NormalTok{ snpeff\_gr.seqnames)}
+
+\NormalTok{snpeff\_exons }\OtherTok{\textless{}{-}} \FunctionTok{mergeByOverlaps}\NormalTok{(snpeff\_gr, exons\_gene)}
+\NormalTok{snpeff\_exons }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(snpeff\_exons}\SpecialCharTok{@}\NormalTok{listData)}
+\NormalTok{snpeff\_exons }\OtherTok{\textless{}{-}}\NormalTok{ snpeff\_exons}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{add\_column}\NormalTok{(}\StringTok{"region\_exon"} \OtherTok{=} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{unique}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\FunctionTok{c}\NormalTok{(snpeff\_gr.seqnames, POS, region\_exon,ID)) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{rename}\NormalTok{(}\AttributeTok{chr =}\NormalTok{ snpeff\_gr.seqnames)}
+
+\NormalTok{snpeff\_introns }\OtherTok{\textless{}{-}} \FunctionTok{mergeByOverlaps}\NormalTok{(snpeff\_gr, introns)}
+\NormalTok{snpeff\_introns }\OtherTok{\textless{}{-}} \FunctionTok{as.data.frame}\NormalTok{(snpeff\_introns}\SpecialCharTok{@}\NormalTok{listData)}
+\NormalTok{snpeff\_introns }\OtherTok{\textless{}{-}}\NormalTok{ snpeff\_introns}\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{add\_column}\NormalTok{(}\StringTok{"region\_intron"} \OtherTok{=} \DecValTok{1}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{unique}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{select}\NormalTok{(}\FunctionTok{c}\NormalTok{(snpeff\_gr.seqnames, POS, region\_intron,ID)) }\SpecialCharTok{\%\textgreater{}\%}\NormalTok{ dplyr}\SpecialCharTok{::}\FunctionTok{rename}\NormalTok{(}\AttributeTok{chr =}\NormalTok{ snpeff\_gr.seqnames)}
+
+\NormalTok{snpeff\_list }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{(snpeff\_promoter, snpeff\_exons, snpeff\_introns)}
+
+\DocumentationTok{\#\#\#\# merge with \textquotesingle{}similar to\textquotesingle{} column to get gene IDs \#\#\#\#}
+\NormalTok{lookup }\OtherTok{\textless{}{-}} \FunctionTok{fread}\NormalTok{(}\StringTok{"data/genomic/annotation/lookup\_ANN\_gene\_id.txt"}\NormalTok{)}
+\FunctionTok{names}\NormalTok{(lookup) }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"ann"}\NormalTok{, }\StringTok{"gene\_id"}\NormalTok{)}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(snpeff\_list))\{}
+\NormalTok{  snpeff\_list[[i]] }\OtherTok{\textless{}{-}} \FunctionTok{left\_join}\NormalTok{(snpeff\_list[[i]], lookup, }\AttributeTok{by =} \FunctionTok{c}\NormalTok{(}\StringTok{"ID"} \OtherTok{=} \StringTok{"ann"}\NormalTok{))}
+  \FunctionTok{names}\NormalTok{(snpeff\_list[[i]])[}\DecValTok{4}\NormalTok{] }\OtherTok{\textless{}{-}} \FunctionTok{c}\NormalTok{(}\StringTok{"ann"}\NormalTok{)}
+\NormalTok{  snpeff\_list[[i]]}\SpecialCharTok{$}\NormalTok{gene\_id }\OtherTok{\textless{}{-}} \FunctionTok{toupper}\NormalTok{(snpeff\_list[[i]]}\SpecialCharTok{$}\NormalTok{gene\_id)}
+\NormalTok{\}}
+
+\DocumentationTok{\#\#\#\# extract snps per GO term \#\#\#\#}
+
+\NormalTok{go\_snps\_promo\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  overlap }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(snpeff\_list[[}\DecValTok{1}\NormalTok{]], gene\_id }\SpecialCharTok{\%in\%}\NormalTok{ list[[i]]}\SpecialCharTok{$}\NormalTok{gene\_id)}
+\NormalTok{  go\_snps\_promo\_snpeff[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ overlap\}}
+
+\NormalTok{go\_snps\_exon\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  overlap }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(snpeff\_list[[}\DecValTok{2}\NormalTok{]], gene\_id }\SpecialCharTok{\%in\%}\NormalTok{ list[[i]]}\SpecialCharTok{$}\NormalTok{gene\_id)}
+\NormalTok{  go\_snps\_exon\_snpeff[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ overlap\}}
+
+\NormalTok{go\_snps\_intron\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  overlap }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(snpeff\_list[[}\DecValTok{3}\NormalTok{]], gene\_id }\SpecialCharTok{\%in\%}\NormalTok{ list[[i]]}\SpecialCharTok{$}\NormalTok{gene\_id)}
+\NormalTok{  go\_snps\_intron\_snpeff[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ overlap\}}
+
+\CommentTok{\# name}
+\FunctionTok{names}\NormalTok{(go\_snps\_promo\_snpeff) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(list)}
+\FunctionTok{names}\NormalTok{(go\_snps\_exon\_snpeff) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(list)}
+\FunctionTok{names}\NormalTok{(go\_snps\_intron\_snpeff) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(list)}
+
+\NormalTok{summary\_snps\_per\_go }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  snps\_go }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{go =} \FunctionTok{names}\NormalTok{(list[i]),}
+                        \AttributeTok{snps\_promo =} \FunctionTok{nrow}\NormalTok{(}\FunctionTok{subset}\NormalTok{(go\_snps\_promo\_snpeff[[i]], region\_promoter }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)),}
+                        \AttributeTok{snps\_exon =} \FunctionTok{nrow}\NormalTok{(}\FunctionTok{subset}\NormalTok{(go\_snps\_exon\_snpeff[[i]], region\_exon }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)),}
+                        \AttributeTok{snps\_intron =} \FunctionTok{nrow}\NormalTok{(}\FunctionTok{subset}\NormalTok{(go\_snps\_intron\_snpeff[[i]], region\_intron }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)),}
+                        \AttributeTok{og\_genes\_total =} \FunctionTok{nrow}\NormalTok{(list[[i]]))}
+\NormalTok{  summary\_snps\_per\_go }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(summary\_snps\_per\_go, snps\_go)}
+\NormalTok{\}}
+
+\NormalTok{genes\_n\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+\NormalTok{  promo }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(go\_snps\_promo\_snpeff[[i]], region\_promoter }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)}
+\NormalTok{  exon }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(go\_snps\_exon\_snpeff[[i]], region\_exon }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)}
+\NormalTok{  intron }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(go\_snps\_intron\_snpeff[[i]], region\_intron }\SpecialCharTok{==} \DecValTok{1}\NormalTok{)}
+\NormalTok{  genes }\OtherTok{\textless{}{-}} \FunctionTok{unique}\NormalTok{(}\FunctionTok{c}\NormalTok{(promo}\SpecialCharTok{$}\NormalTok{gene\_id, exon}\SpecialCharTok{$}\NormalTok{gene\_id, intron}\SpecialCharTok{$}\NormalTok{gene\_id))}
+\NormalTok{  genes\_go }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{(}\AttributeTok{go =} \FunctionTok{names}\NormalTok{(list[i]),}
+                         \AttributeTok{n\_genes =} \FunctionTok{length}\NormalTok{(genes))}
+\NormalTok{  genes\_n\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(genes\_n\_snpeff, genes\_go)}
+\NormalTok{\}}
+
+\FunctionTok{write\_tsv}\NormalTok{(genes\_n\_snpeff, }\AttributeTok{file =} \StringTok{"output/biological\_pathways/n\_genes\_snpeff\_per\_go.tsv"}\NormalTok{)}
+
+\CommentTok{\#note: there are snps for every go term!}
+
+\DocumentationTok{\#\#\#\# extract genotypes per GO term \#\#\#\#}
+\CommentTok{\#only select those with \textgreater{}10 snps}
+\NormalTok{go\_snps\_promo\_snpeff }\OtherTok{\textless{}{-}}\NormalTok{ go\_snps\_promo\_snpeff[}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{4}\SpecialCharTok{:}\DecValTok{9}\NormalTok{)]}
+\NormalTok{go\_snps\_exon\_snpeff }\OtherTok{\textless{}{-}}\NormalTok{ go\_snps\_exon\_snpeff[}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{4}\SpecialCharTok{:}\DecValTok{9}\NormalTok{)]}
+\NormalTok{go\_snps\_intron\_snpeff }\OtherTok{\textless{}{-}}\NormalTok{ go\_snps\_intron\_snpeff[}\FunctionTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{4}\SpecialCharTok{:}\DecValTok{9}\NormalTok{)]}
+
+\CommentTok{\#promo}
+\NormalTok{genotypes\_go\_promo\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(go\_snps\_promo\_snpeff))\{}
+\NormalTok{  go\_snps\_promo\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(go\_snps\_promo\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{chr, }\StringTok{"\_"}\NormalTok{, go\_snps\_promo\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{POS)}
+\NormalTok{  geno }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(snpeff, chr\_pos }\SpecialCharTok{\%in\%}\NormalTok{ go\_snps\_promo\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos)}
+\NormalTok{  geno}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+\NormalTok{  genotypes\_go\_promo\_snpeff[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ geno}
+\NormalTok{\}}
+
+\FunctionTok{names}\NormalTok{(genotypes\_go\_promo\_snpeff) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(go\_snps\_promo\_snpeff)}
+
+\CommentTok{\#exon}
+\NormalTok{genotypes\_go\_exon\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(go\_snps\_exon\_snpeff))\{}
+\NormalTok{  go\_snps\_exon\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(go\_snps\_exon\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{chr, }\StringTok{"\_"}\NormalTok{, go\_snps\_exon\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{POS)}
+\NormalTok{  geno }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(snpeff, chr\_pos }\SpecialCharTok{\%in\%}\NormalTok{ go\_snps\_exon\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos)}
+\NormalTok{  geno}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+\NormalTok{  genotypes\_go\_exon\_snpeff[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ geno}
+\NormalTok{\}}
+\FunctionTok{names}\NormalTok{(genotypes\_go\_exon\_snpeff) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(go\_snps\_exon\_snpeff)}
+
+\CommentTok{\#intron}
+\NormalTok{genotypes\_go\_intron\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{list}\NormalTok{()}
+
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(go\_snps\_intron\_snpeff))\{}
+\NormalTok{  go\_snps\_intron\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \FunctionTok{paste0}\NormalTok{(go\_snps\_intron\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{chr, }\StringTok{"\_"}\NormalTok{, go\_snps\_intron\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{POS)}
+\NormalTok{  geno }\OtherTok{\textless{}{-}} \FunctionTok{subset}\NormalTok{(snpeff, chr\_pos }\SpecialCharTok{\%in\%}\NormalTok{ go\_snps\_intron\_snpeff[[i]]}\SpecialCharTok{$}\NormalTok{chr\_pos)}
+\NormalTok{  geno}\SpecialCharTok{$}\NormalTok{chr\_pos }\OtherTok{\textless{}{-}} \ConstantTok{NULL}
+\NormalTok{  genotypes\_go\_intron\_snpeff[[i]] }\OtherTok{\textless{}{-}}\NormalTok{ geno}
+\NormalTok{\}}
+\FunctionTok{names}\NormalTok{(genotypes\_go\_intron\_snpeff) }\OtherTok{\textless{}{-}} \FunctionTok{names}\NormalTok{(go\_snps\_intron\_snpeff)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsubsection{Calculate mutation load}\label{calculate-mutation-load-1}
+
+Then, we calculate the total load based on these subsets, again for GERP
+and SnpEff separately.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\DocumentationTok{\#\#\#\# calculate mutation load based on mutations in each GO term \#\#\#\#}
+
+\DocumentationTok{\#\#\# GERP}
+\FunctionTok{source}\NormalTok{(}\StringTok{"scripts/7\_calculate\_load/function\_calculate\_load.R"}\NormalTok{)}
+
+\NormalTok{loads }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(list))\{}
+  \CommentTok{\#promo}
+\NormalTok{  load\_promo }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_load\_gerp}\NormalTok{(}\FunctionTok{unique}\NormalTok{(genotypes\_go\_promo[[i]]), }\AttributeTok{loadtype =} \FunctionTok{names}\NormalTok{(genotypes\_go\_promo[i]), }\AttributeTok{output\_vcf =}\NormalTok{ F)}
+\NormalTok{  load\_promo}\SpecialCharTok{$}\NormalTok{method }\OtherTok{\textless{}{-}} \StringTok{"gerp"}
+\NormalTok{  load\_promo}\SpecialCharTok{$}\NormalTok{region }\OtherTok{=} \StringTok{"promo"}
+\NormalTok{  loads }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(loads, load\_promo)}
+  \CommentTok{\#exon}
+\NormalTok{  load\_exon }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_load\_gerp}\NormalTok{(genotypes\_go\_exon[[i]], }\AttributeTok{loadtype =} \FunctionTok{names}\NormalTok{(genotypes\_go\_exon[i]), }\AttributeTok{output\_vcf =}\NormalTok{ F)}
+\NormalTok{  load\_exon}\SpecialCharTok{$}\NormalTok{method }\OtherTok{\textless{}{-}} \StringTok{"gerp"}
+\NormalTok{  load\_exon}\SpecialCharTok{$}\NormalTok{region }\OtherTok{=} \StringTok{"exon"}
+\NormalTok{  loads }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(loads, load\_exon)}
+  \CommentTok{\#intron}
+\NormalTok{  load\_intron }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_load\_gerp}\NormalTok{(genotypes\_go\_intron[[i]], }\AttributeTok{loadtype =} \FunctionTok{names}\NormalTok{(genotypes\_go\_intron[i]), }\AttributeTok{output\_vcf =}\NormalTok{ F)}
+\NormalTok{  load\_intron}\SpecialCharTok{$}\NormalTok{method }\OtherTok{\textless{}{-}} \StringTok{"gerp"}
+\NormalTok{  load\_intron}\SpecialCharTok{$}\NormalTok{region }\OtherTok{=} \StringTok{"intron"}
+\NormalTok{  loads }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(loads, load\_intron)}
+\NormalTok{\}}
+
+\DocumentationTok{\#\#\#\# SnpEff}
+\NormalTok{loads\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{data.frame}\NormalTok{()}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\SpecialCharTok{:}\FunctionTok{length}\NormalTok{(genotypes\_go\_promo\_snpeff))\{}
+  \CommentTok{\#promo}
+\NormalTok{  load }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_load\_snpeff}\NormalTok{(genotypes\_go\_promo\_snpeff[[i]], }\AttributeTok{loadtype =} \FunctionTok{names}\NormalTok{(genotypes\_go\_promo\_snpeff[i]), }\AttributeTok{output\_vcf =}\NormalTok{ F)}
+\NormalTok{  load}\SpecialCharTok{$}\NormalTok{method }\OtherTok{\textless{}{-}} \StringTok{"snpeff"}
+\NormalTok{  load}\SpecialCharTok{$}\NormalTok{region }\OtherTok{=} \StringTok{"promo"}
+\NormalTok{  loads\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(loads\_snpeff, load)}
+  \CommentTok{\#exon}
+\NormalTok{  load }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_load\_snpeff}\NormalTok{(genotypes\_go\_exon\_snpeff[[i]], }\AttributeTok{loadtype =} \FunctionTok{names}\NormalTok{(genotypes\_go\_exon\_snpeff[i]), }\AttributeTok{output\_vcf =}\NormalTok{ F)}
+\NormalTok{  load}\SpecialCharTok{$}\NormalTok{method }\OtherTok{\textless{}{-}} \StringTok{"snpeff"}
+\NormalTok{  load}\SpecialCharTok{$}\NormalTok{region }\OtherTok{=} \StringTok{"exon"}
+\NormalTok{  loads\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(loads\_snpeff, load)}
+  \CommentTok{\#intron}
+\NormalTok{  load }\OtherTok{\textless{}{-}} \FunctionTok{calculate\_load\_snpeff}\NormalTok{(genotypes\_go\_intron\_snpeff[[i]], }\AttributeTok{loadtype =} \FunctionTok{names}\NormalTok{(genotypes\_go\_intron\_snpeff[i]), }\AttributeTok{output\_vcf =}\NormalTok{ F)}
+\NormalTok{  load}\SpecialCharTok{$}\NormalTok{method }\OtherTok{\textless{}{-}} \StringTok{"snpeff"}
+\NormalTok{  load}\SpecialCharTok{$}\NormalTok{region }\OtherTok{=} \StringTok{"intron"}
+\NormalTok{  loads\_snpeff }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(loads\_snpeff, load)}
+\NormalTok{\}}
+
+\NormalTok{loads }\OtherTok{\textless{}{-}} \FunctionTok{rbind}\NormalTok{(loads, loads\_snpeff)}
+\FunctionTok{save}\NormalTok{(loads, }\AttributeTok{file =} \StringTok{"output/biological\_pathways/loads\_per\_go\_term\_per\_region.RData"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\subsection{Modelling}\label{modelling-1}
+
+We then computed the exact same models as the total load models
+presented before with the following model structure:
+
+\texttt{LMS\ \textasciitilde{}\ scale(total\_load)\ +\ core\ +\ (1\textbar{}site)}
+
+Where total load is not a measure taken from a subset of deleterious
+mutations located within a specific genomic region and associated with a
+certain subset of genes.
+
+\subsection{Results}\label{results-4}
+
+Below you find the posterior distributions:
+
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/extended/extended_5_go_gerp.png}}
+
+}
+
+\caption{Results per genomic region per GO term for GERP}
+
+\end{figure}%%
+\begin{figure}[H]
+
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/extended/extended_6_go_snpeff.png}}
+
+}
+
+\caption{Results per genomic region per GO term for SnpEff}
+
+\end{figure}%
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(data.table); }\FunctionTok{library}\NormalTok{(kableExtra)}
+\NormalTok{gerp }\OtherTok{\textless{}{-}} \FunctionTok{fread}\NormalTok{(}\StringTok{"../output/biological\_pathways/intervals\_gerp.tsv"}\NormalTok{)}
+\NormalTok{gerp }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kbl}\NormalTok{() }
+\end{Highlighting}
+\end{Shaded}
+
+\begin{tabular}[t]{l|l|l|r|l|l}
+\hline
+parameter & region & go & median & ci\_95 & ci\_80\\
+\hline
+b\_scaletotal\_load & Exon & Androgen metabolism & -0.17 & -0.25, -0.1 & -0.23, -0.12\\
+\hline
+b\_scaletotal\_load & Exon & Cellular respiration & 0.01 & -0.06, 0.09 & -0.03, 0.07\\
+\hline
+b\_scaletotal\_load & Exon & Developmental growth & 0.05 & -0.04, 0.13 & -0.01, 0.1\\
+\hline
+b\_scaletotal\_load & Exon & Immune response & 0.14 & 0.06, 0.23 & 0.08, 0.2\\
+\hline
+b\_scaletotal\_load & Exon & Muscle tissue development & -0.02 & -0.1, 0.07 & -0.07, 0.04\\
+\hline
+b\_scaletotal\_load & Exon & Response to oxidative stress & -0.17 & -0.25, -0.09 & -0.22, -0.11\\
+\hline
+b\_scaletotal\_load & Intron & Androgen metabolism & 0.41 & 0.32, 0.49 & 0.35, 0.46\\
+\hline
+b\_scaletotal\_load & Intron & Cellular respiration & 0.33 & 0.23, 0.43 & 0.27, 0.4\\
+\hline
+b\_scaletotal\_load & Intron & Developmental growth & 0.09 & 0, 0.18 & 0.03, 0.15\\
+\hline
+b\_scaletotal\_load & Intron & Immune response & -0.29 & -0.38, -0.21 & -0.35, -0.24\\
+\hline
+b\_scaletotal\_load & Intron & Muscle tissue development & 0.08 & 0.01, 0.15 & 0.03, 0.13\\
+\hline
+b\_scaletotal\_load & Intron & Response to oxidative stress & -0.03 & -0.12, 0.06 & -0.09, 0.03\\
+\hline
+b\_scaletotal\_load & Promoter & Androgen metabolism & -0.33 & -0.4, -0.25 & -0.38, -0.28\\
+\hline
+b\_scaletotal\_load & Promoter & Cellular respiration & -0.25 & -0.34, -0.16 & -0.3, -0.19\\
+\hline
+b\_scaletotal\_load & Promoter & Developmental growth & -0.22 & -0.3, -0.15 & -0.27, -0.17\\
+\hline
+b\_scaletotal\_load & Promoter & Immune response & -0.23 & -0.3, -0.15 & -0.28, -0.18\\
+\hline
+b\_scaletotal\_load & Promoter & Muscle tissue development & -0.09 & -0.17, -0.01 & -0.14, -0.04\\
+\hline
+b\_scaletotal\_load & Promoter & Response to oxidative stress & -0.11 & -0.19, -0.02 & -0.16, -0.05\\
+\hline
+\end{tabular}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{high }\OtherTok{\textless{}{-}} \FunctionTok{fread}\NormalTok{(}\StringTok{"../output/biological\_pathways/intervals\_high.tsv"}\NormalTok{)}
+\NormalTok{high }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{kbl}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{tabular}[t]{l|l|l|r|l|l}
+\hline
+parameter & region & go & median & ci\_95 & ci\_80\\
+\hline
+b\_scaletotal\_load & Exon & Cellular respiration & 0.19 & 0.1, 0.28 & 0.13, 0.25\\
+\hline
+b\_scaletotal\_load & Exon & Developmental growth & -0.02 & -0.1, 0.06 & -0.07, 0.03\\
+\hline
+b\_scaletotal\_load & Exon & Immune response & -0.14 & -0.23, -0.05 & -0.2, -0.08\\
+\hline
+b\_scaletotal\_load & Exon & Muscle tissue development & 0.01 & -0.07, 0.08 & -0.04, 0.06\\
+\hline
+b\_scaletotal\_load & Exon & Response to oxidative stress & -0.07 & -0.15, 0.02 & -0.12, -0.02\\
+\hline
+b\_scaletotal\_load & Intron & Cellular respiration & 0.09 & 0.02, 0.17 & 0.04, 0.14\\
+\hline
+b\_scaletotal\_load & Intron & Developmental growth & 0.29 & 0.2, 0.38 & 0.23, 0.35\\
+\hline
+b\_scaletotal\_load & Intron & Immune response & -0.08 & -0.15, 0 & -0.13, -0.03\\
+\hline
+b\_scaletotal\_load & Intron & Muscle tissue development & 0.20 & 0.11, 0.29 & 0.14, 0.26\\
+\hline
+b\_scaletotal\_load & Intron & Response to oxidative stress & 0.37 & 0.28, 0.45 & 0.31, 0.42\\
+\hline
+b\_scaletotal\_load & Promoter & Cellular respiration & 0.00 & -0.09, 0.09 & -0.06, 0.06\\
+\hline
+b\_scaletotal\_load & Promoter & Developmental growth & -0.05 & -0.14, 0.03 & -0.11, 0\\
+\hline
+b\_scaletotal\_load & Promoter & Immune response & -0.25 & -0.34, -0.17 & -0.31, -0.2\\
+\hline
+b\_scaletotal\_load & Promoter & Muscle tissue development & 0.05 & -0.03, 0.13 & 0, 0.1\\
+\hline
+b\_scaletotal\_load & Promoter & Response to oxidative stress & 0.11 & 0.03, 0.19 & 0.06, 0.16\\
+\hline
+\end{tabular}
+
+These results indicate the results really depend on the GO term and
+region in question. But three patterns are clear: - GERP mutations in
+promoters of many GO terms are deleterious - GERP mutations in two or
+more genomic regions of the GO terms: androgen metabolism, immune
+response and response to oxidative stress are deleterious - High impact
+SnpEff mutations in all genomic regions of immune response are negative
+
+\bookmarksetup{startatroot}
+
+\chapter{Random subsampling}\label{random-subsampling}
+
+\section{Introduction}\label{introduction-7}
 
 Variation in the effects of mutation load among the various models
 presented could be attributed to variation in the effect sizes of the
@@ -2013,8 +2471,7 @@ mutations explain more fitness variation. We tested for the effect of
 total load on LMS between GERP and SnpEff mutations and the four genomic
 regions by controlling for the number of mutations.
 
-\hypertarget{methods-3}{%
-\section{Methods}\label{methods-3}}
+\section{Methods}\label{methods-3}
 
 We randomly subset over all deleterioius GERP and SnpEff mutations
 (separately), and per genomic region for the two approaches.
@@ -2189,8 +2646,7 @@ number of mutations that get sampled:
 \end{Highlighting}
 \end{Shaded}
 
-\hypertarget{results-4}{%
-\section{Results}\label{results-4}}
+\section{Results}\label{results-5}
 
 We can then plot the results as histograms:
 
@@ -2239,25 +2695,25 @@ We can then plot the results as histograms:
 We can then repeat this for the other subsets, leading to the following
 plots:
 
-\begin{figure}
+\begin{figure}[H]
 
-{\centering \includegraphics{qmd/../plots/sup/extended_3_random_draws.png}
+{\centering \pandocbounded{\includegraphics[keepaspectratio]{qmd/../plots/sup/sup_3_random_draws.png}}
 
 }
 
 \caption{Random subsets}
 
-\end{figure}
+\end{figure}%
 
 \bookmarksetup{startatroot}
 
-\hypertarget{references}{%
-\chapter*{References}\label{references}}
+\chapter*{References}\label{references}
 \addcontentsline{toc}{chapter}{References}
 
 \markboth{References}{References}
 
 \printbibliography[heading=none]
+
 
 
 

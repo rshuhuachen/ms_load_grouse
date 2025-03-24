@@ -14,7 +14,8 @@ book:
     - qmd/3_load.qmd
     - qmd/4_models.qmd
     - qmd/5_per_region.qmd
-    - qmd/6_random_sub.qmd
+    - qmd/6_per_go.qmd
+    - qmd/7_random_sub.qmd
     - qmd/references.qmd
   navbar:
     search: true

@@ -5,13 +5,13 @@ favicon: plots/img/grouse_silhouette.png
 
 # Introduction
 
-This webpage/document contains a summary of the workflow used in the manuscript titled "Predicted deleterious mutations reveal the genomic mechanisms underlying fitness variation in a lekking bird", Chen et al. 2024 (in preparation). Please see the [github repository](https://github.com/rshuhuachen/ms_load_grouse) for all scripts and more detailed descriptions of the data and analyses.
+This webpage/document contains a summary of the workflow used in the manuscript titled "**Genetic architecture of male reproductive success in a lekking bird: insights from predicted deleterious mutations**", Chen et al. 2024 ([in review](https://doi.org/10.21203/rs.3.rs-5579350/v1)). Please see the [github repository](https://github.com/rshuhuachen/ms_load_grouse) for all scripts and more detailed descriptions of the data and analyses.
 
 ![Black grouse](plots/img/grouse.jpeg)
 
 # Main goals
 
-In the current study, we used a long-term dataset to (i) quantify the fitness effects of homozygous and heterozygous individual genomic mutation loads; (ii) compare the fitness effects of deleterious mutations in coding versus noncoding regions; and (iii) unravel the behavioural and / or ornamental pathways through which deleterious mutations impact lifetime reproductive success. We used whole genome resequencing, phenotypic and fitness data of 190 male black grouse sampled annually across five study sites in Central Finland.
+In the current study, we used a long-term dataset to (i) quantify the fitness effects of total, homozygous and heterozygous individual genomic mutation loads; (ii) evaluate the relative contributions of deleterious mutations across different genomic regions and biological processes to fitness variation (iii) unravel the behavioural and / or ornamental pathways through which deleterious mutations impact lifetime reproductive success. We used whole genome resequencing, phenotypic and fitness data of 190 male black grouse sampled annually across five study sites in Central
 
 Mutation load can be defined as a statistic that summarizes the selection and dominance coefficients of deleterious mutations as a function of their frequencies in a population [@bertorelleGeneticLoadGenomic2022]. As we do not have selection and dominance coefficients of mutations in wild populations, we use a proxy for mutation load calculated as the number of deleterious mutations for a given individual.
 
