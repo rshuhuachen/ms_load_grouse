@@ -6,6 +6,14 @@ This is the repository that contains all scripts used for the analysis in the ma
 
 Below you will find an explanation of which data files can be found where, and the general structure of the workflow. You will find a brief overview of the scripts with an explanation here: https://rshuhuachen.github.io/ms_load_grouse/
 
+# Cloning the repository
+To retrieve all code to your local device, open a terminal and execute the following:
+`git clone https://github.com/rshuhuachen/ms_load_grouse.git`
+
+You will now have access to all scripts and processed data. To download the raw data files (sequencing data), please see how to retrieve them below.
+
+Note that many analyses (especially the bioinformatic analyses) take a long time to run, even on a HPC (days if not weeks). We recommend running any analyses on a cluster. Also the Bayesian models take a few hours to run each and are recommended to be executed on a HPC. To rerun a Bayesian model with a smaller number of iterations than used in the manuscript (which can finish running in a short amount of time), please see the instructions below under "Demo".
+
 # Data
 
 ## Phenotypes
@@ -63,6 +71,32 @@ To allow easier reproducibility, you can use the conda environment listed in `sr
 12_plots: in this folder, we produce the plots used in the main manuscript as well as in the supplementary materials
 
 Lastly, please see our full Methods in the main manuscript for further details.
+
+
+## Demo
+
+If you want to check the main conclusions drawn in the manuscript based on a smaller number of iterations, you can execute the following code in R (modified from `scripts/9_models/lms/model_total.R`). This code will run the Bayesian model of LMS while including the total GERP load as a predictor.
+
+```r
+# load pheno data lifetime
+load(file = "output/load/pheno_loads_lifetime.RData")
+
+# load mutation load measures
+load("output/load/all_loads_combined_da_nosex_29scaf_plus_per_region.RData") #load estimates
+
+# subset only the relevant method/loadtype
+load <- load_per_region %>% filter(loadtype == "gerp45") #gerp 45 = total gerp load based on mutations with GEPR scores >=4
+
+# combine data files
+pheno_wide_load <- left_join(pheno_wide, load, by = "id")
+
+#### model ####
+brm_load <- brm(LMS_min ~ scale(total_load) + core + (1|site), data = pheno_wide_load, family = "zero_inflated_poisson", prior = prior(normal(0,1), class = b), cores =8, control = list(adapt_delta = 0.99, max_treedepth = 15), iter = 1000, thin = 10, warmup = 500, seed = 1908)
+
+# this model will run using 1000 iterations, a thinning interval of 10 and a warmup / burn in period of 500 iterations. in the main MS, we use 1 million iterations. 1000 iterations should finish running within a few minutes
+
+summary(brm_load) # this is a brms formatted output file
+```
 
 ## Dependencies
 All command-line based software used and their versions can be found in the file `src/envs/environment_load.yml`
