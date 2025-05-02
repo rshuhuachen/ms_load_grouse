@@ -76,15 +76,15 @@ sig_exon_snpef <- mergeByOverlaps(snpef_gr, exons_gene)
 sig_exon_snpef <- as.data.frame(sig_exon_snpef@listData)
 sig_exon_snpef <- sig_exon_snpef %>% add_column("region" = "exon") %>% 
   dplyr::select(c(`snpef_gr.seqnames`, POS, region, exons_gene.ID)) 
-sig_exon_snpef <- sig_exon_snpef %>% rename(exons_gene.ID = "gene_id")
+sig_exon_snpef <- sig_exon_snpef %>% rename("gene_id" = "exons_gene.ID")
 
 sig_intron_snpef <- mergeByOverlaps(snpef_gr, introns)
 sig_intron_snpef <- as.data.frame(sig_intron_snpef@listData)
 sig_intron_snpef <- sig_intron_snpef %>% add_column("region" = "intron") %>% 
   dplyr::select(c(`snpef_gr.seqnames`, POS, region, introns.ID)) 
-sig_intron_snpef <- sig_intron_snpef %>% rename(introns.ID = "gene_id")
+sig_intron_snpef <- sig_intron_snpef %>% rename("gene_id" = "introns.ID")
 
-snpef_all <- rbind(snpef_promoter, sig_gene_snpef, sig_tss_snpef, sig_exon_snpef, sig_intron_snpef)
+snpef_all <- rbind(sig_promoter_snpef, sig_gene_snpef, sig_tss_snpef, sig_exon_snpef, sig_intron_snpef)
 
 save(snpef_all, file = "output/load/snpeff/snpeff_high_annotated_region_gene_ids.RData")
 
@@ -112,13 +112,13 @@ sig_exon_gerp <- mergeByOverlaps(gerp_gr, exons_gene)
 sig_exon_gerp <- as.data.frame(sig_exon_gerp@listData)
 sig_exon_gerp <- sig_exon_gerp %>% add_column("region" = "exon") %>% 
   dplyr::select(c(`gerp_gr.seqnames`, POS, region, exons_gene.ID)) 
-sig_exon_gerp <- sig_exon_gerp %>% rename(exons_gene.ID = "gene_id")
+sig_exon_gerp <- sig_exon_gerp %>% rename("gene_id"= "exons_gene.ID")
 
 sig_intron_gerp <- mergeByOverlaps(gerp_gr, introns)
 sig_intron_gerp <- as.data.frame(sig_intron_gerp@listData)
 sig_intron_gerp <- sig_intron_gerp %>% add_column("region" = "intron") %>% 
   dplyr::select(c(`gerp_gr.seqnames`, POS, region, introns.ID)) 
-sig_intron_gerp <- sig_intron_gerp %>% rename(introns.ID = "gene_id")
+sig_intron_gerp <- sig_intron_gerp %>% rename("gene_id" = "introns.ID")
 
 gerp_all <- rbind(sig_promoter_gerp, sig_gene_gerp, sig_tss_gerp, sig_exon_gerp, sig_intron_gerp)
 
@@ -148,13 +148,13 @@ sig_exon_all <- mergeByOverlaps(all_gr, exons_gene)
 sig_exon_all <- as.data.frame(sig_exon_all@listData)
 sig_exon_all <- sig_exon_all %>% add_column("region" = "exon") %>% 
   dplyr::select(c(`all_gr.seqnames`, POS, region, exons_gene.ID)) 
-sig_exon_all <- sig_exon_all %>% rename(exons_gene.ID = "gene_id")
+sig_exon_all <- sig_exon_all %>% rename("gene_id" = "exons_gene.ID")
 
 sig_intron_all <- mergeByOverlaps(all_gr, introns)
 sig_intron_all <- as.data.frame(sig_intron_all@listData)
 sig_intron_all <- sig_intron_all %>% add_column("region" = "intron") %>% 
   dplyr::select(c(`all_gr.seqnames`, POS, region, introns.ID)) 
-sig_intron_all <- sig_intron_all %>% rename(introns.ID = "gene_id")
+sig_intron_all <- sig_intron_all %>% rename("gene_id" = "introns.ID")
 
 all_all <- rbind(sig_promoter_all, sig_gene_all, sig_tss_all, sig_exon_all, sig_intron_all)
 
@@ -172,6 +172,7 @@ snpef_all$similar <- toupper(snpef_all$similar)
 gerp_all$similar <- toupper(gerp_all$similar)
 all_all$similar <- toupper(all_all$similar)
 
+library(readr)
 snpef_all %>% dplyr::select(similar) %>% unique() %>% write_tsv(file = "output/go_analysis/gene_id_snpef_high.tsv")
 gerp_all %>% dplyr::select(similar) %>% unique() %>% write_tsv(file = "output/go_analysis/gene_id_gerp.tsv")
 all_all %>% dplyr::select(similar) %>% unique() %>% write_tsv(file = "output/go_analysis/gene_id_all.tsv")

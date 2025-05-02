@@ -8,3 +8,8 @@ summary(DC_report$MEAN_DEPTH)
 #filter minimum coverage = 0.3 * mean and max coverage = 2*mean
 mean(DC_report$MEAN_DEPTH)/3 # = 10.5 = 10
 2*mean(DC_report$MEAN_DEPTH) # = 63
+
+
+### per ID
+dc_report_id <- read.table("output/genotyping/DC_report_id.idepth", header=T)
+summary(dc_report_id)
