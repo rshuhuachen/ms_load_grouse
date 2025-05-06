@@ -35,14 +35,14 @@ ggplot(num_roh_per_ind, aes(n)) +
 #)))
 
 rohs_class <- rohs %>% mutate(class = as.factor(case_when(
-  length < 500000 ~ "< 500kb",
-  length >= 500000 & length < 2*10^6 ~ "500kb - 2Mb",
+  length < 1*10^6 ~ "< 1 Mb",
+  length >= 1*10^6 & length < 2*10^6 ~ "1 - 2Mb",
   length >= 2*10^6 ~ "> 2Mb"
 )))
 
 #rohs_class <- rohs_class %>% group_by(id, class) %>% summarise(froh = sum(length) / 1004266063)
 #rohs_class$class <- factor(rohs_class$class, levels = c("< 100kb", "100kb - 1Mb", "1 - 5Mb", "> 5Mb"))
-rohs_class$class <- factor(rohs_class$class, levels = c("< 500kb", "500kb - 2Mb", "> 2Mb"))
+rohs_class$class <- factor(rohs_class$class, levels = c("", "< 1 Mb", "1 - 2Mb", "> 2Mb"))
 
 rohs_class %>% group_by(id, class) %>% summarise(froh = sum(length) / 1004266063) %>% ungroup() %>%
   group_by(id) %>% arrange(id, class) %>% mutate(cum_froh = cumsum(froh)) %>% ungroup() %>%

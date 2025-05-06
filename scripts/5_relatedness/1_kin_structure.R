@@ -173,3 +173,15 @@ from the same / a different site",
         axis.title.y = element_blank(),
         legend.title = element_blank(),
         legend.position = "bottom") 
+
+
+# number of related IDs
+
+ids_first <- c(unique(gen_add$id_id1[which(gen_add$criteria == "Parent-offspring"|gen_add$criteria == "Full-sibling")]), 
+unique(gen_add$id_id2[which(gen_add$criteria == "Parent-offspring"|gen_add$criteria == "Full-sibling")]))
+ids_second <- c(unique(gen_add$id_id1[which(gen_add$criteria == "Second-degree")]), unique(gen_add$id_id2[which(gen_add$criteria == "Second-degree")]))
+ids_third <- c(unique(gen_add$id_id1[which(gen_add$criteria == "Third-degree")]), unique(gen_add$id_id2[which(gen_add$criteria == "Third-degree")]))
+
+length(unique(ids_first))
+length(unique(ids_second))
+length(unique(ids_third))
