@@ -78,12 +78,12 @@ ggplot(data = brms_trait_ms_gerp$outer) +
   geom_point(data=brms_trait_ms_gerp_interval, aes(x = m, y = parameter), fill="white",  col = "black", shape=21, size = 6) + 
   geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 1.5)+
   labs(x = expression("Standardised"~beta), y = "Trait")+
-  scale_fill_manual(values =alpha(c(clrs_hunting[1],clrs_hunting[1],
-                                    clrs_hunting[1],clrs_hunting[1],
-                                    clrs_hunting[1],clr_highlight), 0.5)) +
-  scale_color_manual(values =c(clrs_hunting[1],clrs_hunting[1],
-                               clrs_hunting[1],clrs_hunting[1],
-                               clrs_hunting[1],clr_highlight)) +
+  scale_fill_manual(values =alpha(c(clr_grey,clr_grey,
+                                    clr_grey,clr_grey,
+                                    clr_grey,clr_highlight), 0.5)) +
+  scale_color_manual(values =c(clr_grey,clr_grey,
+                               clr_grey,clr_grey,
+                               clr_grey,clr_highlight)) +
   theme(panel.border = element_blank(),
         panel.grid = element_blank(),
         strip.background = element_blank(),
@@ -242,12 +242,12 @@ ggplot(data = gerptrait$outer) +
   geom_point(data=gerptrait_interval, aes(x = m, y = trait), fill="white",  col = "black", shape=21, size = 6) + 
   geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 1.5)+
   labs(x = expression("Standardised"~beta), y = "Trait")+
-  scale_fill_manual(values =alpha(c(clrs_hunting[1],clrs_hunting[1],
-                                    clrs_hunting[1],clrs_hunting[1],
-                                    clrs_hunting[1],clr_highlight), 0.5)) +
-  scale_color_manual(values =c(clrs_hunting[1],clrs_hunting[1],
-                               clrs_hunting[1],clrs_hunting[1],
-                               clrs_hunting[1],clr_highlight)) +
+  scale_fill_manual(values =alpha(c(clr_grey,clr_grey,
+                                    clr_grey,clr_grey,
+                                    clr_grey,clr_highlight), 0.5)) +
+  scale_color_manual(values =c(clr_grey,clr_grey,
+                               clr_grey,clr_grey,
+                               clr_grey,clr_highlight)) +
   theme(panel.border = element_blank(),
         panel.grid = element_blank(),
         strip.background = element_blank(),
