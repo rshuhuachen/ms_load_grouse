@@ -155,4 +155,15 @@ png(file = "plots/main/fig_1.png", width=1100, height=800)
 fig_froh
 dev.off()
 
+# for nee
+setEPS()
+postscript("plots/main/fig_1.eps", width =3565)
+fig_froh
+dev.off()s
 
+ggplot2::ggsave(filename = "plots/main/fig_1.eps", 
+       plot = fig_froh, 
+       device = "eps", 
+       dpi = 1200, 
+       width = 8.8,
+       units = "cm")
