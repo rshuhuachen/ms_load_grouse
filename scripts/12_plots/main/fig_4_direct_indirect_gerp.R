@@ -325,8 +325,8 @@ ggplot(data = brms_trait_ms_gerp$outer) +
 
 traits_ms_gerp_posterior_nee
 
-ggsave(plot = traits_ms_gerp_posterior_nee, filename = 'plots/main/fig_4_right_traits_ams.pdf', width = 90, height = 180,
-       bg='transparent', units = 'mm', device = cairo_pdf)
+ggsave(plot = traits_ms_gerp_posterior_nee, filename = 'plots/main/fig_4_right_traits_ams_nee.png', width = 90, height = 180,
+       bg='transparent', units = 'mm')
 
 ggplot(data = gerptrait$outer) +  
   aes(x = .data$x, y = .data$trait) + 
@@ -355,9 +355,9 @@ ggplot(data = gerptrait$outer) +
     legend.box.background = element_rect(fill='transparent') #transparent legend panel
   )-> traits_gerp_posterior_nee
 
-ggsave(plot = traits_ms_gerp_posterior_nee, filename = 'plots/main/fig_4_left_load_traits.pdf', width = 90, height = 180,
+ggsave(plot = traits_ms_gerp_posterior_nee, filename = 'plots/main/fig_4_left_load_traits_nee.png', width = 90, height = 180,
        bg='transparent',
-       units = 'mm', device = cairo_pdf)
+       units = 'mm')
 
 
 
