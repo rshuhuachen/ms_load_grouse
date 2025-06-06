@@ -355,9 +355,8 @@ ggplot(data = gerptrait$outer) +
     legend.box.background = element_rect(fill='transparent') #transparent legend panel
   )-> traits_gerp_posterior_nee
 
-ggsave(plot = traits_ms_gerp_posterior_nee, filename = 'plots/main/fig_4_left_load_traits_nee.png', width = 90, height = 180,
-       bg='transparent',
-       units = 'mm')
+ggsave(plot = traits_gerp_posterior_nee, filename = 'plots/main/fig_4_left_load_traits_nee.pdf', width = 90, height = 180,
+       bg='transparent', units = 'mm', device=cairo_pdf())
 
 
 
