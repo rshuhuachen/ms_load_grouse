@@ -275,8 +275,8 @@ write.csv(gerptrait_interval, file = "output/models/intervals/gerp_load_traits.c
 
 #### for NEE ###
 
-small_font = 10
-large_font = 12
+small_font = 14
+large_font = 16
 in_box_font = 3.5
 
 theme_set(theme_classic() + theme(title = element_text(small_font),
@@ -302,7 +302,7 @@ ggplot(data = brms_trait_ms_gerp$outer) +
   geom_segment(data=brms_trait_ms_gerp_interval, aes(x = l, xend = h, yend = parameter), col = "black", linewidth=3)+
   geom_segment(data=brms_trait_ms_gerp_interval, aes(x = ll, xend = hh, yend = parameter), col = "black")+
   geom_point(data=brms_trait_ms_gerp_interval, aes(x = m, y = parameter), fill="white",  col = "black", shape=21, size = 3) + 
-  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 0.5)+
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 1)+
   labs(x = expression("Standardised"~beta), y = "Trait")+
   scale_fill_manual(values =alpha(c(clr_grey,clr_grey,
                                     clr_grey,clr_grey,
@@ -325,8 +325,8 @@ ggplot(data = brms_trait_ms_gerp$outer) +
 
 traits_ms_gerp_posterior_nee
 
-ggsave(plot = traits_ms_gerp_posterior_nee, filename = 'plots/main/fig_4_right_traits_ams_nee.png', width = 90, height = 180,
-       bg='transparent', units = 'mm')
+ggsave(plot = traits_ms_gerp_posterior, filename = 'plots/main/fig_4_right_traits_ams_nee.pdf', width=10, height=13.3,
+       bg='transparent', device = cairo_pdf())
 
 ggplot(data = gerptrait$outer) +  
   aes(x = .data$x, y = .data$trait) + 
@@ -334,7 +334,7 @@ ggplot(data = gerptrait$outer) +
   geom_segment(data=gerptrait_interval, aes(x = l, xend = h, yend = trait), col = "black", linewidth=3)+
   geom_segment(data=gerptrait_interval, aes(x = ll, xend = hh, yend = trait), col = "black")+
   geom_point(data=gerptrait_interval, aes(x = m, y = trait), fill="white",  col = "black", shape=21, size = 3) + 
-  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 0.5)+
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 1)+
   labs(x = expression("Standardised"~beta), y = "Trait")+
   scale_fill_manual(values =alpha(c(clr_grey,clr_grey,
                                     clr_grey,clr_grey,
@@ -355,8 +355,8 @@ ggplot(data = gerptrait$outer) +
     legend.box.background = element_rect(fill='transparent') #transparent legend panel
   )-> traits_gerp_posterior_nee
 
-ggsave(plot = traits_gerp_posterior_nee, filename = 'plots/main/fig_4_left_load_traits_nee.pdf', width = 90, height = 180,
-       bg='transparent', units = 'mm', device=cairo_pdf())
+ggsave(plot = traits_gerp_posterior, filename = 'plots/main/fig_4_left_load_traits_nee.pdf', width=10, height=13.3,
+       bg='transparent', device=cairo_pdf)
 
 
 
