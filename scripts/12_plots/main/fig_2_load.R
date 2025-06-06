@@ -1,5 +1,5 @@
 extrafont::loadfonts(device="all")
-pacman::p_load(tidyverse, data.table, cowplot, extrafont, ggtext, VennDiagram, ggvenn, gridExtra, patchwork)
+pacman::p_load(tidyverse, data.table, cowplot, extrafont, ggtext, gridExtra, patchwork)
 source("scripts/theme_ggplot.R")
 
 ### Figure 2a: Distribution of GERP load cat ####
@@ -387,4 +387,132 @@ cowplot::plot_grid(fig_mut_2, fig_mut_3, #rel_heights = c(1, 0.5),
 png(file = "plots/main/fig_2.png", width=1000, height=1400)
 fig_mut
 dev.off()
+
+### Combine in one figure for NEE ####
+
+small_font = 10
+large_font = 12
+in_box_font = 3.5
+
+theme_set(theme_classic() + theme(title = element_text(small_font),
+                                  plot.subtitle = element_text(size=large_font),
+                                  axis.title = element_text(size = large_font, family = "Arial"),
+                                  axis.text = element_text(size = small_font, family = "Arial"),
+                                  text=element_text(size=small_font, family = "Arial"),
+                                  legend.text =  element_text(size = small_font, family = "Arial"),
+                                  legend.title = element_text(size = small_font, family = "Arial"),
+                                  strip.text = element_text(size = small_font, family = "Arial"),
+                                  axis.title.y = element_text(margin = margin(t = 0, r =5, b = 0, l = 0),
+                                                              color = "black"),
+                                  plot.margin = margin(0.3,0.3,0.3,0.3, "cm"),
+                                  plot.title=element_text(margin=margin(0,0,5,0)),
+                                  axis.title.x = element_text(margin = margin(t = 5, r = 0, b = 0, l = 0),
+                                                              color = "black"),
+                                  panel.background = element_rect(fill = "white", colour = NA),
+                                  plot.background = element_rect(fill = "white", colour = NA),))
+# a
+
+ggplot(gerp_count, aes(x = gerp_cat, y = n_total)) + 
+  geom_col(fill = alpha(c(clr_grey, clr_grey, clr_grey, clr_grey, clr_gerp, clr_grey), 0.7), 
+           color=c(clr_grey,clr_grey, clr_grey, clr_grey,  clr_gerp, clr_grey)) + 
+  scale_y_log10(limits=c(1,10000000), labels = c(expression(10^1), expression(10^3), expression(10^6)),
+                breaks=c(1, 1000,1000000)) +
+  labs(x = "Category", y= expression('Number of SNPs (log'[10]*')'), title = "GERP") +
+  geom_text(aes(label = prettyNum(n_total, big.mark=","), y = n_total), 
+            hjust=1.5, size = in_box_font) +
+  coord_flip() -> fig_countgerp_nee
+
+# b
+ggplot(n_mutations_per_impact, aes(x = type, y = n_mutations)) + 
+  geom_col(color=c(clr_high, clr_grey, clr_grey, clr_grey), 
+           fill=alpha(c(clr_high, clr_grey, clr_grey, clr_grey), 0.7)) + 
+  scale_y_log10(labels = c(expression(paste(~10^1)), expression(paste(~10^4)), 
+                           expression(paste(~10^7))),
+                breaks=c(10, 10000, 10000000),
+                limits = c(1, 10000000))+
+  labs(y= expression('Number of SNPs (log'[10]*')'), title = "SnpEff", x = "Category")+
+  scale_fill_manual(values = c(clrs[5], clrs[5], clrs[7], clrs[9]))+
+  geom_text(aes(label = prettyNum(n_mutations, big.mark = ",", scientific=F)), hjust = 1.5, size =in_box_font) +
+  theme(legend.position="none") + coord_flip() -> fig_countsnpef_nee
+
+# c
+ggplot(n_mutations_pertype, aes(x = reorder(abb, desc(n_mutations)), 
+                                y = n_mutations)) + 
+  geom_col(aes(fill = impact, col = impact)) + 
+  scale_y_log10(labels = c(expression(paste(~10^1)), expression(paste(~10^3)), expression(paste(~10^5))), 
+                breaks = c(10, 1000, 100000))+
+  labs(y = expression('Number of SNPs (log'[10]*')'), fill = "Impact Class", x = "Mutation type")+
+  scale_fill_manual(values = alpha(c(clr_high, "#8EA4CC","#703D57",  "#FFCD70"), 0.7))+
+  scale_color_manual(values = c(clr_high, "#8EA4CC","#703D57",  "#FFCD70"))+
+  coord_flip() +geom_text(aes(label = prettyNum(n_mutations, big.mark = ",", scientific=F)), 
+                          hjust = 1.5, size = in_box_font)+
+  guides(col="none") +
+  theme(legend.position = c(0.8,0.8)) -> fig_countsnpef_cat_nee
+fig_countsnpef_cat_nee
+
+# d
+ggplot(subset(allelefreq, Method == "GERP"), aes(x = frequency, fill = Deleteriousness, col = Deleteriousness)) + 
+ geom_histogram(aes(y=after_stat(c(count[group==1]/sum(count[group==1]),
+                                    count[group==2]/sum(count[group==2]))*100)),
+                 binwidth=0.07, position="dodge") +
+  scale_color_manual(values = c("grey", clr_gerp)) + 
+  scale_fill_manual(values = alpha(c("grey", clr_gerp), 0.7))+
+  labs(x = "Allele frequency", y = "% SNPs", title = "GERP") +
+  theme(legend.position = c(0.8,0.9),
+        legend.title = element_blank())-> fig_af_gerp_nee
+
+# e
+ggplot(snpeff_af, aes(x = frequency, fill = Deleteriousness, col = Deleteriousness)) + 
+  geom_histogram(aes(y=after_stat(c(count[group==1]/sum(count[group==1]),
+                                    count[group==2]/sum(count[group==2]))*100)),
+                 binwidth=0.07, position="dodge") +
+  scale_color_manual(values = c("grey", clr_high)) + 
+  scale_fill_manual(values = alpha(c("grey", clr_high), 0.7))+
+  labs(x = "Allele frequency", y = "% SNPs", title = "SnpEff") +
+  theme(legend.position = c(0.8,0.9),
+        legend.title = element_blank())-> fig_af_high_nee
+# f
+ggplot(gerp_loci, aes(x = n_loci)) +
+  geom_histogram(bins = 30, position = "identity", aes(fill = type, col = type)) +
+  labs(x = "# loci", fill = "", y = "# individuals", title = "GERP ≥ 4") +
+  guides(color="none")+
+  scale_x_continuous(labels = c("30,000", "40,000", "50,000"), breaks=c(30000,40000,50000))+
+  scale_fill_manual(values = c(alpha(clr_gerp, 0.8), alpha(clr_gerp, 0.4)))+
+  theme(legend.position = "top")+
+  scale_color_manual(values = c(clr_gerp, alpha(clr_gerp, 0.6))) -> hist_n_gerp_nee
+
+# g
+
+ggplot(high_loci, aes(x = n_loci)) +
+  geom_histogram(bins = 30, position = "identity", aes(fill = type, col = type)) +
+  labs(x = "# loci", fill = "", y = "# individuals", title = "High impact SnpEff") +
+  theme(legend.position = "top")+ guides(color="none")+
+  scale_fill_manual(values = c(alpha(clr_high, 0.8), alpha(clr_high, 0.4)))+
+  scale_color_manual(values = c(clr_high, alpha(clr_high, 0.6)))-> hist_n_high_nee
+
+# combine
+
+cowplot::plot_grid(fig_countgerp_nee, fig_countsnpef_nee,
+                   ncol = 1, labels = c("a", "b"), label_fontface = "plain", label_size = 16) -> fig_mut_1_nee
+
+cowplot::plot_grid(fig_mut_1_nee, fig_countsnpef_cat_nee, rel_widths = c(0.6,1),
+                   labels = c("", "c"), label_fontface = "plain", label_size = 16,
+                   ncol = 2) -> fig_mut_2_nee
+
+cowplot::plot_grid(fig_af_gerp_nee, 
+                   fig_af_high_nee,
+                   hist_n_gerp_nee, 
+                   hist_n_high_nee, 
+                   labels = c("d", "e", "f", "g"), label_fontface = "plain", label_size = 16,
+                   ncol = 2,
+                   align = "hv", axis = "lb") -> fig_mut_3_nee
+
+cowplot::plot_grid(fig_mut_2_nee, fig_mut_3_nee, #rel_heights = c(1, 0.5),
+                   ncol = 1, 
+                   align = "hv", axis = "lb") -> fig_mut_nee
+
+
+ggsave(plot = fig_mut_nee, filename = 'plots/main/fig_2.pdf', width = 180, height = 220,
+       units = 'mm', device = cairo_pdf)
+
 

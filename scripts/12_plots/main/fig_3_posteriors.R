@@ -567,3 +567,101 @@ cowplot::plot_grid(totals,  hom_het, posterior_gerpregions,  posterior_highregio
 png("plots/main/fig_3.png", height = 1000, width = 1000)
 fig
 dev.off()
+
+
+
+#### combine for nee ####
+
+small_font = 10
+large_font = 12
+in_box_font = 3.5
+
+theme_set(theme_classic() + theme(title = element_text(small_font),
+                                  plot.subtitle = element_text(size=large_font),
+                                  axis.title = element_text(size = large_font, family = "Arial"),
+                                  axis.text = element_text(size = small_font, family = "Arial"),
+                                  text=element_text(size=small_font, family = "Arial"),
+                                  legend.text =  element_text(size = small_font, family = "Arial"),
+                                  legend.title = element_text(size = small_font, family = "Arial"),
+                                  strip.text = element_text(size = small_font, family = "Arial"),
+                                  axis.title.y = element_text(margin = margin(t = 0, r =5, b = 0, l = 0),
+                                                              color = "black"),
+                                  plot.margin = margin(0.3,0.3,0.3,0.3, "cm"),
+                                  plot.title=element_text(margin=margin(0,0,5,0)),
+                                  axis.title.x = element_text(margin = margin(t = 5, r = 0, b = 0, l = 0),
+                                                              color = "black"),
+                                  panel.background = element_rect(fill = "white", colour = NA),
+                                  plot.background = element_rect(fill = "white", colour = NA),))
+
+
+ggplot(data = brms_plota$outer) +  
+  aes(x = .data$x, y = .data$model) + 
+  geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = model, col = model))+
+  geom_segment(data=brms_plota_interval, aes(x = l, xend = h, yend = model), col = "black", linewidth=3)+
+  geom_segment(data=brms_plota_interval, aes(x = ll, xend = hh, yend = model), col = "black")+
+  geom_point(data=brms_plota_interval, aes(x = m, y = model), fill="white",  col = "black", shape=21, size = 6) + 
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash")+
+  labs(x = expression("Standardised"~beta), y = "Parameter")+
+  xlim(-0.35, 0.1)+
+  scale_fill_manual(values =alpha(c(clr_froh,
+                                    clr_high, clr_gerp), 0.7)) +
+  scale_y_discrete(labels = c(expression(italic(F)[ROH]), "SnpEff", "GERP"))+
+  scale_color_manual(values =c(clr_froh,clr_high, clr_gerp)) +
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none",
+        axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) -> totals_nee
+
+ggplot(data = brms_gerps_regions$outer) +  
+  aes(x = .data$x, y = .data$region) + 
+  geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = region, col = region))+
+  geom_segment(data=brms_gerps_regions_interval, aes(x = l, xend = h, yend = region), col = "black", linewidth=3)+
+  geom_segment(data=brms_gerps_regions_interval, aes(x = ll, xend = hh, yend = region), col = "black")+
+  geom_point(data=brms_gerps_regions_interval, aes(x = m, y = region), fill="white",  col = "black", shape=21, size = 6) + 
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", linewidth=0.6)+
+  scale_fill_manual(values =alpha(c(clr_gerp, clr_gerp, clr_gerp, clr_gerp), 0.7)) + #
+  scale_color_manual(values =c(clr_gerp, clr_gerp, clr_gerp, clr_gerp)) +
+  labs(x = expression("Standardised"~beta), y = "Region", title = "GERP")+
+  annotate("text", label = "Regulatory", y = 3.2, x = 0.5, size = in_box_font, angle = -90, col = "grey30") +
+  geom_segment(x = 0.4, y = 2, yend = 4.5,
+               col = "grey30")+
+  annotate("text", label = "Coding", y = 1.17, x = 0.5, size = in_box_font, angle = -90, col = "grey30") +
+  geom_segment(x = 0.4, y = 0.5, yend = 1.8,
+               col = "grey30")+
+  scale_x_continuous(labels = c("-0.25", "0.00", "0.25",  ""), breaks = c(-0.25, 0, 0.25, 0.5))+
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none",
+        axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) -> posterior_gerpregions_nee
+
+ggplot(data = brms_high_regions$outer) +  
+  aes(x = .data$x, y = .data$region) + 
+  geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = region, col = region))+
+  geom_segment(data=brms_high_regions_interval, aes(x = l, xend = h, yend = region), col = "black", linewidth=3)+
+  geom_segment(data=brms_high_regions_interval, aes(x = ll, xend = hh, yend = region), col = "black")+
+  geom_point(data=brms_high_regions_interval, aes(x = m, y = region), fill="white",  col = "black", shape=21, size = 6) + 
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", linewidth=0.6)+
+  scale_fill_manual(values =alpha(c(clr_high, clr_high, clr_high, clr_high), 0.7)) + #
+  scale_color_manual(values =c(clr_high, clr_high, clr_high, clr_high)) +
+  labs(x = expression("Standardised"~beta), y = "Region", title = "SnpEff")+
+  annotate("text", label = "Regulatory", y = 3.2, x = 0.2, size = in_box_font, angle = -90, col = "grey30") +
+  geom_segment(x = 0.15, y = 2, yend = 4.5,
+               col = "grey30")+
+  annotate("text", label = "Coding", y = 1.17, x = 0.2, size = in_box_font, angle = -90, col = "grey30") +
+  geom_segment(x = 0.15, y = 0.5, yend = 1.8,
+               col = "grey30")+
+  scale_x_continuous(labels = c("-0.25", "0.00", ""), breaks = c(-0.25, 0,0.75))+
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none",
+        axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) -> posterior_highregions_nee
+
+cowplot::plot_grid(totals_nee,  hom_het, posterior_gerpregions_nee,  posterior_highregions_nee, 
+                   ncol = 2, rel_heights = c(0.5, 1), align = "hv", axis = "lb",
+                   labels = "auto", label_fontface = "plain", label_size = 16) -> fig_nee
+
+ggsave(plot = fig_nee, filename = 'plots/main/fig_3.pdf', width = 180, height = 180,
+       units = 'mm', device = cairo_pdf)

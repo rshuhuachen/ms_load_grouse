@@ -271,3 +271,93 @@ traits_gerp_posterior
 dev.off()
 
 write.csv(gerptrait_interval, file = "output/models/intervals/gerp_load_traits.csv", quote=F, row.names = F)
+
+
+#### for NEE ###
+
+small_font = 10
+large_font = 12
+in_box_font = 3.5
+
+theme_set(theme_classic() + theme(title = element_text(small_font),
+                                  plot.subtitle = element_text(size=large_font),
+                                  axis.title = element_text(size = large_font, family = "Arial"),
+                                  axis.text = element_text(size = small_font, family = "Arial"),
+                                  text=element_text(size=small_font, family = "Arial"),
+                                  legend.text =  element_text(size = small_font, family = "Arial"),
+                                  legend.title = element_text(size = small_font, family = "Arial"),
+                                  strip.text = element_text(size = small_font, family = "Arial"),
+                                  axis.title.y = element_text(margin = margin(t = 0, r =5, b = 0, l = 0),
+                                                              color = "black"),
+                                  plot.margin = margin(0.3,0.3,0.3,0.3, "cm"),
+                                  plot.title=element_text(margin=margin(0,0,5,0)),
+                                  axis.title.x = element_text(margin = margin(t = 5, r = 0, b = 0, l = 0),
+                                                              color = "black"),
+                                  panel.background = element_rect(fill = "white", colour = NA),
+                                  plot.background = element_rect(fill = "white", colour = NA),))
+
+ggplot(data = brms_trait_ms_gerp$outer) +  
+  aes(x = .data$x, y = .data$parameter) + 
+  geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = parameter, col = parameter))+
+  geom_segment(data=brms_trait_ms_gerp_interval, aes(x = l, xend = h, yend = parameter), col = "black", linewidth=3)+
+  geom_segment(data=brms_trait_ms_gerp_interval, aes(x = ll, xend = hh, yend = parameter), col = "black")+
+  geom_point(data=brms_trait_ms_gerp_interval, aes(x = m, y = parameter), fill="white",  col = "black", shape=21, size = 3) + 
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 0.5)+
+  labs(x = expression("Standardised"~beta), y = "Trait")+
+  scale_fill_manual(values =alpha(c(clr_grey,clr_grey,
+                                    clr_grey,clr_grey,
+                                    clr_grey,clr_highlight), 0.5)) +
+  scale_color_manual(values =c(clr_grey,clr_grey,
+                               clr_grey,clr_grey,
+                               clr_grey,clr_highlight)) +
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none") +
+  theme(
+    panel.background = element_rect(fill='transparent'), #transparent panel bg
+    plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+    panel.grid.major = element_blank(), #remove major gridlines
+    panel.grid.minor = element_blank(), #remove minor gridlines
+    legend.background = element_rect(fill='transparent'), #transparent legend bg
+    legend.box.background = element_rect(fill='transparent') #transparent legend panel
+ )-> traits_ms_gerp_posterior_nee
+
+traits_ms_gerp_posterior_nee
+
+ggsave(plot = traits_ms_gerp_posterior_nee, filename = 'plots/main/fig_4_right_traits_ams.pdf', width = 90, height = 180,
+       bg='transparent', units = 'mm', device = cairo_pdf)
+
+ggplot(data = gerptrait$outer) +  
+  aes(x = .data$x, y = .data$trait) + 
+  geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = trait, col = trait))+
+  geom_segment(data=gerptrait_interval, aes(x = l, xend = h, yend = trait), col = "black", linewidth=3)+
+  geom_segment(data=gerptrait_interval, aes(x = ll, xend = hh, yend = trait), col = "black")+
+  geom_point(data=gerptrait_interval, aes(x = m, y = trait), fill="white",  col = "black", shape=21, size = 3) + 
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", size = 0.5)+
+  labs(x = expression("Standardised"~beta), y = "Trait")+
+  scale_fill_manual(values =alpha(c(clr_grey,clr_grey,
+                                    clr_grey,clr_grey,
+                                    clr_grey,clr_highlight), 0.5)) +
+  scale_color_manual(values =c(clr_grey,clr_grey,
+                               clr_grey,clr_grey,
+                               clr_grey,clr_highlight)) +
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none") +
+  theme(
+    panel.background = element_rect(fill='transparent'), #transparent panel bg
+    plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+    panel.grid.major = element_blank(), #remove major gridlines
+    panel.grid.minor = element_blank(), #remove minor gridlines
+    legend.background = element_rect(fill='transparent'), #transparent legend bg
+    legend.box.background = element_rect(fill='transparent') #transparent legend panel
+  )-> traits_gerp_posterior_nee
+
+ggsave(plot = traits_ms_gerp_posterior_nee, filename = 'plots/main/fig_4_left_load_traits.pdf', width = 90, height = 180,
+       bg='transparent',
+       units = 'mm', device = cairo_pdf)
+
+
+
