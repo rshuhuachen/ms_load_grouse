@@ -155,6 +155,9 @@ png(file = "plots/main/fig_1.png", width=1100, height=800)
 fig_froh
 dev.off()
 
+ggsave(plot = fig_froh, filename = 'plots/main/fig_1.pdf', width=1100, height=800, dpi=30,
+       units = 'px', device = cairo_pdf)
+
 #### Figures for nee in PDF #####
 
 # a
@@ -176,7 +179,7 @@ fig_cum_froh_nee
 # c
 
 df %>% 
-  filter(KB > 100 & scaf_nr < 11) %>% 
+  filter(KB > 100 & nsnp > 100 & scaf_nr < 11) %>% 
   ggplot() +
   geom_rect(data=shade, aes(xmin=min, xmax=max, ymin=0, ymax=num_ind*2 + 1), 
             alpha=0.5, fill = "#eceff4") + # "#f7f7f7" "#eceff4"
@@ -214,7 +217,7 @@ cowplot::plot_grid(fig_hist_froh_nee, fig_cum_froh_nee,
 cowplot::plot_grid(fig_froh_1_nee, fig_roh_dist_nee,
                    ncol = 1, labels = c("", "c"), label_fontface = "plain", label_size = 16) -> fig_froh_nee
 
-ggsave(plot = fig_froh_nee, filename = 'plots/main/fig_1.pdf',width = 180,height = 140,
+ggsave(plot = fig_froh_nee, filename = 'plots/main/fig_1.pdf',width = 275,height = 200,
        units = 'mm', device = cairo_pdf)
 
 

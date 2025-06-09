@@ -568,12 +568,13 @@ png("plots/main/fig_3.png", height = 1000, width = 1000)
 fig
 dev.off()
 
-
+ggsave(plot = fig, filename = 'plots/main/fig_3.pdf', width = 350, height = 350,
+       units = 'mm', device = cairo_pdf)
 
 #### combine for nee ####
 
-small_font = 10
-large_font = 12
+small_font = 8
+large_font = 10
 in_box_font = 3.5
 
 theme_set(theme_classic() + theme(title = element_text(small_font),
@@ -663,5 +664,5 @@ cowplot::plot_grid(totals_nee,  hom_het, posterior_gerpregions_nee,  posterior_h
                    ncol = 2, rel_heights = c(0.5, 1), align = "hv", axis = "lb",
                    labels = "auto", label_fontface = "plain", label_size = 16) -> fig_nee
 
-ggsave(plot = fig_nee, filename = 'plots/main/fig_3.pdf', width = 180, height = 180,
+ggsave(plot = fig_nee, filename = 'plots/main/fig_3_sized.pdf', width = 180, height = 180,
        units = 'mm', device = cairo_pdf)

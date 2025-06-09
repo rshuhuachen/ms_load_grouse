@@ -284,7 +284,7 @@ ggplot(snpeff_af, aes(x = frequency, fill = Deleteriousness, col = Deleteriousne
                  binwidth=0.07, position="dodge") +
   scale_color_manual(values = c("grey", clr_high)) + 
   scale_fill_manual(values = alpha(c("grey", clr_high), 0.7))+
-  labs(x = "Allele frequency", y = "Frequency", title = "SnpEff") +
+  labs(x = "Allele frequency", y = "Percentage of SNPs", title = "SnpEff") +
   theme(legend.position = c(0.8,0.9),
         legend.title = element_blank())-> fig_af_high
 
@@ -387,6 +387,9 @@ cowplot::plot_grid(fig_mut_2, fig_mut_3, #rel_heights = c(1, 0.5),
 png(file = "plots/main/fig_2.png", width=1000, height=1400)
 fig_mut
 dev.off()
+
+ggsave(plot = fig_mut, filename = 'plots/main/fig_2.pdf', width = 350, height = 420,
+       units = 'mm', device = cairo_pdf)
 
 ### Combine in one figure for NEE ####
 
