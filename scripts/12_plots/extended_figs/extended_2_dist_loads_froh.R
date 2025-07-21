@@ -32,7 +32,7 @@ ggplot(subset(long_load, loadtype == "GERP ≥ 4"), aes(x = load, fill = zygosit
   theme(strip.background = element_blank(),
         legend.position="none")+
   guides(col = "none")+
-  labs(x = "Load", y = "Count", fill = "Load type", title = "GERP ≥ 4") -> hist_loads_gerp
+  labs(x = "Load", y = "Count", fill = "Load component", title = "GERP ≥ 4") -> hist_loads_gerp
 
 hist_loads_gerp
 
@@ -48,7 +48,7 @@ ggplot(subset(long_load, loadtype == "High impact SnpEff"), aes(x = load, fill =
   guides(col = "none")+
   theme(strip.background = element_blank(),
         legend.position="none")+
-  labs(x = "Load", y = "Count", fill = "Load type", title = "High impact SnpEff") -> hist_loads_high
+  labs(x = "Load", y = "Count", fill = "Load component", title = "High impact SnpEff") -> hist_loads_high
 
 hist_loads_high
 
@@ -75,7 +75,7 @@ ggplot(load_froh_long, aes(x = froh, y = load, col = zygosity, fill = zygosity))
   facet_wrap(~loadtype, scales="free") +
   theme(strip.background = element_blank(),
         legend.position="bottom")+
-  labs(x = expression(italic(F)[ROH]), y= "Load", fill = "Load type") +
+  labs(x = expression(italic(F)[ROH]), y= "Load", fill = "Load component") +
   scale_fill_manual(values = alpha(c("#8EA4CC","#703D57",  "#FFCD70"), 0.6)) +
   guides(col = "none")+
   scale_color_manual(values = c("#8EA4CC","#703D57",  "#FFCD70"))  -> froh_load 
