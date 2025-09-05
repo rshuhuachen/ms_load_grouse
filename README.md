@@ -2,7 +2,7 @@
 
 # General
 
-This is the repository that contains all scripts used for the analysis in the manuscript titled "Predicted deleterious mutations reveal the genetic architecture of male reproductive success in a lekking bird", Chen et al. 2024 ([in review](https://doi.org/10.21203/rs.3.rs-5579350/v1)). Genomic data, including the reference genome, and the 190 resequenced grouse genomes can be found on NCBI (see links below) and phenotypic data as well as the black grouse annotation are stored in this repository.
+This is the repository that contains all scripts used for the analysis in the manuscript titled "Predicted deleterious mutations reveal the genetic architecture of male reproductive success in a lekking bird", Chen et al. 2025 published in NEE ([https://doi.org/10.21203/rs.3.rs-5579350/v1](https://doi.org/10.1038/s41559-025-02802-8))). Genomic data, including the reference genome, and the 190 resequenced grouse genomes can be found on NCBI (see links below) and phenotypic data as well as the black grouse annotation are stored in this repository.
 
 Below you will find an explanation of which data files can be found where, and the general structure of the workflow. You will find a brief overview of the scripts with an explanation here: https://rshuhuachen.github.io/ms_load_grouse/
 
