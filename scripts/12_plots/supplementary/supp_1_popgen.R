@@ -66,7 +66,7 @@ scandinavia <- world %>%
 ## Add map -> item properties -> put min max coordinates of X and Y in 3857 (used a converter on google)
 ## Added legend and arrow, export
 
-gis <- readPNG("plots/qgis_export_focalsamples.png")
+gis <- readPNG("plots/sup/qgis_export_focalsamples.png")
 gis <- rasterGrob(gis, interpolate=TRUE)
 
 inset <- world %>% 
