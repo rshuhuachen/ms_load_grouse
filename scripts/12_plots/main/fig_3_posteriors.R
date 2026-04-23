@@ -87,7 +87,7 @@ brms_plota_areas$model  <- factor(as.factor(brms_plota_areas$model),
 # split by interval
 brms_plota <- split(brms_plota_areas, brms_plota_areas$interval)
 
-brms_plota$bottom <- brms_plota$outer %>%
+e  <- brms_plota$outer %>%
   summarise(
     ll = min(.data$x),
     hh = max(.data$x),
@@ -114,6 +114,12 @@ ggplot(data = brms_plota$outer) +
         panel.grid = element_blank(),
         strip.background = element_blank(),
         legend.position = "none",
+        panel.background = element_rect(fill='transparent'), #transparent panel bg
+        plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+        panel.grid.major = element_blank(), #remove major gridlines
+        panel.grid.minor = element_blank(), #remove minor gridlines
+        legend.background = element_rect(fill='transparent'), #transparent legend bg
+        legend.box.background = element_rect(fill='transparent'), #transparent legend panel
         axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) -> totals
 
 totals
@@ -121,9 +127,48 @@ totals
 brms_plota_interval <- brms_plota_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_plota_interval, file = "output/models/intervals/total_froh_gerp45_high.csv", quote=F, row.names = F)
 
-png(file = "plots/main/fig_3a.png", width=600, height=600)
+png(file = "plots/main/fig_3a.png", width=500, height=400, bg='transparent')
 totals
 dev.off()
+
+pdf(file = "../ms_purging_grouse//plots/nee_fig_3a.pdf", width=600, height=600)
+totals
+dev.off()
+
+# without froh
+ggplot(data = subset(brms_plota$outer, model != "FROH")) +  
+  aes(x = .data$x, y = .data$model) + 
+  geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = model, col = model))+
+  geom_segment(data=subset(brms_plota_interval, model != "FROH"), aes(x = l, xend = h, yend = model), col = "black", linewidth=3)+
+  geom_segment(data=subset(brms_plota_interval, model != "FROH"), aes(x = ll, xend = hh, yend = model), col = "black")+
+  geom_point(data=subset(brms_plota_interval, model != "FROH"), aes(x = m, y = model), fill="white",  col = "black", shape=21, size = 6) + 
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash")+
+  labs(x = expression("Standardised"~beta), y = "Parameter")+
+  xlim(-0.35, 0.1)+
+  scale_fill_manual(values =alpha(c(clr_high, clr_gerp), 0.7)) +
+  scale_y_discrete(labels = c("Total SnpEff load", "Total GERP load"))+
+  scale_color_manual(values =c(clr_high, clr_gerp)) +
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        panel.background = element_rect(fill='transparent'), #transparent panel bg
+        plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+        panel.grid.major = element_blank(), #remove major gridlines
+        panel.grid.minor = element_blank(), #remove minor gridlines
+        legend.background = element_rect(fill='transparent'), #transparent legend bg
+        legend.box.background = element_rect(fill='transparent'), #transparent legend panel
+        legend.position = "none",
+        axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) -> totals
+
+ggsave(plot = totals, filename = 'plots/main/fig_3a.pdf', width = 200, height = 180,bg='transparent',
+       units = 'mm', device = cairo_pdf)
+
+png("plots/main/fig_3a.png", width=500, height=400, bg='transparent')
+totals
+dev.off()
+
+# without inbreeding for ppt
+
 
 ##### plot b - hom and het  #####
 
@@ -258,6 +303,20 @@ write.csv(brms_hom_het_lms_interval, file = "output/models/intervals/hom_het_ger
 png(file = "plots/main/fig_3b.png", width=800, height=600)
 hom_het
 dev.off()
+hom_het + theme(panel.border = element_blank(),
+      panel.grid = element_blank(),
+      strip.background = element_blank(),
+      panel.background = element_rect(fill='transparent'), #transparent panel bg
+      plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+      panel.grid.major = element_blank(), #remove major gridlines
+      panel.grid.minor = element_blank(), #remove minor gridlines
+      legend.background = element_rect(fill='transparent'), #transparent legend bg
+      legend.box.background = element_rect(fill='transparent'), #transparent legend panel
+      legend.position = "none",
+      axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) -> hom_het_2
+
+ggsave(plot = hom_het_2, filename = 'plots/main/fig_3b.pdf', width = 300, height = 180,
+       units = 'mm', device = cairo_pdf)
 
 #### plot c - GERP per region ####
 load(file = "output/models/per_gene_region/lms_total_gerp45_promoter.RData")
@@ -404,8 +463,39 @@ posterior_gerpregions
 brms_gerps_regions_interval <- brms_gerps_regions_interval %>% mutate(across(where(is.numeric), ~round(., 2)))
 write.csv(brms_gerps_regions_interval, file = "output/models/intervals/regions_gerp45.csv", quote=F, row.names = F)
 
-png(file = "plots/main/fig_3c.png", width=600, height=800)
+
+# without tss for ppt
+ggplot(data = subset(brms_gerps_regions$outer, brms_gerps_regions$outer$region != "TSS")) +  
+  aes(x = .data$x, y = .data$region) + 
+  geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = region, col = region))+
+  geom_segment(data=subset(brms_gerps_regions_interval, region != "TSS"), aes(x = l, xend = h, yend = region), col = "black", linewidth=3)+
+  geom_segment(data=subset(brms_gerps_regions_interval, region != "TSS"), aes(x = ll, xend = hh, yend = region), col = "black")+
+  geom_point(data=subset(brms_gerps_regions_interval, region != "TSS"), aes(x = m, y = region), fill="white",  col = "black", shape=21, size = 6) + 
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", linewidth=0.6)+
+  scale_fill_manual(values =alpha(c(clr_gerp, clr_gerp, clr_gerp, clr_gerp), 0.7)) + #
+  scale_color_manual(values =c(clr_gerp, clr_gerp, clr_gerp, clr_gerp)) +
+  labs(x = expression("Standardised"~beta), y = "Region", title = "GERP")+
+  annotate("text", label = "Regulatory", y = 2.7, x = 0.5, size = 5.5, angle = -90, col = "grey30") +
+  geom_segment(x = 0.4, y = 2, yend = 3.5,
+               col = "grey30")+
+  annotate("text", label = "Coding", y = 1.17, x = 0.5, size = 5.5, angle = -90, col = "grey30") +
+  geom_segment(x = 0.4, y = 0.5, yend = 1.8,
+               col = "grey30")+
+  scale_x_continuous(labels = c("-0.25", "0.00", "0.25",  ""), breaks = c(-0.25, 0, 0.25, 0.5))+
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none",
+        axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) -> posterior_gerpregions
+
 posterior_gerpregions
+png(file = "plots/main/fig_3c_noTSS.png", width=400, height=600, bg='transparent')
+posterior_gerpregions + theme(        panel.background = element_rect(fill='transparent'), #transparent panel bg
+                                      plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+                                      panel.grid.major = element_blank(), #remove major gridlines
+                                      panel.grid.minor = element_blank(), #remove minor gridlines
+                                      legend.background = element_rect(fill='transparent'), #transparent legend bg
+                                      legend.box.background = element_rect(fill='transparent')) #transparent legend panel
 dev.off()
 
 #### plot d - high per region ####
@@ -558,11 +648,59 @@ png(file = "plots/main/fig_3d.png", width=600, height=800)
 posterior_highregions
 dev.off()
 
+# without tss
+
+ggplot(data = subset(brms_high_regions$outer, brms_high_regions$outer$region != "TSS")) +  
+  aes(x = .data$x, y = .data$region) + 
+  geom_ridgeline(aes(scale = 0.4, height = scaled_density, fill = region, col = region))+
+  geom_segment(data=subset(brms_high_regions_interval, region != "TSS"), aes(x = l, xend = h, yend = region), col = "black", linewidth=3)+
+  geom_segment(data=subset(brms_high_regions_interval, region != "TSS"), aes(x = ll, xend = hh, yend = region), col = "black")+
+  geom_point(data=subset(brms_high_regions_interval, region != "TSS"), aes(x = m, y = region), fill="white",  col = "black", shape=21, size = 6) + 
+  geom_vline(xintercept = 0, col = "#ca562c", linetype="longdash", linewidth=0.6)+
+  scale_fill_manual(values =alpha(c(clr_high, clr_high, clr_high, clr_high), 0.7)) + #
+  scale_color_manual(values =c(clr_high, clr_high, clr_high, clr_high)) +
+  labs(x = expression("Standardised"~beta), y = "Region", title = "SnpEff")+
+  annotate("text", label = "Regulatory", y = 2.7, x = 0.5, size = 5.5, angle = -90, col = "grey30") +
+  geom_segment(x = 0.4, y = 2, yend = 3.5,
+               col = "grey30")+
+  annotate("text", label = "Coding", y = 1.17, x = 0.5, size = 5.5, angle = -90, col = "grey30") +
+  geom_segment(x = 0.4, y = 0.5, yend = 1.8,
+               col = "grey30")+
+  scale_x_continuous(labels = c("-0.25", "0.00", ""), breaks = c(-0.25, 0,0.75))+
+  theme(panel.border = element_blank(),
+        panel.grid = element_blank(),
+        strip.background = element_blank(),
+        legend.position = "none",
+        axis.title.y = element_text(margin = margin(t = 0, r = 10, b = 0, l = 0))) -> posterior_highregions
+
+posterior_highregions
+
+png(file = "plots/main/fig_3c.png", width=400, height=600, bg='transparent')
+posterior_gerpregions + theme(        panel.background = element_rect(fill='transparent'), #transparent panel bg
+                                      plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+                                      panel.grid.major = element_blank(), #remove major gridlines
+                                      panel.grid.minor = element_blank(), #remove minor gridlines
+                                      legend.background = element_rect(fill='transparent'), #transparent legend bg
+                                      legend.box.background = element_rect(fill='transparent')) #transparent legend panel
+dev.off()
+png(file = "plots/main/fig_3d_notss.png", width=400, height=600, bg='transparent')
+posterior_highregions + theme(        panel.background = element_rect(fill='transparent'), #transparent panel bg
+                                      plot.background = element_rect(fill='transparent', color=NA), #transparent plot bg
+                                      panel.grid.major = element_blank(), #remove major gridlines
+                                      panel.grid.minor = element_blank(), #remove minor gridlines
+                                      legend.background = element_rect(fill='transparent'), #transparent legend bg
+                                      legend.box.background = element_rect(fill='transparent')) #transparent legend panel
+dev.off()
+
+
+
 #### combine ####
 
 cowplot::plot_grid(totals,  hom_het, posterior_gerpregions,  posterior_highregions, 
                    ncol = 2, align = "hv", axis = "lb",rel_heights = c(0.5, 1),
                    labels = "auto", label_fontface = "plain", label_size = 22) -> fig
+
+
 
 png("plots/main/fig_3.png", height = 1000, width = 1000)
 fig

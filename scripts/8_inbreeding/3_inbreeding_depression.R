@@ -27,6 +27,14 @@ fit <- brm(LMS_min ~ scale(froh) + core + (1|site), data = froh_pheno,
 
 save(fit, file = "output/models/from_lms.RData")
 
+fit <- brm(LMS_min ~ scale(froh) + core + (1|site), data = froh_pheno,
+           family = negbinomial(),
+           prior = prior(normal(0,1), class = b),
+           cores =8, control = list(adapt_delta = 0.99, max_treedepth = 15),
+           iter = iter, thin = thin, warmup = burn, seed = 1908)
+
+save(fit, file = "output/models/from_lms_nb.RData")
+
 #### Model diagnosis ####
 #get posteriors
 posterior <- as.array(fit)

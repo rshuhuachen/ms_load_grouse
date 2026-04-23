@@ -23,11 +23,11 @@ clrs <- c("#284651", "#d34e38", "#54b9c5", "#efefef", "#8e8e99", "#F2CC8F", "#86
           "#f49c84", "#ec7c64", "#f4b4a4", "#bccccc", "#3c5587", "#FFBC42", "#8DAA91",
           "#7E6148", "#06a088")  #from ggsci:npg + additions
 
-clrs_hunting <- c("#001524", "#15616D","#78290F", "#FF7D00", "#FFDDAD" )
-clrs_related <- c("#3c5587","#f49c84","#FFBC42","#06a088","#861657","#7E6148")
-clr_gerp <- "#d34e38" 
-clr_high <- "#284651"
-clr_froh <- "#8DAA91" 
-clr_grey <- "#8e8e99"
-clr_highlight <- "#FFBC42" 
-clr_2 <- c("#bccccc", "#8e8e99")
+# clrs_hunting <- c("#001524", "#15616D","#78290F", "#FF7D00", "#FFDDAD" )
+# clrs_related <- c("#3c5587","#f49c84","#FFBC42","#06a088","#861657","#7E6148")
+ clr_gerp <- "#d34e38" 
+ clr_high <- "#284651"
+ clr_froh <- "#8DAA91" 
+ clr_grey <- "#8e8e99"
+# clr_highlight <- "#FFBC42" 
+# clr_2 <- c("#bccccc", "#8e8e99")
