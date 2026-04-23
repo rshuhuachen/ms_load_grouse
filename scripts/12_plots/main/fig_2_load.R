@@ -81,7 +81,7 @@ fig_count_high_per_gerp
 
 #fig_countgerp+ fig_count_high_per_gerp-> fig_count_gerp_plus_high
 
-png(file = "plots/main/fig_2a.png", width=1000, height=800)
+png(file = "plots/main/fig_2a.png", width=800, height=600)
 fig_countgerp
 dev.off()
 
